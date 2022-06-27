@@ -135,7 +135,8 @@ public abstract class EdgarParser {
 //                .skip(10)
                 .forEach(line -> {
                     try {
-                        DailyDataRec dailyData = new DailyDataRec(fileName, line.trim().split("\\s{2,}"));
+                        String[] arr = line.trim().split("\\s{2,}");
+                        DailyDataRec dailyData = new DailyDataRec(fileName, arr[0], arr[1], arr[2], arr[3], arr[4]);
                         if (dailyData.formType().equals("4")) {
 //                            if (!ddList.containsKey(dailyData.getFormType())) {
 //                                ArrayList<DailyData> dailyDataList = new ArrayList<>();
