@@ -116,7 +116,7 @@ public class Main {
             FTP.invokeParsingClass(hashMap, path);
 */
             EdgarParser eParser = new EdgarForm4Parser();
-            List<DailyData> ddList = eParser.getDailyDataList(path);
+            List<DailyDataRec> ddList = eParser.getDailyDataList(path);
 
 
         }
