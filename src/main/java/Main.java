@@ -137,12 +137,11 @@ public class Main {
             parser.parseForm4String(data.remove(0), csvTableBuilder);
         }
 
-//        String output = csvTableBuilder.outputCsv();
-//        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
-//                new FileOutputStream("/output.txt"), "utf-8"))) {
+        String output = csvTableBuilder.outputCsv();
+        try (Writer writer = new BufferedWriter(new FileWriter("output.txt", true))) {
 //                new FileOutputStream(String.format("/data/%s-output.txt", path)), "utf-8"))) {
-//            writer.write(output);
-//        }
+            writer.append(output);
+        }
 
 
 //            List<DailyDataRec> ddList = eParser.getDailyDataList(path);

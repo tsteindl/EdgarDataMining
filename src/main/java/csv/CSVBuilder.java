@@ -90,7 +90,7 @@ public class CSVBuilder {
     }
 
     public String outputCsv() {
-        return this.getHeader() + this.lines.stream().collect(Collectors.joining());
+        return this.getHeader() + "\n" + this.lines.stream().collect(Collectors.joining("\n"));
     }
 
     public boolean containsTag(Map<List<String>, String> tagList, List<String> tag) {
