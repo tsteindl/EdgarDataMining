@@ -51,72 +51,19 @@ public class Form4Parser extends Parser {
         FORM_4_SET.put("form_folder_path", "form_folder_path");
     }
 
-    public void iterateDailyData(String dirPath) {
-        int idx = 0;
-
-        ArrayList<HashMap<String, String>> csvData = new ArrayList<>();
-        for (DailyData dailyData : this.dailyDataList) {
-            try {
-                idx++;
-                String returnData = FTP.loadUrl(dailyData.getFolderPath());
-                if (returnData == null) continue;
-
-//                saveFile(dirPath, returnData, dailyData);
-
-                HashMap<String, String> temp = parseForm4String(returnData);
-
-                if (temp != null) {
-                    temp.put("form_folder_path", dailyData.getFolderPath());
-                    csvData.add(temp);
-                }
-
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-//        Form4Parser.createOutPutCsv(csvData.get(0), dirPath);
-//        Form4Parser.appendToOutPutCSV(csvData, dirPath);
-        Form4Parser.createOutPutCsv(FORM_4_SET, dirPath);
-        Form4Parser.appendToOutPutCSV(csvData, FORM_4_SET, dirPath);
-    }
-
-    public void iterateDailyDataConcurrently(String dirPath) {
-        ArrayList<HashMap<String, String>> csvData = new ArrayList<>();
-
-        this.dailyDataList.stream().parallel().forEach(dailyData -> {
-            try {
-                Thread.sleep(100);
-                String returnData = FTP.loadUrl(dailyData.getFolderPath());
-                if (returnData == null) return;
-
-                HashMap<String, String> temp = parseForm4String(returnData);
-
-                if (temp != null) {
-                    temp.put("form_folder_path", dailyData.getFolderPath());
-                    csvData.add(temp);
-                }
-
-            } catch (IOException | InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-
-        Form4Parser.createOutPutCsv(csvData.get(0), dirPath);
-        Form4Parser.appendToOutPutCSV(csvData, FORM_4_SET, dirPath);
-    }
-
 
     public void saveFile(String dirPath, String returnData, DailyData dailyData) throws IOException {
+        //TODO: see if this still works
         File dir = new File(FOLDER_PATH + File.separator + dirPath);
         if (!dir.exists()) {
             dir.mkdirs();
         }
-        String dailyDirPath = FOLDER_PATH + File.separator + dirPath + File.separator + dailyData.getDateFiled();
+        String dailyDirPath = FOLDER_PATH + File.separator + dirPath + File.separator + dailyData.folderPath();
         File dailyDir = new File(dailyDirPath);
         if (!dailyDir.exists()) {
             dailyDir.mkdirs();
         }
-        String currFilePath = dailyDirPath + File.separator + dailyData.getFolderPath().replaceAll("/", Matcher.quoteReplacement("."));
+        String currFilePath = dailyDirPath + File.separator + dailyData.folderPath().replaceAll("/", Matcher.quoteReplacement("."));
         File currFile = new File(currFilePath);
         if (currFile.exists()) {
             return;
@@ -126,34 +73,6 @@ public class Form4Parser extends Parser {
         FileWriter fileWriter = new FileWriter(currFile);
         fileWriter.write(returnData);
         fileWriter.close();
-    }
-
-    public HashMap<String, String> parseForm4String(String input) {
-        if (input == null || FORM_4_SET == null) return null;
-
-        HashMap<String, String> csvData = null;
-
-        String xml = testXMLTag(input, "XML");
-        if (xml == null) {
-            xml = testXMLTag(input, "SEC-DOCUMENT");
-            if (xml == null) {
-                //TODO: parse no XML
-                return null;
-            }
-            try {
-                parseWellFormedXML(xml);
-                return null;
-            } catch (ParserConfigurationException | SAXException | IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            xml = xml.substring(xml.indexOf("<?xml version"), xml.indexOf("</XML>") - 1);
-            csvData = parseXML(xml);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return csvData;
     }
 
     public void parseForm4String(String input, CSVBuilder csvBuilder) {
@@ -194,8 +113,6 @@ public class Form4Parser extends Parser {
         Element root = doc.getDocumentElement();
         //TODO: used linkedlist here because...
         parseXMLNodesRec(root, new LinkedList<>(), csvBuilder);
-
-        System.out.println("debug");
     }
 
     public HashMap<String, String> parseXML(String xml) throws ParserConfigurationException, IOException, SAXException {

@@ -3,12 +3,6 @@ import csv.CSVBuilder;
 import csv.CSVTableBuilder;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -71,21 +65,6 @@ public class Main {
             System.out.println("Application took: " + (endTime - startTime) + " nanoseconds!");
         }
         System.out.println("----------------------------");
-/*
-        if (onlyParseSingleForm) {
-            parseSingleForm(singleForm);
-        } else {
-            execute(listToCurrentYear, programArgYear, year, executeConcurrently);
-            double endTime = System.nanoTime();
-            System.out.println("----------------------------");
-            System.out.println("Application ended");
-            if (doStats) {
-                System.out.println("Application ended at time: " + endTime);
-                System.out.println("Application took: " + (endTime - startTime) + " nanoseconds!");
-            }
-            System.out.println("----------------------------");
-        }
-*/
     }
 
     public static void execute(String path, boolean executeConcurrently) throws IOException {
@@ -94,7 +73,7 @@ public class Main {
         System.out.println("Mining data for path: " + path + " sequentially.");
         System.out.println("-------------------------------------------------");
 
-        EdgarParser eParser = new EdgarForm4Parser();
+        EdgarParser eParser = new EdgarParser("4");
         //TODO: maybe use concurrent datasource for this, put the getDailyDataList into Monolithic core that starts it while other workers start working
         List<String> idxFilesList = new CopyOnWriteArrayList<>();
 
@@ -111,65 +90,38 @@ public class Main {
                 List.of(NULLABLE_TAGS)
         );
 
-//            Thread downloadIdxFilesThread = new Thread(() -> eParser.getIdxFiles(path, idxFilesList));
         eParser.getIdxFiles(path, idxFilesList);
 
-        List<DailyDataRec> ddList = new CopyOnWriteArrayList<>();
+        List<DailyData> ddList = new CopyOnWriteArrayList<>();
 
         while (!idxFilesList.isEmpty()) {
             try {
                 eParser.processIdxFile(idxFilesList.remove(0), ddList); //TODO: multithreading here
+                String outputPath = "data/output" + ddList.get(0).dateFiled() + ".csv";
+
+                try (Writer writer = new BufferedWriter(new FileWriter(outputPath))) {
+                    writer.write(csvTableBuilder.getHeader() + "\n");
+                }
+
+                List<String> data = new CopyOnWriteArrayList<>();
+                while (!ddList.isEmpty()) {
+                    try {
+                        eParser.downloadData(ddList.remove(0), data);
+                        while (!data.isEmpty()) {
+                            parser.parseForm4String(data.remove(0), csvTableBuilder);
+                        }
+
+                        String output = csvTableBuilder.outputCsv();
+                        try (Writer writer = new BufferedWriter(new FileWriter(outputPath, true))) {
+                            writer.append(output);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-
-        List<String> data = new CopyOnWriteArrayList<>();
-        while (!ddList.isEmpty() && data.size() < 100) {
-            try {
-                eParser.downloadData(ddList.remove(0), data);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        while (!data.isEmpty()) {
-            parser.parseForm4String(data.remove(0), csvTableBuilder);
-        }
-
-        String output = csvTableBuilder.outputCsv();
-        try (Writer writer = new BufferedWriter(new FileWriter("output.txt", true))) {
-//                new FileOutputStream(String.format("/data/%s-output.txt", path)), "utf-8"))) {
-            writer.append(output);
-        }
-
-
-//            List<DailyDataRec> ddList = eParser.getDailyDataList(path);
-
-//            List<String> data = new CopyOnWriteArrayList<>();
-
-//            downloadData(ddList, data);
-
-        System.out.println("ddList" + ddList.toString());
-
-
-    }
-
-
-    public static void parseTestForm(String url) {
-        FTP ftp = new FTP();
-        String dirPath = "singleFilesCSV";
-
-        HashMap<String, ArrayList<DailyData>> hashMap = new HashMap<>();
-        ArrayList<DailyData> arrayList = new ArrayList<>();
-        arrayList.add(new DailyData("testurl", "4", "testcompany", "testcik", "testDate", url));
-
-        hashMap.put("4", arrayList);
-
-        Parser parser = new Form4Parser(hashMap.get("4"));
-
-        if (parser != null) {
-            parser.iterateDailyData(dirPath);
         }
     }
 }

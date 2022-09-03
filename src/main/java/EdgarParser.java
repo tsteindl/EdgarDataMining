@@ -13,15 +13,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public abstract class EdgarParser {
+public class EdgarParser {
     public static String BASE_URL = "https://www.sec.gov/Archives/edgar/";
     private int loadedIdxFiles = 0;
     private int failedIndexFiles = 0;
     private int failedIdxFiles = 0;
-    public String FORM_TYPE;
+    public String formType;
 
-    public List<DailyDataRec> getDailyDataList(String path) {
-        ArrayList<DailyDataRec> ddList = new ArrayList<>();
+    public EdgarParser(String formType) {
+        this.formType = formType;
+    }
+
+    public List<DailyData> getDailyDataList(String path) {
+        ArrayList<DailyData> ddList = new ArrayList<>();
 
 
 
@@ -40,7 +44,7 @@ public abstract class EdgarParser {
         return ddList;
     }
 
-    private void getFileLocListRec(String path, List<DailyDataRec> list) {
+    private void getFileLocListRec(String path, List<DailyData> list) {
         String fileExt = getFileExtension(path);
         switch (fileExt) {
             case (".idx"):
@@ -55,7 +59,7 @@ public abstract class EdgarParser {
 
     public void getIdxFiles(String path, List<String> list) {
         //TODO: remove this
-        if (this.loadedIdxFiles > 1) return;
+        if (this.loadedIdxFiles > 0) return;
         String fileExt = getFileExtension(path);
         switch (fileExt) {
             case (".idx"):
@@ -104,7 +108,7 @@ public abstract class EdgarParser {
         }
     }
 
-    private void traverseDirTreeFurther(String path, List<DailyDataRec> list) {
+    private void traverseDirTreeFurther(String path, List<DailyData> list) {
         //traverse tree further
         try {
             String indexData = loadUrl("daily-index/" + path + "index.json");
@@ -125,7 +129,7 @@ public abstract class EdgarParser {
         }
     }
 
-    private void getDailyDataRec(String path, List<DailyDataRec> list) {
+    private void getDailyDataRec(String path, List<DailyData> list) {
         String[] urlSplit = path.split("/");
         urlSplit = Arrays.copyOfRange(urlSplit, urlSplit.length - 3, urlSplit.length);
         String indexType = urlSplit[urlSplit.length - 1].split("\\.")[0];
@@ -148,7 +152,7 @@ public abstract class EdgarParser {
         }
     }
 
-    private void getIdxFileRecursively(String path, List<DailyDataRec> ddList) {
+    private void getIdxFileRecursively(String path, List<DailyData> ddList) {
         try {
 //            List valid = Arrays.asList(path.split("/")[path.split("/").length - 1].split("\\."));
             switch (getFileExtension(path)) {
@@ -239,7 +243,7 @@ public abstract class EdgarParser {
         return null;
     }
 
-    private void parseIndexFile(String requestString, List<DailyDataRec> list, String fileName) throws IOException {
+    private void parseIndexFile(String requestString, List<DailyData> list, String fileName) throws IOException {
         //TODO: Test if thread is fast enough for 10 requests/s otherwhise multithreading
 //        String splitString = requestString.substring(requestString.indexOf("Form Type", requestString.indexOf("Form Type") + 1));
         String splitString = requestString.substring(requestString.lastIndexOf("---") + 4);
@@ -248,7 +252,7 @@ public abstract class EdgarParser {
                 .forEach(line -> {
                     try {
                         String[] arr = line.trim().split("\\s{2,}");
-                        DailyDataRec dailyData = new DailyDataRec(fileName, arr[0], arr[1], arr[2], arr[3], arr[4]);
+                        DailyData dailyData = new DailyData(fileName, arr[0], arr[1], arr[2], arr[3], arr[4]);
                         //TODO: use constants for this
                         if (dailyData.formType().equals("4")) {
 //                            if (!list.containsKey(dailyData.getFormType())) {
@@ -269,7 +273,7 @@ public abstract class EdgarParser {
     }
 
 
-    public void processIdxFile(String idxFile, List<DailyDataRec> outputList) throws IOException, InterruptedException {
+    public void processIdxFile(String idxFile, List<DailyData> outputList) throws IOException, InterruptedException {
 //        String requestData = loadUrl("daily-index/" + path);
 //        this.loadedIdxFiles++;
 //        System.out.println(" parsed .idx file number " + loadedIdxFiles);
@@ -280,8 +284,8 @@ public abstract class EdgarParser {
         parseIndexFile(idxFile, outputList, "");
     }
 
-    public void downloadData(DailyDataRec dailyDataRec, List<String> outputList) throws IOException, InterruptedException {
-        String returnData = FTP.loadUrl(dailyDataRec.folderPath());
+    public void downloadData(DailyData dailyData, List<String> outputList) throws IOException, InterruptedException {
+        String returnData = FTP.loadUrl(dailyData.folderPath());
         if (returnData == null) return;
         outputList.add(returnData);
     }

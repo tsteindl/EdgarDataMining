@@ -9,7 +9,7 @@ public class CSVBuilder {
     private final List<String> lines;
     final String sep;
     protected final List<String> nullableTags;
-    private final Map<String, String> currLine;
+    private Map<String, String> currLine;
 
     public CSVBuilder(String sep, List<String> names, List<String[]> tags, List<String> documentRoot, List<String> nullableTags) {
         if (names.size() != tags.size())
@@ -17,15 +17,13 @@ public class CSVBuilder {
         this.sep = sep;
         //use linked list as dynamic access will not be needed but lots of items will be added
         this.lines = new LinkedList<>();
-        this.tags = new HashMap<>();
+        this.tags = new LinkedHashMap<>();
         for (int i = 0; i < names.size(); i++) {
             List<String> tagsListWithDocumentRoot = Stream.concat(documentRoot.stream(), Arrays.asList(tags.get(i)).stream()).toList();
             this.tags.put(tagsListWithDocumentRoot, names.get(i));
         }
         this.nullableTags = nullableTags;
-        this.currLine = new HashMap<>();
-        resetMap(this.currLine, this.tags.values());
-
+        reset();
     }
 
     void resetMap(Map<String, String> map, Collection<String> keySet) {
@@ -33,7 +31,12 @@ public class CSVBuilder {
             map.put(name, null);
     }
 
-    private String getHeader() {
+    public void reset() {
+        this.currLine = new HashMap<>();
+        resetMap(this.currLine, this.tags.values());
+    }
+
+    public String getHeader() {
         return this.tags.values().stream().collect(Collectors.joining(this.sep));
     }
 
@@ -58,7 +61,7 @@ public class CSVBuilder {
 
     //Caution when using this method
     public void addLine(String input) {
-        System.out.println(String.format("Line added:\n%s", input));
+//        System.out.println(String.format("Line added:\n%s", input));
         this.lines.add(input);
     }
 
@@ -90,7 +93,7 @@ public class CSVBuilder {
     }
 
     public String outputCsv() {
-        return this.getHeader() + "\n" + this.lines.stream().collect(Collectors.joining("\n"));
+        return this.lines.stream().collect(Collectors.joining("\n"));
     }
 
     public boolean containsTag(Map<List<String>, String> tagList, List<String> tag) {

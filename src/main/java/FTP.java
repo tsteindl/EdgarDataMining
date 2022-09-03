@@ -25,28 +25,6 @@ public class FTP {
 
     public FTP() {}
 
-    public HashMap<String, ArrayList<DailyData>> getDataHashMap(String urlApp) {
-        String dataPath = path + File.separator + "indices";
-        String url = "edgar/daily-index/";
-        if (urlApp != null) url += urlApp;
-
-        //TODO: compute dates
-
-        HashMap<String, ArrayList<DailyData>> hashMap = new HashMap<>();
-
-        try {
-            getIdxFileRecursively(url, hashMap);
-            System.out.println("---------------------------------------------------");
-            System.out.println("Parsed a total of " + loadedIdxFiles + " .idx files");
-            System.out.println("Failed nO index json files: " + failedIndexFiles);
-            System.out.println("Failed nO .idx files: " + failedIdxFiles);
-            System.out.println("---------------------------------------------------");
-        } catch (Exception e) {
-            System.out.println("Exception: %s".format(e.getMessage()));
-        }
-        return hashMap;
-    }
-
     public static String loadUrl(String url) throws IOException, InterruptedException {
         //wait to not exceed 10 requests per second
         Thread.sleep(100);
@@ -86,91 +64,6 @@ public class FTP {
 
     public static JsonObject getJsonObjectFromString(String string) {
         return new Gson().fromJson(string, JsonObject.class);
-    }
-
-    private void getIdxFileRecursively(String url, HashMap<String, ArrayList<DailyData>> hashMap){
-        try {
-            List valid = Arrays.asList(url.split("/")[url.split("/").length - 1].split("\\."));
-            //TODO: include different types of indexes: eg XML
-            if (valid.contains("xml")) {
-                return;
-            }
-            if (valid.contains("idx")) {
-                //TODO: parallelize this function and create own HashMap for every index file
-
-                String[] urlSplit = url.split("/");
-                urlSplit = Arrays.copyOfRange(urlSplit, urlSplit.length - 3, urlSplit.length);
-                String idxType = urlSplit[urlSplit.length - 1].split("\\.")[0];
-
-                if (idxType.equals("form")) {
-                    String requestData = loadUrl(url);
-                    this.loadedIdxFiles++;
-                    System.out.println(" parsed .idx file number " + loadedIdxFiles);
-                    if (requestData == null) {
-                        failedIdxFiles++;
-                        throw new Exception(".idx file not available");
-                    }
-                    parseIndexFile(requestData, hashMap, urlSplit[urlSplit.length - 1]);
-                }
-            } else {
-                String indexData = loadUrl(url + "index.json");
-                if (indexData == null) {
-                    failedIndexFiles++;
-                    throw new Exception("index json not available");
-                }
-                JsonObject indexJson = getJsonObjectFromString(indexData);
-                JsonArray itemArray = indexJson.get("directory").getAsJsonObject().get("item").getAsJsonArray();
-
-                for (JsonElement item : itemArray) {
-//                    if (url.equals("edgar/daily-index/"))
-//                    int year = Integer.parseInt(url.substring(url.indexOf("daily-index") + 13));
-//                    if (year > 2010) {
-                    JsonObject itemObj = item.getAsJsonObject();
-                    String href = itemObj.get("href").getAsString();
-                    getIdxFileRecursively(url + href, hashMap);
-//                    }
-                }
-            }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            System.out.println("skipped url: " + url);
-        }
-    }
-
-    private void parseIndexFile(String requestString, HashMap<String, ArrayList<DailyData>> hashMap, String fileName) throws IOException {
-//        String splitString = requestString.substring(requestString.indexOf("Form Type", requestString.indexOf("Form Type") + 1));
-        String splitString = requestString.substring(requestString.lastIndexOf("---") + 4);
-        splitString.lines()
-//                .skip(10)
-                .forEach(line -> {
-                    try {
-                        DailyData dailyData = new DailyData(fileName, line.trim().split("\\s{2,}"));
-                        if (dailyData.getFormType().equals("4")) {
-                            if (!hashMap.containsKey(dailyData.getFormType())) {
-                                ArrayList<DailyData> dailyDataList = new ArrayList<>();
-                                hashMap.put(dailyData.getFormType(), dailyDataList);
-                            }
-                            hashMap.get(dailyData.getFormType()).add(dailyData);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-        });
-    }
-
-    public static void invokeParsingClass(HashMap<String, ArrayList<DailyData>> hashMap, String dirPath) {
-        //TODO: add other parsers and iterate over hashmap
-        if (hashMap == null) return;
-        for (String formType : hashMap.keySet()) {
-            Parser parser = null;
-            if (formType.equals("4")) {
-                parser = new Form4Parser(hashMap.get(formType));
-            }
-            if (parser != null) {
-                parser.iterateDailyData(dirPath);
-            }
-        }
     }
 
     public static void invokeConcurrentParsingClass(HashMap<String, ArrayList<DailyData>> hashMap, String dirPath) {

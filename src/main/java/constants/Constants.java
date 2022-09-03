@@ -1,6 +1,6 @@
 package constants;
 
-public class Constants {
+public class Constants { //TODO: add JSON parsing possibility instead of hard coding here
     public static String DEFAULT_YEAR = "2020/";
 
     public static String[] CSV_DOCUMENT_ROOT = {
@@ -42,7 +42,7 @@ public class Constants {
             "securityTitle",
             "transactionDate",
             "deemedExecutionDate",
-            "transactionFormType",
+//            "transactionFormType",
             "transactionCode",
             "transactionTimeliness",
             "transactionShares",
@@ -56,11 +56,11 @@ public class Constants {
             {"securityTitle", "value"},
             {"transactionDate", "value"},
             {"deemedExecutionDate", "value"},
-            {"transactionCoding", "transactionFormType"},
+//            {"transactionCoding", "transactionFormType"},
             {"transactionCoding", "transactionCode"},
             {"transactionTimeliness", "value"},
-            {"transactionAmounts", "transactionShares"},
-            {"transactionAmounts", "transactionPricePerShare"},
+            {"transactionAmounts", "transactionShares", "value"},
+            {"transactionAmounts", "transactionPricePerShare", "value"},
             {"transactionAmounts", "transactionAcquiredDisposedCode", "value"},
             {"postTransactionAmounts", "sharesOwnedFollowingTransaction", "value"},
             {"ownershipNature", "directOrIndirectOwnership", "value"}

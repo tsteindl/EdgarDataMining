@@ -1,4 +1,3 @@
-.idea/
-C:\Users\fju\Documents\WUTIS\WUTIS insider trading\Programs\Data retrieval\data\forms
-.Rproj.user
-.gitattributes
+data/
+
+document tags.txt

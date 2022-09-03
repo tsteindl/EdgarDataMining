@@ -40,11 +40,7 @@ public class CSVTableBuilder extends CSVBuilder {
             List<String> tagsListWithDocumentRoot = Stream.of(documentRoot, tableNodeTags, Arrays.asList(tableTags.get(i))).flatMap(Collection::stream).collect(Collectors.toList());
             this.tableTags.put(tagsListWithDocumentRoot, tableNames.get(i));
         }
-
-        currRepVals = new HashMap<>();
-        currTableVals = new HashMap<>();
-        resetMap(this.currRepVals, this.repTags.values());
-        resetMap(this.currTableVals, this.tableTags.values());
+        resetTableBuilder();
     }
 
     public int getRepTagsColSize() {
@@ -55,13 +51,12 @@ public class CSVTableBuilder extends CSVBuilder {
         return this.tableTags.keySet().size();
     }
 
-/*
-    public void setCurrRepVals(String[] input) {
-        if (input.length != getRepTagsColSize())
-            throw new IllegalArgumentException(String.format("Repeating values sizes differ %s != %s", input.length, getRepTagsColSize()));
-        this.currRepVals = input;
+    public void resetTableBuilder() {
+        this.currRepVals = new HashMap<>();
+        this.currTableVals = new HashMap<>();
+        resetMap(this.currRepVals, this.repTags.values());
+        resetMap(this.currTableVals, this.tableTags.values());
     }
-*/
 
     public void addEntryToCurrLine(List<String> tag, String value) {
         Map<List<String>, String> table = whichTableContains(tag);
@@ -97,18 +92,4 @@ public class CSVTableBuilder extends CSVBuilder {
         if (containsTag(this.tableTags, tag)) return this.tableTags;
         return null;
     }
-
-    public Map<String, String> getCurrRepVals() {
-//        return Arrays.stream(this.currRepVals).collect(Collectors.joining(this.sep));
-        return this.currRepVals;
-    }
-
-/*
-    public void addLine(String[] input) {
-        if (getCurrRepVals() == null) throw new IllegalArgumentException("Repeating columns values must be set first");
-        if (input.length != getTableTagsColSize())
-            throw new IllegalArgumentException(String.format("Table value sizes differ %s != %s", input.length, getTableTagsColSize()));
-        super.addLine(getCurrRepVals(), input);
-    }
-*/
 }
