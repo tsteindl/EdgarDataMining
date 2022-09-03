@@ -178,7 +178,8 @@ public class Form4Parser extends Parser {
             e.printStackTrace();
         }
     }
-//TODO: reduce amount of functions called, choose better names for functions
+
+    //TODO: reduce amount of functions called, choose better names for functions
     public void parseXML(String xml, CSVBuilder csvBuilder) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -193,6 +194,8 @@ public class Form4Parser extends Parser {
         Element root = doc.getDocumentElement();
         //TODO: used linkedlist here because...
         parseXMLNodesRec(root, new LinkedList<>(), csvBuilder);
+
+        System.out.println("debug");
     }
 
     public HashMap<String, String> parseXML(String xml) throws ParserConfigurationException, IOException, SAXException {
@@ -240,33 +243,20 @@ public class Form4Parser extends Parser {
     private void parseXMLNodesRec(Node node, List<String> currTag, CSVBuilder csvBuilder) {
         if (node == null)
             return;
-        if (csvBuilder.containsTag(currTag)) {
-            if (isTextNode(node)) {
-                String text = node.getTextContent().trim().replaceAll("[\\n\\t]", "");
-                csvBuilder.addEntryToCurrLine(csvBuilder.getTagName(currTag), text);
-            }
-        }
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
+        if (isTextNode(node))
+            csvBuilder.addEntryToCurrLine(currTag, getText(node));
+        else if (node.getNodeType() == Node.ELEMENT_NODE) {
             Element nodeElem = (Element) node;
             //don't include first tag in names
             currTag.add(nodeElem.getTagName());
             NodeList childNodes = node.getChildNodes();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node n = childNodes.item(i);
-                parseXMLNodesRec(n, new LinkedList<>(currTag), csvBuilder);
-            }
+            for (int i = 0; i < childNodes.getLength(); i++)
+                parseXMLNodesRec(childNodes.item(i), new LinkedList<>(currTag), csvBuilder);
         }
+    }
 
-/*
-        if (isTextNode(node)) {
-            String text = node.getTextContent().trim().replaceAll("[\\n\\t]", "");
-            if (!text.equals("")) {
-
-                if (!FORM_4_SET.containsKey(tag)) FORM_4_SET.put(tag, tag);
-
-                parsedData.put(tag, text);
-            }
-        }*/
+    private static String getText(Node node) {
+        return node.getTextContent().trim().replaceAll("[\\n\\t]", "");
     }
 
 

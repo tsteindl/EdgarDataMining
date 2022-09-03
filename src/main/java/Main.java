@@ -1,14 +1,18 @@
+import constants.Constants;
 import csv.CSVBuilder;
 import csv.CSVTableBuilder;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
+import static constants.Constants.*;
 
 /**
  * PROGRAM ARGS:
@@ -19,7 +23,7 @@ import java.util.concurrent.Executors;
  */
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         //xml data from 2004 onwards
         //BASE PATH = https://www.sec.gov/Archives/
 
@@ -84,7 +88,7 @@ public class Main {
 */
     }
 
-    public static void execute(String path, boolean executeConcurrently) {
+    public static void execute(String path, boolean executeConcurrently) throws IOException {
 
         System.out.println("-------------------------------------------------");
         System.out.println("Mining data for path: " + path + " sequentially.");
@@ -96,7 +100,16 @@ public class Main {
 
         Form4Parser parser = new Form4Parser(null);
 
-        CSVBuilder csvTableBuilder = new CSVTableBuilder(";", List.of(Constants.CSV_TAG_NAMES_REP), List.of(Constants.CSV_TAGS_REP), List.of(Constants.CSV_TAG_NAMES_TABLE), List.of(Constants.CSV_TAGS_TABLE), "nonDerivativeTable");
+        CSVBuilder csvTableBuilder = new CSVTableBuilder(
+                ";",
+                List.of(CSV_TAG_NAMES_REP),
+                List.of(CSV_TAGS_REP),
+                List.of(CSV_TAG_NAMES_TABLE),
+                List.of(CSV_TAGS_TABLE),
+                List.of(TABLE_NODE_TAGS),
+                List.of(CSV_DOCUMENT_ROOT),
+                List.of(NULLABLE_TAGS)
+        );
 
 //            Thread downloadIdxFilesThread = new Thread(() -> eParser.getIdxFiles(path, idxFilesList));
         eParser.getIdxFiles(path, idxFilesList);
@@ -124,7 +137,12 @@ public class Main {
             parser.parseForm4String(data.remove(0), csvTableBuilder);
         }
 
-        String output = csvTableBuilder.outputCsv("");
+//        String output = csvTableBuilder.outputCsv();
+//        try (Writer writer = new BufferedWriter(new OutputStreamWriter(
+//                new FileOutputStream("/output.txt"), "utf-8"))) {
+//                new FileOutputStream(String.format("/data/%s-output.txt", path)), "utf-8"))) {
+//            writer.write(output);
+//        }
 
 
 //            List<DailyDataRec> ddList = eParser.getDailyDataList(path);
