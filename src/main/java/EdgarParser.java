@@ -4,14 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -24,8 +22,13 @@ public abstract class EdgarParser {
 
     public List<DailyDataRec> getDailyDataList(String path) {
         ArrayList<DailyDataRec> ddList = new ArrayList<>();
+
+
+
+        getFileLocListRec(path, ddList);
+
         try {
-            getIdxFileRecursively(path, ddList);
+//            getIdxFileRecursively(path, ddList);
             System.out.println("---------------------------------------------------");
             System.out.println("Parsed a total of " + loadedIdxFiles + " .idx files");
             System.out.println("Failed nO index json files: " + failedIndexFiles);
@@ -35,6 +38,114 @@ public abstract class EdgarParser {
             System.out.format("Exception: %s", e.getMessage());
         }
         return ddList;
+    }
+
+    private void getFileLocListRec(String path, List<DailyDataRec> list) {
+        String fileExt = getFileExtension(path);
+        switch (fileExt) {
+            case (".idx"):
+                getDailyDataRec(path, list); break;
+            case "":
+                traverseDirTreeFurther(path, list); break;
+            default:
+                return;
+        }
+    }
+
+
+    public void getIdxFiles(String path, List<String> list) {
+        //TODO: remove this
+        if (this.loadedIdxFiles > 1) return;
+        String fileExt = getFileExtension(path);
+        switch (fileExt) {
+            case (".idx"):
+                String[] urlSplit = path.split("/");
+                urlSplit = Arrays.copyOfRange(urlSplit, urlSplit.length - 3, urlSplit.length);
+                String indexType = urlSplit[urlSplit.length - 1].split("\\.")[0];
+
+                if (indexType.equals("form")) {
+                    try {
+                        String requestData = loadUrl("daily-index/" + path);
+                        this.loadedIdxFiles++;
+                        System.out.println(" parsed .idx file number " + loadedIdxFiles);
+                        if (requestData == null) {
+                            failedIdxFiles++;
+                            throw new Exception(".idx file not available");
+                        }
+//                        parseIndexFile(requestData, list, urlSplit[urlSplit.length - 1]);
+                        list.add(requestData);
+                    } catch (Exception e) {
+                        System.out.println(String.format("Url. %s not loadable", path));
+                    }
+                }
+                break;
+            case "":
+                //traverse tree further
+                try {
+                    String indexData = loadUrl("daily-index/" + path + "index.json");
+                    if (indexData == null) {
+                        failedIndexFiles++;
+                        throw new Exception("index json not available");
+                    }
+                    JsonObject indexJson = getJsonObjectFromString(indexData);
+                    JsonArray itemArray = indexJson.get("directory").getAsJsonObject().get("item").getAsJsonArray();
+
+                    for (JsonElement item : itemArray) {
+                        JsonObject itemObj = item.getAsJsonObject();
+                        String href = itemObj.get("href").getAsString();
+                        getIdxFiles(path + href, list);
+                    }
+                } catch(Exception e) {
+                    System.out.println(String.format("Url. %s not loadable", path));
+                }
+                break;
+            default:
+                return;
+        }
+    }
+
+    private void traverseDirTreeFurther(String path, List<DailyDataRec> list) {
+        //traverse tree further
+        try {
+            String indexData = loadUrl("daily-index/" + path + "index.json");
+            if (indexData == null) {
+                failedIndexFiles++;
+                throw new Exception("index json not available");
+            }
+            JsonObject indexJson = getJsonObjectFromString(indexData);
+            JsonArray itemArray = indexJson.get("directory").getAsJsonObject().get("item").getAsJsonArray();
+
+            for (JsonElement item : itemArray) {
+                JsonObject itemObj = item.getAsJsonObject();
+                String href = itemObj.get("href").getAsString();
+                getFileLocListRec(path + href, list);
+            }
+        } catch(Exception e) {
+            System.out.println(String.format("Url. %s not loadable", path));
+        }
+    }
+
+    private void getDailyDataRec(String path, List<DailyDataRec> list) {
+        String[] urlSplit = path.split("/");
+        urlSplit = Arrays.copyOfRange(urlSplit, urlSplit.length - 3, urlSplit.length);
+        String indexType = urlSplit[urlSplit.length - 1].split("\\.")[0];
+
+        if (indexType.equals("form")) {
+            try {
+//                        list.add("data/" + urlSplit[urlSplit.length - 1]);
+//                String requestData = loadUrl("data/" + urlSplit[urlSplit.length - 1]);
+                String requestData = loadUrl("daily-index/" + path);
+                this.loadedIdxFiles++;
+                System.out.println(" parsed .idx file number " + loadedIdxFiles);
+                if (requestData == null) {
+                    failedIdxFiles++;
+                    throw new Exception(".idx file not available");
+                }
+                parseIndexFile(requestData, list, urlSplit[urlSplit.length - 1]);
+            } catch (Exception e) {
+                System.out.println(String.format("Url. %s not loadable", path));
+            }
+        }
     }
 
     private void getIdxFileRecursively(String path, List<DailyDataRec> ddList) {
@@ -49,7 +160,7 @@ public abstract class EdgarParser {
                     String idxType = urlSplit[urlSplit.length - 1].split("\\.")[0];
 
                     if (idxType.equals("form")) {
-                        String requestData = loadUrl(path);
+                        String requestData = loadUrl("data/" + urlSplit[urlSplit.length - 1]);
                         this.loadedIdxFiles++;
                         System.out.println(" parsed .idx file number " + loadedIdxFiles);
                         if (requestData == null) {
@@ -61,7 +172,7 @@ public abstract class EdgarParser {
                     break;
                 default:
                     //traverse tree further
-                    String indexData = loadUrl(path + "index.json");
+                    String indexData = loadUrl("daily-index/" + path + "index.json");
                     if (indexData == null) {
                         failedIndexFiles++;
                         throw new Exception("index json not available");
@@ -93,6 +204,7 @@ public abstract class EdgarParser {
     public static String loadUrl(String path) throws IOException, InterruptedException {
         //TODO: sleep thread
         //wait to not exceed 10 requests per second
+        //TODO: change this (do this in controller)
         Thread.sleep(100);
 
         String url = BASE_URL + path;
@@ -123,12 +235,12 @@ public abstract class EdgarParser {
             in.close();
 
             return content.toString();
-        } else {
-            return null;
         }
+        return null;
     }
 
-    private void parseIndexFile(String requestString, List<DailyDataRec> ddList, String fileName) throws IOException {
+    private void parseIndexFile(String requestString, List<DailyDataRec> list, String fileName) throws IOException {
+        //TODO: Test if thread is fast enough for 10 requests/s otherwhise multithreading
 //        String splitString = requestString.substring(requestString.indexOf("Form Type", requestString.indexOf("Form Type") + 1));
         String splitString = requestString.substring(requestString.lastIndexOf("---") + 4);
         splitString.lines()
@@ -137,12 +249,13 @@ public abstract class EdgarParser {
                     try {
                         String[] arr = line.trim().split("\\s{2,}");
                         DailyDataRec dailyData = new DailyDataRec(fileName, arr[0], arr[1], arr[2], arr[3], arr[4]);
+                        //TODO: use constants for this
                         if (dailyData.formType().equals("4")) {
-//                            if (!ddList.containsKey(dailyData.getFormType())) {
+//                            if (!list.containsKey(dailyData.getFormType())) {
 //                                ArrayList<DailyData> dailyDataList = new ArrayList<>();
-//                                ddList.put(dailyData.getFormType(), dailyDataList);
+//                                list.put(dailyData.getFormType(), dailyDataList);
 //                            }
-                            ddList.add(dailyData);
+                            list.add(dailyData);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
@@ -156,4 +269,20 @@ public abstract class EdgarParser {
     }
 
 
+    public void processIdxFile(String idxFile, List<DailyDataRec> outputList) throws IOException, InterruptedException {
+//        String requestData = loadUrl("daily-index/" + path);
+//        this.loadedIdxFiles++;
+//        System.out.println(" parsed .idx file number " + loadedIdxFiles);
+//        if (requestData == null) {
+//            failedIdxFiles++;
+//            throw new Exception(".idx file not available");
+//        }
+        parseIndexFile(idxFile, outputList, "");
+    }
+
+    public void downloadData(DailyDataRec dailyDataRec, List<String> outputList) throws IOException, InterruptedException {
+        String returnData = FTP.loadUrl(dailyDataRec.folderPath());
+        if (returnData == null) return;
+        outputList.add(returnData);
+    }
 }

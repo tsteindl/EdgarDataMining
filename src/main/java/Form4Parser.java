@@ -1,6 +1,8 @@
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import com.opencsv.exceptions.CsvValidationException;
+import csv.CSVBuilder;
+import csv.CSVTableBuilder;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -13,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
-public class Form4Parser extends Parser{
+public class Form4Parser extends Parser {
 
     public static final String FOLDER_PATH = "data" + File.separator + "forms";
 
@@ -100,7 +102,7 @@ public class Form4Parser extends Parser{
         });
 
         Form4Parser.createOutPutCsv(csvData.get(0), dirPath);
-        Form4Parser.appendToOutPutCSV(csvData, FORM_4_SET ,dirPath);
+        Form4Parser.appendToOutPutCSV(csvData, FORM_4_SET, dirPath);
     }
 
 
@@ -133,7 +135,7 @@ public class Form4Parser extends Parser{
 
         String xml = testXMLTag(input, "XML");
         if (xml == null) {
-            xml = testXMLTag(input,"SEC-DOCUMENT");
+            xml = testXMLTag(input, "SEC-DOCUMENT");
             if (xml == null) {
                 //TODO: parse no XML
                 return null;
@@ -152,6 +154,45 @@ public class Form4Parser extends Parser{
             e.printStackTrace();
         }
         return csvData;
+    }
+
+    public void parseForm4String(String input, CSVBuilder csvBuilder) {
+        String xml = testXMLTag(input, "XML");
+        if (xml == null) {
+            xml = testXMLTag(input, "SEC-DOCUMENT");
+            if (xml == null) {
+                //TODO: parse no XML
+                return;
+            }
+            try {
+                parseWellFormedXML(xml);
+                return;
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            xml = xml.substring(xml.indexOf("<?xml version"), xml.indexOf("</XML>") - 1);
+            parseXML(xml, csvBuilder);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+//TODO: reduce amount of functions called, choose better names for functions
+    public void parseXML(String xml, CSVBuilder csvBuilder) throws ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+        DocumentBuilder db = dbf.newDocumentBuilder();
+        InputSource data = new InputSource(new StringReader(xml));
+        Document doc = db.parse(data);
+
+        doc.getDocumentElement().normalize();
+
+        HashMap<String, String> parsedData = new HashMap<>();
+
+        Element root = doc.getDocumentElement();
+        //TODO: used linkedlist here because...
+        parseXMLNodesRec(root, new LinkedList<>(), csvBuilder);
     }
 
     public HashMap<String, String> parseXML(String xml) throws ParserConfigurationException, IOException, SAXException {
@@ -196,6 +237,39 @@ public class Form4Parser extends Parser{
         return parsedData;
     }
 
+    private void parseXMLNodesRec(Node node, List<String> currTag, CSVBuilder csvBuilder) {
+        if (node == null)
+            return;
+        if (csvBuilder.containsTag(currTag)) {
+            if (isTextNode(node)) {
+                String text = node.getTextContent().trim().replaceAll("[\\n\\t]", "");
+                csvBuilder.addEntryToCurrLine(csvBuilder.getTagName(currTag), text);
+            }
+        }
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
+            Element nodeElem = (Element) node;
+            //don't include first tag in names
+            currTag.add(nodeElem.getTagName());
+            NodeList childNodes = node.getChildNodes();
+            for (int i = 0; i < childNodes.getLength(); i++) {
+                Node n = childNodes.item(i);
+                parseXMLNodesRec(n, new LinkedList<>(currTag), csvBuilder);
+            }
+        }
+
+/*
+        if (isTextNode(node)) {
+            String text = node.getTextContent().trim().replaceAll("[\\n\\t]", "");
+            if (!text.equals("")) {
+
+                if (!FORM_4_SET.containsKey(tag)) FORM_4_SET.put(tag, tag);
+
+                parsedData.put(tag, text);
+            }
+        }*/
+    }
+
+
     private void getXMLNodesRecursively(HashMap<String, String> parsedData, HashMap<String, String> FORM_4_SET, Node node, String currentTag) {
         if (node == null) {
             return;
@@ -214,13 +288,14 @@ public class Form4Parser extends Parser{
 
                 parsedData.put(tag, text);
             }
-        } if (node.getNodeType() == Node.ELEMENT_NODE) {
+        }
+        if (node.getNodeType() == Node.ELEMENT_NODE) {
             Element nodeElem = (Element) node;
             //don't include first tag in names
             currentTag = (currentTag == null) ? "" : currentTag + ">" + nodeElem.getTagName();
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++) {
-                Node n =  childNodes.item(i);
+                Node n = childNodes.item(i);
                 getXMLNodesRecursively(parsedData, FORM_4_SET, n, currentTag);
             }
         }
@@ -272,7 +347,7 @@ public class Form4Parser extends Parser{
         }
     }
 
-    public static void appendToOutPutCSV(ArrayList<HashMap<String, String>> csvData, HashMap<String, String> metaTable ,String addPath) {
+    public static void appendToOutPutCSV(ArrayList<HashMap<String, String>> csvData, HashMap<String, String> metaTable, String addPath) {
         try {
             addPath = addPath.replaceAll("/", "");
             File csvFile = new File("data" + File.separator + addPath + ".csv");

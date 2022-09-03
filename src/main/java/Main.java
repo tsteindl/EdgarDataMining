@@ -1,6 +1,11 @@
+import csv.CSVBuilder;
+import csv.CSVTableBuilder;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -80,47 +85,57 @@ public class Main {
     }
 
     public static void execute(String path, boolean executeConcurrently) {
-//        int endYear = listToCurrentYear ? Calendar.getInstance().get(Calendar.YEAR) : path;
 
-//        for (; path <= endYear; path++) {
-//            if (path.equals("")) {
-//                path = String.valueOf(path) + "/";
-//            }
+        System.out.println("-------------------------------------------------");
+        System.out.println("Mining data for path: " + path + " sequentially.");
+        System.out.println("-------------------------------------------------");
 
-        if (executeConcurrently) {
-            int availableCores = Runtime.getRuntime().availableProcessors();
+        EdgarParser eParser = new EdgarForm4Parser();
+        //TODO: maybe use concurrent datasource for this, put the getDailyDataList into Monolithic core that starts it while other workers start working
+        List<String> idxFilesList = new CopyOnWriteArrayList<>();
 
-            System.out.println("-------------------------------------------------");
-            System.out.println("Mining data for path: " + path + " concurrently with " + availableCores + " available cores.");
-            System.out.println("-------------------------------------------------");
+        Form4Parser parser = new Form4Parser(null);
 
-            ExecutorService executorService = Executors.newFixedThreadPool(availableCores);
+        CSVBuilder csvTableBuilder = new CSVTableBuilder(";", List.of(Constants.CSV_TAG_NAMES_REP), List.of(Constants.CSV_TAGS_REP), List.of(Constants.CSV_TAG_NAMES_TABLE), List.of(Constants.CSV_TAGS_TABLE), "nonDerivativeTable");
 
-            for (int i = 0; i < availableCores; i++) {
-                Runnable task = new ConcurrentThread(path);
-                executorService.submit(task);
+//            Thread downloadIdxFilesThread = new Thread(() -> eParser.getIdxFiles(path, idxFilesList));
+        eParser.getIdxFiles(path, idxFilesList);
+
+        List<DailyDataRec> ddList = new CopyOnWriteArrayList<>();
+
+        while (!idxFilesList.isEmpty()) {
+            try {
+                eParser.processIdxFile(idxFilesList.remove(0), ddList); //TODO: multithreading here
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-
-            executorService.shutdown();
-
-
-        } else {
-
-            System.out.println("-------------------------------------------------");
-            System.out.println("Mining data for path: " + path + " sequentially.");
-            System.out.println("-------------------------------------------------");
-
-/*
-            FTP ftp = new FTP();
-            HashMap<String, ArrayList<DailyData>> hashMap = ftp.getDataHashMap(path);
-            FTP.invokeParsingClass(hashMap, path);
-*/
-            EdgarParser eParser = new EdgarForm4Parser();
-            List<DailyDataRec> ddList = eParser.getDailyDataList(path);
-
-
         }
-//        }
+
+        List<String> data = new CopyOnWriteArrayList<>();
+        while (!ddList.isEmpty() && data.size() < 100) {
+            try {
+                eParser.downloadData(ddList.remove(0), data);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        while (!data.isEmpty()) {
+            parser.parseForm4String(data.remove(0), csvTableBuilder);
+        }
+
+        String output = csvTableBuilder.outputCsv("");
+
+
+//            List<DailyDataRec> ddList = eParser.getDailyDataList(path);
+
+//            List<String> data = new CopyOnWriteArrayList<>();
+
+//            downloadData(ddList, data);
+
+        System.out.println("ddList" + ddList.toString());
+
+
     }
 
 
