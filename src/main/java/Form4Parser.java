@@ -1,25 +1,34 @@
 import csv.CSVBuilder;
+import csv.CSVTableBuilder;
+import interfaces.FormParser;
+import interfaces.XMLConverter;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import util.DailyData;
+import util.InitException;
+import util.OutputException;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.*;
 import java.io.*;
 
 import java.util.*;
-import java.util.regex.Matcher;
 
-public class Form4Parser{
+public class Form4Parser extends FormParser {
 
     //TODO: use this folder path for outputting
     public static String FOLDER_PATH = "data/";
 
-    public Form4Parser() {
+    public Form4Parser(XMLConverter csvTableBuilder) {
+        super("4", csvTableBuilder);
+    }
+
+    public void init() throws InitException {
+        outputter.init();
     }
 
 
+/*
     public void saveFile(String dirPath, String returnData, DailyData dailyData) throws IOException {
         //TODO: see if this still works
         File dir = new File(FOLDER_PATH + File.separator + dirPath);
@@ -42,8 +51,10 @@ public class Form4Parser{
         fileWriter.write(returnData);
         fileWriter.close();
     }
-
-    public void parseForm4String(String input, CSVBuilder csvBuilder) {
+*/
+    @Override
+    public void parseFormString(String input) throws OutputException {
+        if (input == null) return;
         String xml = testXMLTag(input, "XML");
         if (xml == null) {
             xml = testXMLTag(input, "SEC-DOCUMENT");
@@ -60,13 +71,14 @@ public class Form4Parser{
         }
         try {
             xml = xml.substring(xml.indexOf("<?xml version"), xml.indexOf("</XML>") - 1);
-            parseXML(xml, csvBuilder);
-        } catch (Exception e) {
+            parseXML(xml);
+            outputter.output();
+        } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
     }
 
-    public void parseXML(String xml, CSVBuilder csvBuilder) throws ParserConfigurationException, IOException, SAXException {
+    public void parseXML(String xml) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -79,11 +91,11 @@ public class Form4Parser{
 
         Element root = doc.getDocumentElement();
         //TODO: used linkedlist here because...
-        parseXMLNodesRec(root, new LinkedList<>(), csvBuilder);
+        parseXMLNodesRec(root, new LinkedList<>(), (CSVTableBuilder) this.outputter);
     }
 
 
-    private void parseXMLNodesRec(Node node, List<String> currTag, CSVBuilder csvBuilder) {
+    private void parseXMLNodesRec(Node node, List<String> currTag, CSVTableBuilder csvBuilder) {
         if (node == null)
             return;
         if (isTextNode(node))

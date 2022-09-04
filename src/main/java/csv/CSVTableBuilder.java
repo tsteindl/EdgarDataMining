@@ -16,8 +16,10 @@ public class CSVTableBuilder extends CSVBuilder {
     private final Map<String, String> currRepVals;
     private final Map<String, String> currTableVals;
 
-    public CSVTableBuilder(String sep, List<String> repTagNames, List<String[]> repTags, List<String> tableNames, List<String[]> tableTags, List<String> tableNodeTags, List<String> documentRoot, List<String> notNullTags) {
-        super(sep,
+    public CSVTableBuilder(String outputPath, String sep, List<String> repTagNames, List<String[]> repTags, List<String> tableNames, List<String[]> tableTags, List<String> tableNodeTags, List<String> documentRoot, List<String> notNullTags) {
+        super(
+                outputPath,
+                sep,
                 Stream.concat(repTagNames.stream(), tableNames.stream())
                         .collect(Collectors.toList()),
                 Stream.concat(repTags.stream(), tableTags.stream())

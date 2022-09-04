@@ -1,11 +1,10 @@
+import interfaces.XMLConverter;
 import util.Constants;
-import csv.CSVBuilder;
 import csv.CSVTableBuilder;
 import util.DailyData;
 
 import java.io.*;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static util.Constants.*;
 
@@ -61,8 +60,70 @@ public class Main {
     }
 
     public static void executeSequentially(String path) {
+        EdgarScraper edgarScraper = new EdgarScraper("4");
+        //wait until all idx files are downloaded (problem: recursion)
+        edgarScraper.scrapeIndexFiles(path);
+        for (String idxFile : edgarScraper.getIndexFiles()) {
+            try {
+                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
+                String outputPath = "data/output" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
+                XMLConverter csvTableBuilder = new CSVTableBuilder(
+                        outputPath,
+                        ";",
+                        List.of(CSV_TAG_NAMES_REP),
+                        List.of(CSV_TAGS_REP),
+                        List.of(CSV_TAG_NAMES_TABLE),
+                        List.of(CSV_TAGS_TABLE),
+                        List.of(TABLE_NODE_TAGS),
+                        List.of(CSV_DOCUMENT_ROOT),
+                        List.of(NULLABLE_TAGS)
+                );
+                Form4Parser form4Parser = new Form4Parser(csvTableBuilder);
+                form4Parser.init();
+                for (DailyData dailyData : dailyDataList) {
+                    String responseData = edgarScraper.downloadData(dailyData);
+                    form4Parser.parseFormString(responseData);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+/*
+        while (!edgarScraper.getIdxFiles().isEmpty()) {
+            try {
+                edgarScraper.parseIndexFile(idxFilesList.remove(0), ddList); //TODO: multithreading here
+                String outputPath = "data/output" + ddList.get(0).dateFiled() + ".csv";
 
-        EdgarParser eParser = new EdgarParser("4");
+                try (Writer writer = new BufferedWriter(new FileWriter(outputPath))) {
+                    writer.write(csvTableBuilder.getHeader());
+                }
+
+                List<String> data = new CopyOnWriteArrayList<>();
+                while (!ddList.isEmpty()) {
+                    try {
+                        edgarScraper.downloadData(ddList.remove(0), data);
+                        while (!data.isEmpty()) {
+                            form4Parser.parseFormString(data.remove(0), csvTableBuilder);
+                        }
+                        String output = csvTableBuilder.outputCsv();
+                        if (output == null) continue;
+                        try (Writer writer = new BufferedWriter(new FileWriter(outputPath, true))) {
+                            writer.append(output);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+*/
+    }
+
+    public static void executeConcurrently(String path) {
+/*
+        EdgarScraper eParser = new EdgarScraper("4");
         List<String> idxFilesList = new CopyOnWriteArrayList<>();
 
         Form4Parser parser = new Form4Parser();
@@ -78,7 +139,7 @@ public class Main {
                 List.of(NULLABLE_TAGS)
         );
 
-        eParser.getIdxFiles(path, idxFilesList);
+        eParser.scrapeIdxFiles(path, idxFilesList);
 
         List<DailyData> ddList = new CopyOnWriteArrayList<>();
 
@@ -96,7 +157,7 @@ public class Main {
                     try {
                         eParser.downloadData(ddList.remove(0), data);
                         while (!data.isEmpty()) {
-                            parser.parseForm4String(data.remove(0), csvTableBuilder);
+                            parser.parseFormString(data.remove(0), csvTableBuilder);
                         }
                         String output = csvTableBuilder.outputCsv();
                         if (output == null) continue;
@@ -111,10 +172,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
-    }
-
-    public static void executeConcurrently(String path) {
-
-
+*/
     }
 }

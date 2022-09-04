@@ -5,22 +5,28 @@ import com.google.gson.JsonObject;
 import util.DailyData;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
-public class EdgarParser {
+public class EdgarScraper {
     private int loadedIdxFiles = 0;
     private int failedIndexFiles = 0;
     private int failedIdxFiles = 0;
     public String FORM_TYPE;
+    private final List<String> indexFiles;
+    private final List<DailyData> dailyDataList;
 
-    public EdgarParser(String formType) {
+    public EdgarScraper(String formType) {
         this.FORM_TYPE = formType;
+        this.indexFiles = new ArrayList<>();
+        this.dailyDataList = new ArrayList<>();
     }
 
-    public void getIdxFiles(String path, List<String> list) {
+    public void scrapeIndexFiles(String path) {
         //TODO: remove this
-        if (this.loadedIdxFiles > 2) return;
+//        if (this.loadedIdxFiles > 2) return;
         String fileExt = getFileExtension(path);
         switch (fileExt) {
             case (".idx"):
@@ -30,14 +36,14 @@ public class EdgarParser {
 
                 if (indexType.equals("form")) {
                     try {
-                        String requestData = FTPCommunicator.loadUrl("daily-index/" + path);
+                        String requestData = FTPCommunicator.loadIndexFile(path);
                         if (requestData == null) {
                             failedIdxFiles++;
 //                            throw new Exception(".idx file not available");
                         }
                         this.loadedIdxFiles++;
                         System.out.println(" parsed .idx file number " + loadedIdxFiles);
-                        list.add(requestData);
+                        this.indexFiles.add(requestData);
                     } catch (Exception e) {
                         System.out.println(String.format("Url. %s not loadable", path));
                     }
@@ -46,7 +52,7 @@ public class EdgarParser {
             case "":
                 //traverse tree further
                 try {
-                    String indexData = FTPCommunicator.loadUrl("daily-index/" + path + "index.json");
+                    String indexData = FTPCommunicator.loadNavFile(path);
                     if (indexData == null) {
                         failedIndexFiles++;
 //                        throw new Exception("index json not available");
@@ -57,7 +63,7 @@ public class EdgarParser {
                     for (JsonElement item : itemArray) {
                         JsonObject itemObj = item.getAsJsonObject();
                         String href = itemObj.get("href").getAsString();
-                        getIdxFiles(path + href, list);
+                        scrapeIndexFiles(path + href);
                     }
                 } catch(Exception e) {
                     System.out.println(String.format("Url. %s not loadable", path));
@@ -75,30 +81,26 @@ public class EdgarParser {
         return s.substring(lastIndexOf);
     }
 
-    public void parseIndexFile(String requestString, List<DailyData> list) {
-        //TODO: Test if thread is fast enough for 10 requests/s otherwhise multithreading
+    public List<String> getIndexFiles() {
+        return this.indexFiles;
+    }
+
+    public List<DailyData> parseIndexFile(String requestString) { //TODO rework this: use reduce or collect for stream
+        if (requestString == null) return null;
         String splitString = requestString.substring(requestString.lastIndexOf("---") + 4);
-        splitString.lines()
-                .forEach(line -> {
-                    try {
-                        String[] arr = line.trim().split("\\s{2,}");
-                        DailyData dailyData = new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4]);
-                        if (dailyData.formType().equals(FORM_TYPE)) {
-                            list.add(dailyData);
-                        }
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                });
+        return splitString.lines()
+                .map(line -> (line == null) ? null : line.trim().split("\\s{2,}"))
+                .filter(arr -> arr != null)
+                .filter(arr -> arr[0].equals(FORM_TYPE))
+                .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4]))
+                .collect(Collectors.toList());
     }
 
     public static JsonObject getJsonObjectFromString(String string) {
         return new Gson().fromJson(string, JsonObject.class);
     }
 
-    public void downloadData(DailyData dailyData, List<String> outputList) throws IOException, InterruptedException {
-        String returnData = FTPCommunicator.loadUrl(dailyData.folderPath());
-        if (returnData == null) return;
-        outputList.add(returnData);
+    public String downloadData(DailyData dailyData) throws IOException, InterruptedException {
+        return FTPCommunicator.loadForm(dailyData.folderPath());
     }
 }

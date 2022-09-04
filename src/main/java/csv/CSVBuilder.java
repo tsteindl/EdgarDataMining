@@ -1,17 +1,26 @@
 package csv;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import interfaces.XMLConverter;
+import util.InitException;
+import util.OutputException;
 
-public class CSVBuilder {
+public class CSVBuilder implements XMLConverter {
+    private final String outputPath;
     private final Map<List<String>, String> tags;
     private final List<String> lines;
     final String sep;
     protected final List<String> nullableTags;
     private final Map<String, String> currLine;
 
-    public CSVBuilder(String sep, List<String> names, List<String[]> tags, List<String> documentRoot, List<String> nullableTags) {
+    public CSVBuilder(String outputPath, String sep, List<String> names, List<String[]> tags, List<String> documentRoot, List<String> nullableTags) {
+        this.outputPath = outputPath;
         if (names.size() != tags.size())
             throw new IllegalArgumentException("Length of names and tags arrays must match");
         this.sep = sep;
@@ -25,6 +34,14 @@ public class CSVBuilder {
         this.nullableTags = nullableTags;
         this.currLine = new HashMap<>();
         reset();
+    }
+
+    public void init() throws InitException {
+        try (Writer writer = new BufferedWriter(new FileWriter(this.outputPath))) {
+            writer.write(this.getHeader());
+        } catch (IOException e) {
+            throw new InitException(e.getMessage());
+        }
     }
 
     void initMap(Map<String, String> map, Collection<String> keySet) {
@@ -92,6 +109,16 @@ public class CSVBuilder {
             sb.append(sep);
         }
         addLine(sb.toString());
+    }
+
+    public void output() throws OutputException {
+        String output = outputCsv();
+        if (output == null) return;
+        try (Writer writer = new BufferedWriter(new FileWriter(outputPath, true))) {
+            writer.append(output);
+        } catch (IOException e) {
+            throw new OutputException(e.getMessage());
+        }
     }
 
     public String outputCsv() {

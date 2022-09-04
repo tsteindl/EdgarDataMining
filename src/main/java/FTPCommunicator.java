@@ -9,7 +9,21 @@ public class FTPCommunicator {
 
     public FTPCommunicator() {}
 
-    public static String loadUrl(String path) throws IOException, InterruptedException {
+    public static String loadNavFile(String path) throws IOException, InterruptedException {
+        InputStream result = loadUrl("edgar/daily-index/" + path + "index.json");
+        return (result == null) ? null : getResponseDataFromStream(result);
+    }
+    public static String loadIndexFile(String path) throws IOException, InterruptedException {
+        InputStream response = loadUrl("edgar/daily-index/" + path);
+        return (response == null) ? null : getResponseDataFromStream(response);
+    }
+
+    public static String loadForm(String path) throws IOException, InterruptedException {
+        InputStream response = loadUrl(path);
+        return (response == null) ? null : getResponseDataFromStream(response);
+    }
+
+    private static InputStream loadUrl(String path) throws InterruptedException, IOException {
         //wait to not exceed 10 requests per second
         //TODO: change this
         Thread.sleep(100);
@@ -32,7 +46,7 @@ public class FTPCommunicator {
             status = con.getResponseCode();
         }
         if (status == 200) {
-            return getResponseDataFromStream(con.getInputStream());
+            return con.getInputStream();
         }else {
             return null;
         }
