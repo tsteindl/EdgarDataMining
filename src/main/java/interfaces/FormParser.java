@@ -13,5 +13,5 @@ public abstract class FormParser {
     }
     public abstract void init() throws InitException;
 
-    public abstract void parseFormString(String input) throws OutputException;
+    public abstract void parseForm(String input) throws OutputException;
 }

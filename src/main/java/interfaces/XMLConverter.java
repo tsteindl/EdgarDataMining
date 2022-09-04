@@ -6,5 +6,5 @@ import util.OutputException;
 public interface XMLConverter {
     void init() throws InitException;
 
-    void output() throws OutputException;
+    void outputForm() throws OutputException;
 }

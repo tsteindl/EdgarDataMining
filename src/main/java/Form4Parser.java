@@ -1,4 +1,3 @@
-import csv.CSVBuilder;
 import csv.CSVTableBuilder;
 import interfaces.FormParser;
 import interfaces.XMLConverter;
@@ -15,70 +14,46 @@ import java.io.*;
 import java.util.*;
 
 public class Form4Parser extends FormParser {
-
-    //TODO: use this folder path for outputting
-    public static String FOLDER_PATH = "data/";
+    private static String XML_TAG = "XML";
+    private static String WELL_FORMED_XML_TAG = "SEC-DOCUMENT";
+    private static String XML_DOC_STARTING_TAG = "<?xml version";
 
     public Form4Parser(XMLConverter csvTableBuilder) {
         super("4", csvTableBuilder);
     }
 
+    @Override
     public void init() throws InitException {
         outputter.init();
     }
-
-
-/*
-    public void saveFile(String dirPath, String returnData, DailyData dailyData) throws IOException {
-        //TODO: see if this still works
-        File dir = new File(FOLDER_PATH + File.separator + dirPath);
-        if (!dir.exists()) {
-            dir.mkdirs();
-        }
-        String dailyDirPath = FOLDER_PATH + File.separator + dirPath + File.separator + dailyData.folderPath();
-        File dailyDir = new File(dailyDirPath);
-        if (!dailyDir.exists()) {
-            dailyDir.mkdirs();
-        }
-        String currFilePath = dailyDirPath + File.separator + dailyData.folderPath().replaceAll("/", Matcher.quoteReplacement("."));
-        File currFile = new File(currFilePath);
-        if (currFile.exists()) {
-            return;
-        } else {
-            currFile.createNewFile();
-        }
-        FileWriter fileWriter = new FileWriter(currFile);
-        fileWriter.write(returnData);
-        fileWriter.close();
-    }
-*/
     @Override
-    public void parseFormString(String input) throws OutputException {
+    public void parseForm(String input) throws OutputException {
         if (input == null) return;
-        String xml = testXMLTag(input, "XML");
+        String xml = testXMLTag(input, XML_TAG);
         if (xml == null) {
-            xml = testXMLTag(input, "SEC-DOCUMENT");
+            xml = testXMLTag(input, WELL_FORMED_XML_TAG);
             if (xml == null) {
-                //TODO: parse no XML
+                parseNoXML(xml);
                 return;
             }
-            try {
-                parseWellFormedXML(xml);
-                return;
-            } catch (ParserConfigurationException | SAXException | IOException e) {
-                e.printStackTrace();
-            }
+            parseWellFormedXML(xml);
         }
         try {
-            xml = xml.substring(xml.indexOf("<?xml version"), xml.indexOf("</XML>") - 1);
-            parseXML(xml);
-            outputter.output();
+            xml = getXMLBody(xml);
+            Element xmlRoot = getXMLTreeFromString(xml);
+
+            parseXMLNodes(xmlRoot, new LinkedList<>(), (CSVTableBuilder) this.outputter);
+            outputter.outputForm();
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
     }
 
-    public void parseXML(String xml) throws ParserConfigurationException, IOException, SAXException {
+    private static String getXMLBody(String xml) {
+        return xml.substring(xml.indexOf(XML_DOC_STARTING_TAG), xml.indexOf("</" + XML_TAG+ ">") - 1);
+    }
+
+    public Element getXMLTreeFromString(String xml) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
         DocumentBuilder db = dbf.newDocumentBuilder();
@@ -87,15 +62,13 @@ public class Form4Parser extends FormParser {
 
         doc.getDocumentElement().normalize();
 
-        HashMap<String, String> parsedData = new HashMap<>();
-
-        Element root = doc.getDocumentElement();
-        //TODO: used linkedlist here because...
-        parseXMLNodesRec(root, new LinkedList<>(), (CSVTableBuilder) this.outputter);
+        return doc.getDocumentElement();
     }
 
-
-    private void parseXMLNodesRec(Node node, List<String> currTag, CSVTableBuilder csvBuilder) {
+/**
+Used LinkedList here because only append operations are needed which are more efficient than on ArrayLists
+ */
+    private void parseXMLNodes(Node node, List<String> currTag, CSVTableBuilder csvBuilder) {
         if (node == null)
             return;
         if (isTextNode(node))
@@ -106,7 +79,7 @@ public class Form4Parser extends FormParser {
             currTag.add(nodeElem.getTagName());
             NodeList childNodes = node.getChildNodes();
             for (int i = 0; i < childNodes.getLength(); i++)
-                parseXMLNodesRec(childNodes.item(i), new LinkedList<>(currTag), csvBuilder);
+                parseXMLNodes(childNodes.item(i), new LinkedList<>(currTag), csvBuilder);
         }
     }
 
@@ -114,13 +87,16 @@ public class Form4Parser extends FormParser {
         return node.getTextContent().trim().replaceAll("[\\n\\t]", "");
     }
 
-
-    public void parseWellFormedXML(String xml) throws ParserConfigurationException, IOException, SAXException {
+    private void parseWellFormedXML(String xml) {
         //TODO: use Jsoup
     }
 
+    private void parseNoXML(String xml) {
+        //TODO: implement
+    }
+
     //returns tested substring, null if not correct
-    public String testXMLTag(String input, String xmlTag) {
+    private String testXMLTag(String input, String xmlTag) {
         String xml = input.trim();
         String startString = "<" + xmlTag + ">";
         String endString = "</" + xmlTag + ">";
@@ -135,7 +111,7 @@ public class Form4Parser extends FormParser {
         return xml;
     }
 
-    public boolean isTextNode(Node n) {
+    private boolean isTextNode(Node n) {
         return n.getNodeName().equals("#text");
     }
 }

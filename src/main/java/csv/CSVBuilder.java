@@ -111,7 +111,7 @@ public class CSVBuilder implements XMLConverter {
         addLine(sb.toString());
     }
 
-    public void output() throws OutputException {
+    public void outputForm() throws OutputException {
         String output = outputCsv();
         if (output == null) return;
         try (Writer writer = new BufferedWriter(new FileWriter(outputPath, true))) {

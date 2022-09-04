@@ -82,7 +82,7 @@ public class Main {
                 form4Parser.init();
                 for (DailyData dailyData : dailyDataList) {
                     String responseData = edgarScraper.downloadData(dailyData);
-                    form4Parser.parseFormString(responseData);
+                    form4Parser.parseForm(responseData);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
