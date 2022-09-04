@@ -59,7 +59,7 @@ public class EdgarParser {
 
     public void getIdxFiles(String path, List<String> list) {
         //TODO: remove this
-        if (this.loadedIdxFiles > 0) return;
+        if (this.loadedIdxFiles > 2) return;
         String fileExt = getFileExtension(path);
         switch (fileExt) {
             case (".idx"):

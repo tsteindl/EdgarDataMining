@@ -9,11 +9,12 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import static constants.Constants.*;
 
 /**
+ * @author Tobias Steindl tobias.steindl@gmx.net
+ * @version 1
  * PROGRAM ARGS:
- * only one program argument => singular file starting from data/....txt
- * 1. Sequential or concurrent execution, default = false: "-conc=true"
- * 2. programArgYear, default = current year: eg: "-year=daily-index/2020/"
- * 4. include statistical evaluation, default=false: "-stats=true"
+ * 1. path in EDGAR file system, suffix with "/" if there are subdirectories
+ * 2. multithreading: -conc=true/false
+ * 3. doStats: -stats=true/false time costly functions, print out statistics at end of parsing
  */
 public class Main {
 
@@ -22,24 +23,20 @@ public class Main {
         //BASE PATH = https://www.sec.gov/Archives/
 
         //get program args
-
+        String path = Constants.DEFAULT_YEAR;
         boolean executeConcurrently = false;
-        String year = Constants.DEFAULT_YEAR;
-        String singleForm = "";
-        boolean onlyParseSingleForm = false;
         boolean doStats = false;
 
         if (args.length == 1) {
-            singleForm = args[0];
-            onlyParseSingleForm = true;
+            path = args[0];
         }
         if (args.length == 2) {
-            executeConcurrently = args[0].equals("-conc=true") || args[0].equals("-conc=1");
-            year = args[1].split("-year=")[1];
+            path = args[0];
+            executeConcurrently = args[1].equals("-conc=true") || args[1].equals("-conc=1");
         }
         if (args.length == 3) {
-            executeConcurrently = args[0].equals("-conc=true") || args[0].equals("-conc=1");
-            year = args[1].split("-year=")[1];
+            path = args[0];
+            executeConcurrently = args[1].equals("-conc=true") || args[1].equals("-conc=1");
             doStats = args[2].equals("-stats=true") || args[2].equals("-stats=1");
         }
 
@@ -47,8 +44,6 @@ public class Main {
         System.out.println("----------------------------");
         System.out.println("Starting application with program args: ");
         System.out.println("executeConcurrently: " + executeConcurrently);
-        System.out.println("onlyParseSingleForm: " + onlyParseSingleForm);
-        System.out.println("singleForm: " + singleForm.toString());
         System.out.println("doStats: " + doStats);
         System.out.println();
         if (doStats) {
@@ -56,7 +51,7 @@ public class Main {
         }
         System.out.println("----------------------------");
 
-        execute((onlyParseSingleForm) ? singleForm : year, executeConcurrently);
+        execute(path, executeConcurrently);
         long endTime = System.nanoTime();
         System.out.println("----------------------------");
         System.out.println("Application ended");
