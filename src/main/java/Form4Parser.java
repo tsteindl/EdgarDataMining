@@ -1,54 +1,22 @@
-import com.opencsv.CSVReader;
-import com.opencsv.CSVWriter;
-import com.opencsv.exceptions.CsvValidationException;
 import csv.CSVBuilder;
-import csv.CSVTableBuilder;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import util.DailyData;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.*;
 import java.io.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 
-public class Form4Parser extends Parser {
+public class Form4Parser{
 
-    public static final String FOLDER_PATH = "data" + File.separator + "forms";
+    //TODO: use this folder path for outputting
+    public static String FOLDER_PATH = "data/";
 
-    public static final String PATH_META_TABLE_FORM4 = "data/meta_table_form4.csv";
-    public HashMap<String, String> FORM_4_SET;
-
-    public Form4Parser(ArrayList<DailyData> dailyDataList) {
-        super(dailyDataList);
-        //----------
-        /*
-        try {
-            FileReader filereader = null;
-            try {
-                filereader = new FileReader(PATH_META_TABLE_FORM4);
-                CSVReader csvReader = new CSVReader(filereader);
-                String[] record;
-                FORM_4_SET = new HashMap<>();
-                for (int i = 0; (record = csvReader.readNext()) != null; i++) {
-                    if (i == 0) continue;
-                    FORM_4_SET.put(record[0].split(";")[1], record[0].split(";")[0]);
-                }
-            } catch (CsvValidationException | IOException e) {
-                e.printStackTrace();
-            }
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-         */
-        FORM_4_SET = new HashMap<>();
-        //reset meta table
-        FORM_4_SET.clear();
-        FORM_4_SET.put("form_folder_path", "form_folder_path");
+    public Form4Parser() {
     }
 
 
@@ -98,7 +66,6 @@ public class Form4Parser extends Parser {
         }
     }
 
-    //TODO: reduce amount of functions called, choose better names for functions
     public void parseXML(String xml, CSVBuilder csvBuilder) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -115,47 +82,6 @@ public class Form4Parser extends Parser {
         parseXMLNodesRec(root, new LinkedList<>(), csvBuilder);
     }
 
-    public HashMap<String, String> parseXML(String xml) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-//             parse XML file
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        InputSource data = new InputSource(new StringReader(xml));
-        Document doc = db.parse(data);
-
-        doc.getDocumentElement().normalize();
-
-        HashMap<String, String> parsedData = new HashMap<>();
-
-        Element root = doc.getDocumentElement();
-
-
-        getXMLNodesRecursively(parsedData, FORM_4_SET, root, null);
-
-        /*
-        for (String xmlTag : FORM_4_SET.keySet()) {
-
-//            Node n = (Node) doc.getElementsByTagName(xmlTag).item(0);
-            NodeList nl = doc.getElementsByTagName(xmlTag);
-            int nodeLength = nl.getLength();
-            //iterate over nodelist if it is a list (length > 1)
-            for (int i = 0; i < nodeLength; i++) {
-
-            }
-            Node n = (Node) doc.getElementsByTagName(xmlTag);
-
-
-            if (n == null) {
-                parsedData.put(FORM_4_SET.get(xmlTag), "");
-            } else {
-                String temp = n.getTextContent();
-                parsedData.put(FORM_4_SET.get(xmlTag), temp.trim().replaceAll("[\\n\\t]", ""));
-            }
-        }
-
-         */
-        return parsedData;
-    }
 
     private void parseXMLNodesRec(Node node, List<String> currTag, CSVBuilder csvBuilder) {
         if (node == null)
@@ -177,37 +103,6 @@ public class Form4Parser extends Parser {
     }
 
 
-    private void getXMLNodesRecursively(HashMap<String, String> parsedData, HashMap<String, String> FORM_4_SET, Node node, String currentTag) {
-        if (node == null) {
-            return;
-        }
-        if (isTextNode(node)) {
-            String text = node.getTextContent().trim().replaceAll("[\\n\\t]", "");
-            if (!text.equals("")) {
-                //if node has same name make it distinguishable
-                String tag = currentTag;
-                int n = 1;
-                while (parsedData.containsKey(tag)) {
-                    tag = currentTag + n;
-                    n++;
-                }
-                if (!FORM_4_SET.containsKey(tag)) FORM_4_SET.put(tag, tag);
-
-                parsedData.put(tag, text);
-            }
-        }
-        if (node.getNodeType() == Node.ELEMENT_NODE) {
-            Element nodeElem = (Element) node;
-            //don't include first tag in names
-            currentTag = (currentTag == null) ? "" : currentTag + ">" + nodeElem.getTagName();
-            NodeList childNodes = node.getChildNodes();
-            for (int i = 0; i < childNodes.getLength(); i++) {
-                Node n = childNodes.item(i);
-                getXMLNodesRecursively(parsedData, FORM_4_SET, n, currentTag);
-            }
-        }
-    }
-
     public void parseWellFormedXML(String xml) throws ParserConfigurationException, IOException, SAXException {
         //TODO: use Jsoup
     }
@@ -226,78 +121,6 @@ public class Form4Parser extends Parser {
             xml = null;
         }
         return xml;
-    }
-
-    public static void createOutPutCsv(HashMap<String, String> csvDataHeader, String dirPath) {
-        try {
-            dirPath = dirPath.replaceAll("/", "");
-            File csvFile = new File("data" + File.separator + dirPath + ".csv");
-
-            FileWriter outputFile = new FileWriter(csvFile, true);
-
-            CSVWriter writer = new CSVWriter(outputFile);
-
-            List<String[]> data = new ArrayList<>();
-
-            //include header
-            data.add(csvDataHeader.keySet().toArray(new String[0]));
-
-            writer.writeAll(data);
-            writer.close();
-
-            System.out.println("\n------------------------------------");
-            System.out.println("Created csv: " + "data" + File.separator + dirPath + ".csv");
-            System.out.println("------------------------------------");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static void appendToOutPutCSV(ArrayList<HashMap<String, String>> csvData, HashMap<String, String> metaTable, String addPath) {
-        try {
-            addPath = addPath.replaceAll("/", "");
-            File csvFile = new File("data" + File.separator + addPath + ".csv");
-
-            FileWriter outputFile = new FileWriter(csvFile, true);
-            CSVWriter writer = new CSVWriter(outputFile);
-
-            List<String[]> data = new ArrayList<>();
-
-            /*
-            int nOColumns = csvData.get(0).keySet().size();
-            for (HashMap<String, String> record : csvData) {
-                String[] output = new String[nOColumns];
-                for (int i = 0; i < nOColumns; i++) {
-                    String column = record.keySet().toArray(new String[0])[i];
-                    output[i] = record.get(column);
-                }
-                data.add(output);
-            }
-
-             */
-
-            int nOColumns = metaTable.keySet().size();
-            for (HashMap<String, String> record : csvData) {
-                String[] output = new String[nOColumns];
-                for (int i = 0; i < nOColumns; i++) {
-                    String column = metaTable.keySet().toArray(new String[0])[i];
-                    output[i] = record.get(column);
-                }
-                data.add(output);
-            }
-
-            writer.writeAll(data);
-            writer.close();
-
-            System.out.println("\n------------------------------------");
-            System.out.println("Appended to csv: " + "data" + File.separator + addPath + ".csv");
-            System.out.println("with " + data.size() + " lines of data and " + nOColumns + " columns");
-            System.out.println("------------------------------------");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isTextNode(Node n) {

@@ -1,12 +1,13 @@
-import constants.Constants;
+import util.Constants;
 import csv.CSVBuilder;
 import csv.CSVTableBuilder;
+import util.DailyData;
 
 import java.io.*;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import static constants.Constants.*;
+import static util.Constants.*;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
@@ -24,7 +25,7 @@ public class Main {
 
         //get program args
         String path = Constants.DEFAULT_YEAR;
-        boolean executeConcurrently = false;
+        boolean conc = false;
         boolean doStats = false;
 
         if (args.length == 1) {
@@ -32,47 +33,39 @@ public class Main {
         }
         if (args.length == 2) {
             path = args[0];
-            executeConcurrently = args[1].equals("-conc=true") || args[1].equals("-conc=1");
+            conc = args[1].equals("-conc=true") || args[1].equals("-conc=1");
         }
         if (args.length == 3) {
             path = args[0];
-            executeConcurrently = args[1].equals("-conc=true") || args[1].equals("-conc=1");
+            conc = args[1].equals("-conc=true") || args[1].equals("-conc=1");
             doStats = args[2].equals("-stats=true") || args[2].equals("-stats=1");
         }
 
-        long startTime = System.nanoTime();
         System.out.println("----------------------------");
         System.out.println("Starting application with program args: ");
-        System.out.println("executeConcurrently: " + executeConcurrently);
+        System.out.println("Path: " + path);
+        System.out.println("conc: " + conc);
         System.out.println("doStats: " + doStats);
-        System.out.println();
-        if (doStats) {
-            System.out.println("Starting application at time: " + startTime);
-        }
         System.out.println("----------------------------");
 
-        execute(path, executeConcurrently);
-        long endTime = System.nanoTime();
-        System.out.println("----------------------------");
-        System.out.println("Application ended");
-        if (doStats) {
-            System.out.println("Application ended at time: " + endTime);
-            System.out.println("Application took: " + (endTime - startTime) + " nanoseconds!");
-        }
-        System.out.println("----------------------------");
+        System.out.println("-------------------------------------------------");
+        System.out.format("Mining data for path: %s %s.", path, (conc) ? "concurrently" : "sequentially.\n");
+        System.out.println("-------------------------------------------------");
+        if (conc)
+            executeConcurrently(path);
+        else
+            executeSequentially(path);
+        System.out.println("-------------------------------------------------");
+        System.out.format("Application ended");
+        System.out.println("-------------------------------------------------");
     }
 
-    public static void execute(String path, boolean executeConcurrently) throws IOException {
-
-        System.out.println("-------------------------------------------------");
-        System.out.println("Mining data for path: " + path + " sequentially.");
-        System.out.println("-------------------------------------------------");
+    public static void executeSequentially(String path) {
 
         EdgarParser eParser = new EdgarParser("4");
-        //TODO: maybe use concurrent datasource for this, put the getDailyDataList into Monolithic core that starts it while other workers start working
         List<String> idxFilesList = new CopyOnWriteArrayList<>();
 
-        Form4Parser parser = new Form4Parser(null);
+        Form4Parser parser = new Form4Parser();
 
         CSVBuilder csvTableBuilder = new CSVTableBuilder(
                 ";",
@@ -91,7 +84,7 @@ public class Main {
 
         while (!idxFilesList.isEmpty()) {
             try {
-                eParser.processIdxFile(idxFilesList.remove(0), ddList); //TODO: multithreading here
+                eParser.parseIndexFile(idxFilesList.remove(0), ddList); //TODO: multithreading here
                 String outputPath = "data/output" + ddList.get(0).dateFiled() + ".csv";
 
                 try (Writer writer = new BufferedWriter(new FileWriter(outputPath))) {
@@ -118,5 +111,10 @@ public class Main {
                 e.printStackTrace();
             }
         }
+    }
+
+    public static void executeConcurrently(String path) {
+
+
     }
 }
