@@ -1,7 +1,5 @@
 package csv;
 
-import org.apache.commons.lang3.ArrayUtils;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -13,10 +11,10 @@ public class CSVTableBuilder extends CSVBuilder {
     private final Map<List<String>, String> repTags;
     private final Map<List<String>, String> tableTags;
 
-    private List<String> documentRoot;
-    private List<String> tableNodeTags;
-    private Map<String, String> currRepVals;
-    private Map<String, String> currTableVals;
+    private final List<String> documentRoot;
+    private final List<String> tableNodeTags;
+    private final Map<String, String> currRepVals;
+    private final Map<String, String> currTableVals;
 
     public CSVTableBuilder(String sep, List<String> repTagNames, List<String[]> repTags, List<String> tableNames, List<String[]> tableTags, List<String> tableNodeTags, List<String> documentRoot, List<String> notNullTags) {
         super(sep,
@@ -40,6 +38,8 @@ public class CSVTableBuilder extends CSVBuilder {
             List<String> tagsListWithDocumentRoot = Stream.of(documentRoot, tableNodeTags, Arrays.asList(tableTags.get(i))).flatMap(Collection::stream).collect(Collectors.toList());
             this.tableTags.put(tagsListWithDocumentRoot, tableNames.get(i));
         }
+        this.currRepVals = new HashMap<>();
+        this.currTableVals = new HashMap<>();
         resetTableBuilder();
     }
 
@@ -52,10 +52,10 @@ public class CSVTableBuilder extends CSVBuilder {
     }
 
     public void resetTableBuilder() {
-        this.currRepVals = new HashMap<>();
-        this.currTableVals = new HashMap<>();
-        resetMap(this.currRepVals, this.repTags.values());
-        resetMap(this.currTableVals, this.tableTags.values());
+        this.currRepVals.clear();
+        this.currTableVals.clear();
+        initMap(this.currRepVals, this.repTags.values());
+        initMap(this.currTableVals, this.tableTags.values());
     }
 
     public void addEntryToCurrLine(List<String> tag, String value) {
@@ -77,7 +77,7 @@ public class CSVTableBuilder extends CSVBuilder {
 
     public void addCurrLine() {
         addLine(this.currRepVals, this.currTableVals);
-        resetMap(this.currTableVals, this.tableTags.values());
+        initMap(this.currTableVals, this.tableTags.values());
     }
 
     private void addLine(Map<String, String> repVals, Map<String, String> tableVals) {

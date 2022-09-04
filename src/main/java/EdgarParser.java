@@ -285,7 +285,7 @@ public class EdgarParser {
     }
 
     public void downloadData(DailyData dailyData, List<String> outputList) throws IOException, InterruptedException {
-        String returnData = FTP.loadUrl(dailyData.folderPath());
+        String returnData = FTPCommunicator.loadUrl(dailyData.folderPath());
         if (returnData == null) return;
         outputList.add(returnData);
     }

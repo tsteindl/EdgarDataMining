@@ -100,7 +100,7 @@ public class Main {
                 String outputPath = "data/output" + ddList.get(0).dateFiled() + ".csv";
 
                 try (Writer writer = new BufferedWriter(new FileWriter(outputPath))) {
-                    writer.write(csvTableBuilder.getHeader() + "\n");
+                    writer.write(csvTableBuilder.getHeader());
                 }
 
                 List<String> data = new CopyOnWriteArrayList<>();
@@ -110,8 +110,8 @@ public class Main {
                         while (!data.isEmpty()) {
                             parser.parseForm4String(data.remove(0), csvTableBuilder);
                         }
-
                         String output = csvTableBuilder.outputCsv();
+                        if (output == null) continue;
                         try (Writer writer = new BufferedWriter(new FileWriter(outputPath, true))) {
                             writer.append(output);
                         }

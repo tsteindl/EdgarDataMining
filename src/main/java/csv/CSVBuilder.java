@@ -9,7 +9,7 @@ public class CSVBuilder {
     private final List<String> lines;
     final String sep;
     protected final List<String> nullableTags;
-    private Map<String, String> currLine;
+    private final Map<String, String> currLine;
 
     public CSVBuilder(String sep, List<String> names, List<String[]> tags, List<String> documentRoot, List<String> nullableTags) {
         if (names.size() != tags.size())
@@ -23,17 +23,19 @@ public class CSVBuilder {
             this.tags.put(tagsListWithDocumentRoot, names.get(i));
         }
         this.nullableTags = nullableTags;
+        this.currLine = new HashMap<>();
         reset();
     }
 
-    void resetMap(Map<String, String> map, Collection<String> keySet) {
+    void initMap(Map<String, String> map, Collection<String> keySet) {
         for (String name : keySet)
             map.put(name, null);
     }
 
     public void reset() {
-        this.currLine = new HashMap<>();
-        resetMap(this.currLine, this.tags.values());
+        currLine.clear();
+        initMap(this.currLine, this.tags.values());
+        this.lines.clear();
     }
 
     public String getHeader() {
@@ -56,7 +58,7 @@ public class CSVBuilder {
 
     public void addCurrLine() {
         addLine(this.currLine);
-        resetMap(this.currLine, this.tags.values());
+        initMap(this.currLine, this.tags.values());
     }
 
     //Caution when using this method
@@ -93,7 +95,10 @@ public class CSVBuilder {
     }
 
     public String outputCsv() {
-        return this.lines.stream().collect(Collectors.joining("\n"));
+        if (this.lines.isEmpty()) return null;
+        String result = this.lines.stream().collect(Collectors.joining("\n"));
+        reset();
+        return "\n" + result;
     }
 
     public boolean containsTag(Map<List<String>, String> tagList, List<String> tag) {

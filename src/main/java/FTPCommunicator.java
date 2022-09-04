@@ -3,9 +3,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.Arrays;
 
 import com.google.gson.*;
 
@@ -15,7 +13,7 @@ import com.google.gson.*;
 //download index files
 //generate csvs from index files
 //save csvs in directory
-public class FTP {
+public class FTPCommunicator {
 
     public static String baseUrl = "https://www.sec.gov/Archives/";
     private static String path = "data";
@@ -23,7 +21,7 @@ public class FTP {
     private int failedIndexFiles = 0;
     private int failedIdxFiles = 0;
 
-    public FTP() {}
+    public FTPCommunicator() {}
 
     public static String loadUrl(String url) throws IOException, InterruptedException {
         //wait to not exceed 10 requests per second
