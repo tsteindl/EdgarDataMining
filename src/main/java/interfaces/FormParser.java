@@ -5,11 +5,11 @@ import util.OutputException;
 
 public abstract class FormParser {
     public final String FORM_TYPE;
-    protected final XMLConverter outputter;
+    protected final XMLConverter model;
 
-    protected FormParser(String formType, XMLConverter outputter) {
+    protected FormParser(String formType, XMLConverter model) {
         FORM_TYPE = formType;
-        this.outputter = outputter;
+        this.model = model;
     }
     public abstract void init() throws InitException;
 

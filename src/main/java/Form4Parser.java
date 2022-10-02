@@ -14,9 +14,9 @@ import java.io.*;
 import java.util.*;
 
 public class Form4Parser extends FormParser {
-    private static String XML_TAG = "XML";
-    private static String WELL_FORMED_XML_TAG = "SEC-DOCUMENT";
-    private static String XML_DOC_STARTING_TAG = "<?xml version";
+    private static final String XML_TAG = "XML";
+    private static final String WELL_FORMED_XML_TAG = "SEC-DOCUMENT";
+    private static final String XML_DOC_STARTING_TAG = "<?xml version";
 
     public Form4Parser(XMLConverter csvTableBuilder) {
         super("4", csvTableBuilder);
@@ -24,8 +24,9 @@ public class Form4Parser extends FormParser {
 
     @Override
     public void init() throws InitException {
-        outputter.init();
+        model.init();
     }
+
     @Override
     public void parseForm(String input) throws OutputException {
         if (input == null) return;
@@ -42,15 +43,16 @@ public class Form4Parser extends FormParser {
             xml = getXMLBody(xml);
             Element xmlRoot = getXMLTreeFromString(xml);
 
-            parseXMLNodes(xmlRoot, new LinkedList<>(), (CSVTableBuilder) this.outputter);
-            outputter.outputForm();
+//            Used LinkedList here because only append operations are needed which are more efficient than on ArrayLists
+            parseXMLNodes(xmlRoot, new LinkedList<>(), (CSVTableBuilder) this.model);
+            model.outputForm();
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }
     }
 
     private static String getXMLBody(String xml) {
-        return xml.substring(xml.indexOf(XML_DOC_STARTING_TAG), xml.indexOf("</" + XML_TAG+ ">") - 1);
+        return xml.substring(xml.indexOf(XML_DOC_STARTING_TAG), xml.indexOf("</" + XML_TAG + ">") - 1);
     }
 
     public Element getXMLTreeFromString(String xml) throws ParserConfigurationException, IOException, SAXException {
@@ -65,9 +67,7 @@ public class Form4Parser extends FormParser {
         return doc.getDocumentElement();
     }
 
-/**
-Used LinkedList here because only append operations are needed which are more efficient than on ArrayLists
- */
+
     private void parseXMLNodes(Node node, List<String> currTag, CSVTableBuilder csvBuilder) {
         if (node == null)
             return;
