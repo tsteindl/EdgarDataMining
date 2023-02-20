@@ -1,4 +1,5 @@
 import interfaces.XMLConverter;
+import statistics.Stats;
 import util.Constants;
 import csv.CSVTableBuilder;
 import util.DailyData;
@@ -17,6 +18,7 @@ import static util.Constants.*;
  * 3. doStats: -stats=true/false time costly functions, print out statistics at end of parsing
  */
 public class Main {
+    public static Stats stats;
 
     public static void main(String[] args) throws IOException {
         //xml data from 2004 onwards
@@ -60,8 +62,10 @@ public class Main {
     }
 
     public static void executeSequentially(String path) {
+        stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (problem: recursion)
+        stats.execute(() -> edgarScraper.scrapeIndexFiles(path), "scrapeIndexFiles");
         edgarScraper.scrapeIndexFiles(path);
         for (String idxFile : edgarScraper.getIndexFiles()) {
             try {

@@ -1,0 +1,34 @@
+DOCUMENT ROOT:
+ownershipDocument
+
+
+documentType
+periodOfReport
+
+reportingOwner, reportingOwnerId, rptOwnerCik
+reportingOwner, reportingOwnerId, rptOwnerName
+
+reportingOwner, reportingOwnerRelationship, isDirector
+reportingOwner, reportingOwnerRelationship, isOfficer
+reportingOwner, reportingOwnerRelationship, isTenPercentOwner
+reportingOwner, reportingOwnerRelationship, isOther
+
+issuer, issuerCik
+issuer, issuerName
+issuer, issuerTradingSymbol
+
+
+Table => for Each nonDerivativeTable, nonDerivativeTransaction:
+
+securityTitle, value
+transactionDate, value
+deemedExecutionDate, value
+transactionCoding, transactionFormType
+transactionCoding, transactionCode
+transactionTimeliness, value
+transactionAmounts, transactionShares
+transactionAmounts, transactionPricePerShare
+transactionAmounts, transactionAcquiredDisposedCode, value
+postTransactionAmounts, sharesOwnedFollowingTransaction, value
+ownershipNature, directOrIndirectOwnership, value
+

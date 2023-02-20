@@ -8,7 +8,7 @@ public class Stats {
 
     private final Map<String, List<Long>> timeMap = new HashMap<>();
 
-    public <T> void execute(Callable fn, String fnName) throws Exception {
+    public void execute(Callable fn, String fnName) throws Exception {
         Long startTime = System.nanoTime();
         fn.call();
         Long endTime = System.nanoTime();
@@ -66,5 +66,6 @@ public class Stats {
 
         System.out.println(statClass.toString());
     }
+
 }
 
