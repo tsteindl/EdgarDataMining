@@ -15,6 +15,9 @@ Stride the ArrayList for all DailyData objects and visit the url from folderPath
 
 Parse XML using XML-tags from the metatable and use this data to create CSV file.
 
+#Example input
+/edgar/daily-index/2022/QTR1/ -conc=false
+
 
 Technologies:
 -Generic class hierarchies including interfaces and abstract classes enabling building on this implementation

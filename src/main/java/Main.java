@@ -16,6 +16,7 @@ import static util.Constants.*;
  * 1. path in EDGAR file system, suffix with "/" if there are subdirectories
  * 2. multithreading: -conc=true/false
  * 3. doStats: -stats=true/false time costly functions, print out statistics at end of parsing
+ * example:
  */
 public class Main {
     public static Stats stats;
