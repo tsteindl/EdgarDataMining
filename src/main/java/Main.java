@@ -66,7 +66,7 @@ public class Main {
         stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (problem: recursion)
-        stats.execute(() -> edgarScraper.scrapeIndexFiles(path), "scrapeIndexFiles");
+//        stats.execute(() -> edgarScraper.scrapeIndexFiles(path), "scrapeIndexFiles");
         edgarScraper.scrapeIndexFiles(path);
         for (String idxFile : edgarScraper.getIndexFiles()) {
             try {
