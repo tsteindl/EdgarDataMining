@@ -22,6 +22,10 @@ public class Form4Parser extends FormParser {
         super("4", csvTableBuilder);
     }
 
+    /**
+     * inits outputter passed in constructor
+     * @throws InitException
+     */
     @Override
     public void init() throws InitException {
         outputter.init();
@@ -43,7 +47,7 @@ public class Form4Parser extends FormParser {
             Element xmlRoot = getXMLTreeFromString(xml);
 
             parseXMLNodes(xmlRoot, new LinkedList<>(), (CSVTableBuilder) this.outputter);
-            outputter.outputForm();
+            outputter.outputForm(); //TODO: maybe extract this into parent function
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
         }

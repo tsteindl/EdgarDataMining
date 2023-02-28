@@ -16,6 +16,18 @@ public class CSVTableBuilder extends CSVBuilder {
     private final Map<String, String> currRepVals;
     private final Map<String, String> currTableVals;
 
+    /**
+     * Init CSV Builder with tables
+     * @param outputPath
+     * @param sep
+     * @param repTagNames
+     * @param repTags
+     * @param tableNames
+     * @param tableTags
+     * @param tableNodeTags
+     * @param documentRoot
+     * @param notNullTags
+     */
     public CSVTableBuilder(String outputPath, String sep, List<String> repTagNames, List<String[]> repTags, List<String> tableNames, List<String[]> tableTags, List<String> tableNodeTags, List<String> documentRoot, List<String> notNullTags) {
         super(
                 outputPath,

@@ -11,6 +11,7 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class EdgarScraper {
@@ -25,6 +26,7 @@ public class EdgarScraper {
         this.indexFiles = new ArrayList<>();
         this.dailyDataList = new ArrayList<>();
     }
+
 
     public void scrapeIndexFiles(String path) {
         //TODO: refactor
@@ -86,9 +88,10 @@ public class EdgarScraper {
     public List<DailyData> parseIndexFile(String requestString) {
         if (requestString == null) return null;
         String splitString = requestString.substring(requestString.lastIndexOf("---") + 4);
-        return splitString.lines()
+        return splitString
+                .lines()
                 .map(line -> (line == null) ? null : line.trim().split("\\s{2,}"))
-                .filter(arr -> arr != null)
+                .filter(Objects::nonNull)
                 .filter(arr -> arr[0].equals(FORM_TYPE))
                 .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4]))
                 .collect(Collectors.toList());

@@ -9,7 +9,9 @@ public class Constants { //TODO: add JSON parsing possibility instead of hard co
 
     public static String[] TABLE_NODE_TAGS = {
             "nonDerivativeTable",
-            "nonDerivativeTransaction"
+            "nonDerivativeTransaction",
+//            "derivativeTable",
+//            "derivativeTransaction"
     };
     public static String[] CSV_TAG_NAMES_REP = {
             "documentType",

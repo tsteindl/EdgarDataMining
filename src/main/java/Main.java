@@ -1,4 +1,5 @@
 import interfaces.XMLConverter;
+import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
 import util.Constants;
 import csv.CSVTableBuilder;
@@ -20,6 +21,9 @@ import static util.Constants.*;
  */
 public class Main {
     public static Stats stats;
+    public static long startTime;
+    public static long totalTimeTaken;
+    public static long nOForms = 0;
 
     public static void main(String[] args) throws IOException {
         //xml data from 2004 onwards
@@ -53,12 +57,21 @@ public class Main {
         System.out.println("-------------------------------------------------");
         System.out.format("Mining data for path: %s %s.", path, (conc) ? "concurrently" : "sequentially.\n");
         System.out.println("-------------------------------------------------");
+//        startTime = System.nanoTime();
+        StopWatch watch = new StopWatch();
+        watch.start();
         if (conc)
             executeConcurrently(path);
         else
             executeSequentially(path);
+//        totalTimeTaken = startTime - System.nanoTime();
+        watch.stop();
+        totalTimeTaken = watch.getTime();
         System.out.println("-------------------------------------------------");
-        System.out.format("Application ended");
+        System.out.println("Application ended");
+        System.out.println("Total time taken: " + totalTimeTaken + "s");
+        System.out.println("Number of Forms parsed: " + nOForms);
+        System.out.println("Avg time per form: " + ((double) totalTimeTaken/nOForms));
         System.out.println("-------------------------------------------------");
     }
 
@@ -88,6 +101,7 @@ public class Main {
                 for (DailyData dailyData : dailyDataList) {
                     String responseData = edgarScraper.downloadData(dailyData);
                     form4Parser.parseForm(responseData);
+                    nOForms++;
                 }
             } catch (Exception e) {
                 e.printStackTrace();

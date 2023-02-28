@@ -25,10 +25,10 @@ public class Stats {
     private double avg(List<Long> entries) {
         return (double) total(entries) / entries.size();
     }
-    private double nsToSec(Long ms) {
+    public static double nsToSec(Long ms) {
         return (double) ms/1000000;
     }
-    private double nsToSec(double ms) {
+    public static double nsToSec(double ms) {
         return ms/1000000;
     }
     public String toString() {
