@@ -6,6 +6,7 @@ import csv.CSVTableBuilder;
 import util.DailyData;
 
 import java.io.*;
+import java.math.BigInteger;
 import java.util.List;
 
 import static util.Constants.*;
@@ -21,8 +22,8 @@ import static util.Constants.*;
  */
 public class Main {
     public static Stats stats;
-    public static long startTime;
-    public static long totalTimeTaken;
+    public static BigInteger startTime;
+    public static double totalTimeTaken; //total time taken in seconds
     public static long nOForms = 0;
 
     public static void main(String[] args) throws IOException {
@@ -57,21 +58,21 @@ public class Main {
         System.out.println("-------------------------------------------------");
         System.out.format("Mining data for path: %s %s.", path, (conc) ? "concurrently" : "sequentially.\n");
         System.out.println("-------------------------------------------------");
-//        startTime = System.nanoTime();
+        startTime = new BigInteger(Long.toString(System.nanoTime()));
         StopWatch watch = new StopWatch();
         watch.start();
         if (conc)
             executeConcurrently(path);
         else
             executeSequentially(path);
-//        totalTimeTaken = startTime - System.nanoTime();
+        totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
         watch.stop();
-        totalTimeTaken = watch.getTime();
+//        totalTimeTaken = watch.getTime();
         System.out.println("-------------------------------------------------");
         System.out.println("Application ended");
         System.out.println("Total time taken: " + totalTimeTaken + "s");
         System.out.println("Number of Forms parsed: " + nOForms);
-        System.out.println("Avg time per form: " + ((double) totalTimeTaken/nOForms));
+        System.out.println("Avg seconds per form: " + ((double) totalTimeTaken/nOForms));
         System.out.println("-------------------------------------------------");
     }
 

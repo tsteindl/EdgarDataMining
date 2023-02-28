@@ -1,11 +1,14 @@
 package statistics;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.stream.IntStream;
 
 public class Stats {
 
+    public static final int NS2S = 1000000;
     private final Map<String, List<Long>> timeMap = new HashMap<>();
 
     public void execute(Callable fn, String fnName) throws Exception {
@@ -26,7 +29,12 @@ public class Stats {
         return (double) total(entries) / entries.size();
     }
     public static double nsToSec(Long ms) {
-        return (double) ms/1000000;
+        return (double) ms/NS2S;
+    }
+
+    //return value double should be enough here as no parsing should take longer than 1.7976931348623157E+308 (Double.MAX_VALUE) seconds
+    public static double nsToSec(BigInteger ms) {
+        return ms.doubleValue() / NS2S;
     }
     public static double nsToSec(double ms) {
         return ms/1000000;
