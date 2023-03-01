@@ -12,30 +12,38 @@ public class CSVTableBuilder extends CSVBuilder {
     private final Map<List<String>, String> tableTags;
 
     private final List<String> documentRoot;
-    private final List<String> tableNodeTags;
+    private final List<String[]> tableNodeTags;
     private final Map<String, String> currRepVals;
     private final Map<String, String> currTableVals;
 
     /**
-     * Init CSV Builder with tables
-     * @param outputPath
-     * @param sep
-     * @param repTagNames
-     * @param repTags
-     * @param tableNames
-     * @param tableTags
-     * @param tableNodeTags
+     * Init CSV Builder with table. Repeating tags are the ones that are the same for each table entry: eg the reporter of a form
+     * @param outputPath the output path of the generated output //TODO: change this for non CSV
+     * @param sep separator
+     * @param repTagNames mapping of the repeating tags to output document names
+     * @param repTags repeating tags
+     * @param tableNames mapping of table tags
+     * @param tableTags table tags
+     * @param tableNodeTags list of list of nodes for tables
      * @param documentRoot
      * @param notNullTags
+     * Use Lists instead of arrays so concatenation is easier (Java doesn't offer native array concatenation
      */
-    public CSVTableBuilder(String outputPath, String sep, List<String> repTagNames, List<String[]> repTags, List<String> tableNames, List<String[]> tableTags, List<String> tableNodeTags, List<String> documentRoot, List<String> notNullTags) {
+    public CSVTableBuilder(String outputPath,
+                           String sep,
+                           List<String> repTagNames,
+                           List<String[]> repTags,
+                           List<String> tableNames,
+                           List<String[][]> tableTags,
+                           List<String[]> tableNodeTags,
+                           List<String> documentRoot,
+                           List<String> notNullTags
+    ) {
         super(
                 outputPath,
                 sep,
-                Stream.concat(repTagNames.stream(), tableNames.stream())
-                        .collect(Collectors.toList()),
-                Stream.concat(repTags.stream(), tableTags.stream())
-                        .collect(Collectors.toList()),
+                getNestedTableNames(repTagNames, tableNames),
+                getNestedTableTags(repTags, tableTags),
                 documentRoot,
                 notNullTags
         );
@@ -45,16 +53,29 @@ public class CSVTableBuilder extends CSVBuilder {
         this.documentRoot = documentRoot;
         this.tableNodeTags = tableNodeTags;
         for (int i = 0; i < repTagNames.size(); i++) {
-            List<String> tagsListWithDocumentRoot = Stream.concat(documentRoot.stream(), Arrays.asList(repTags.get(i)).stream()).toList();
+            List<String> tagsListWithDocumentRoot = Stream.concat(documentRoot.stream(), Arrays.stream(repTags.get(i))).toList();
             this.repTags.put(tagsListWithDocumentRoot, repTagNames.get(i));
         }
         for (int i = 0; i < tableNames.size(); i++) {
-            List<String> tagsListWithDocumentRoot = Stream.of(documentRoot, tableNodeTags, Arrays.asList(tableTags.get(i))).flatMap(Collection::stream).collect(Collectors.toList());
+//            List<String> tagsListWithDocumentRoot = Stream.of(documentRoot, tableNodeTags, Arrays.asList(tableTags.get(i))).flatMap(Collection::stream).collect(Collectors.toList());
+            List<String> tagsListWithDocumentRoot = null;
             this.tableTags.put(tagsListWithDocumentRoot, tableNames.get(i));
         }
         this.currRepVals = new HashMap<>();
         this.currTableVals = new HashMap<>();
         resetTableBuilder();
+    }
+
+    private static List<String> getNestedTableNames(List<String> repTagNames, List<String> tableNames) {
+        return Stream.concat(repTagNames.stream(),
+                        tableNames.stream())
+                .collect(Collectors.toList());
+    }
+
+    private static List<String[]> getNestedTableTags(List<String[]> repTags, List<String[][]> tableTags) {
+        return Stream.concat(repTags.stream(),
+                        tableTags.stream().map(Arrays::asList).flatMap(List::stream))
+                .collect(Collectors.toList());
     }
 
     public int getRepTagsColSize() {

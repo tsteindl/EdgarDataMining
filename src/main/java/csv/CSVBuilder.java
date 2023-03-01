@@ -19,6 +19,15 @@ public class CSVBuilder implements XMLConverter {
     protected final List<String> nullableTags;
     private final Map<String, String> currLine;
 
+    /**
+     * CSVBuilder builds CSV from XML, structure in form of nodes that should be parsed is initialized here
+     * @param outputPath the output path of the generated output //TODO: change this for non CSV
+     * @param sep CSV separator
+     * @param names CSV column names
+     * @param tags  XML tags
+     * @param documentRoot root of the XML document
+     * @param nullableTags tags that will be overlooked if they are empty
+     */
     public CSVBuilder(String outputPath, String sep, List<String> names, List<String[]> tags, List<String> documentRoot, List<String> nullableTags) {
         this.outputPath = outputPath;
         if (names.size() != tags.size())
