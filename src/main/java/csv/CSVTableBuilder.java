@@ -1,5 +1,7 @@
 package csv;
 
+import com.google.common.collect.Streams;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -22,8 +24,8 @@ public class CSVTableBuilder extends CSVBuilder {
      * @param sep separator
      * @param repTagNames mapping of the repeating tags to output document names
      * @param repTags repeating tags
-     * @param tableNames mapping of table tags
-     * @param tableTags table tags
+     * @param tableNamesList mapping of table tags
+     * @param tableTagsList table tags
      * @param tableNodeTags list of list of nodes for tables
      * @param documentRoot
      * @param notNullTags
@@ -33,8 +35,8 @@ public class CSVTableBuilder extends CSVBuilder {
                            String sep,
                            List<String> repTagNames,
                            List<String[]> repTags,
-                           List<String> tableNames,
-                           List<String[][]> tableTags,
+                           List<String[]> tableNamesList,
+                           List<String[][]> tableTagsList,
                            List<String[]> tableNodeTags,
                            List<String> documentRoot,
                            List<String> notNullTags
@@ -42,8 +44,8 @@ public class CSVTableBuilder extends CSVBuilder {
         super(
                 outputPath,
                 sep,
-                getNestedTableNames(repTagNames, tableNames),
-                getNestedTableTags(repTags, tableTags),
+                getNestedTableNames(repTagNames, tableNamesList),
+                getNestedTableTags(repTags, tableTagsList),
                 documentRoot,
                 notNullTags
         );
@@ -52,23 +54,37 @@ public class CSVTableBuilder extends CSVBuilder {
 
         this.documentRoot = documentRoot;
         this.tableNodeTags = tableNodeTags;
-        for (int i = 0; i < repTagNames.size(); i++) {
-            List<String> tagsListWithDocumentRoot = Stream.concat(documentRoot.stream(), Arrays.stream(repTags.get(i))).toList();
-            this.repTags.put(tagsListWithDocumentRoot, repTagNames.get(i));
-        }
-        for (int i = 0; i < tableNames.size(); i++) {
-//            List<String> tagsListWithDocumentRoot = Stream.of(documentRoot, tableNodeTags, Arrays.asList(tableTags.get(i))).flatMap(Collection::stream).collect(Collectors.toList());
-            List<String> tagsListWithDocumentRoot = null;
-            this.tableTags.put(tagsListWithDocumentRoot, tableNames.get(i));
-        }
+        getAllRepeatingTags(repTagNames, repTags, documentRoot);
+        getAllTableTags(tableNamesList, tableTagsList);
+
         this.currRepVals = new HashMap<>();
         this.currTableVals = new HashMap<>();
         resetTableBuilder();
     }
 
-    private static List<String> getNestedTableNames(List<String> repTagNames, List<String> tableNames) {
-        return Stream.concat(repTagNames.stream(),
-                        tableNames.stream())
+    //TODO: refactor this to be functional (return type)
+    // refactor this to map collect https://stackoverflow.com/questions/14513475/how-do-i-iterate-over-multiple-lists-in-parallel-in-java
+    // find way to use one generic function for both get All functions
+    private void getAllTableTags(List<String[]> tableNamesList, List<String[][]> tableTagsList) {
+        for (int i = 0; i < tableNamesList.size(); i++)
+            for(int j = 0; j < tableNamesList.get(i).length; j++)
+                this.tableTags.put(Stream.concat(documentRoot.stream(), Stream.concat(Arrays.stream(tableNodeTags.get(i)), Arrays.stream(tableTagsList.get(i)[j]))).toList(), tableNamesList.get(i)[j]); //TODO: Stream concat twice is ugly => refactor
+//        this.tableTags = Streams.zip(tableNamesList.stream(), tableTagsList.stream(), (tableNames, tableTags) -> {
+//            return tableTags
+//        }).collect(Collectors.toMap());
+//        Streams.forEachPair(tableNamesList.stream(), tableTagsList.stream(),
+//                (tableNames, tableTags) -> Streams.forEachPair(Arrays.stream(tableNames), Arrays.stream(tableTags),
+//                                            (name, tags) -> this.tableTags.put(Stream.of(documentRoot, tableNodeTags, Arrays.stream(tags)), name))
+//        );
+    }
+
+    private void getAllRepeatingTags(List<String> repTagNames, List<String[]> repTags, List<String> documentRoot) {
+        Streams.forEachPair(repTagNames.stream(), repTags.stream(), (name, tags) -> this.repTags.put(Stream.concat(documentRoot.stream(), Arrays.stream(tags)).toList(), name));
+    }
+
+    //TODO: refactor these 2 as 1 fct?
+    private static List<String> getNestedTableNames(List<String> repTagNames, List<String[]> tableNames) {
+        return Stream.concat(repTagNames.stream(), tableNames.stream().map(Arrays::asList).flatMap(List::stream))
                 .collect(Collectors.toList());
     }
 

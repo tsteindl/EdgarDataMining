@@ -1,0 +1,13 @@
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/interfaces/XMLConverter.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/util/DailyData.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/FTPCommunicator.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/util/InitException.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/Main.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/Form4Parser.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/csv/CSVTableBuilder.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/util/Constants.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/statistics/Stats.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/interfaces/FormParser.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/util/OutputException.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/EdgarScraper.java
+/home/tsteindl/Documents/Projects/EDGAR Data Mining/src/main/java/csv/CSVBuilder.java

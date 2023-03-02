@@ -44,8 +44,8 @@ public class Constants { //TODO: add JSON parsing possibility instead of hard co
             {"issuer", "issuerName"},
             {"issuer", "issuerTradingSymbol"},
     };
-    public static String[] CSV_TAG_NAMES_TABLE = {
-
+    public static String[][] CSV_TAG_NAMES_TABLE = {
+            {
                     "securityTitle",
                     "transactionDate",
                     "deemedExecutionDate",
@@ -57,21 +57,24 @@ public class Constants { //TODO: add JSON parsing possibility instead of hard co
                     "transactionAcquiredDisposedCode",
                     "sharesOwnedFollowingTransaction",
                     "directOrIndirectOwnership",
-                    "securityTitle",
-                    "conversionOrExercisePrice",
-                    "transactionDate",
-                    "transactionFormType",
-                    "transactionCode",
-                    "equitySwapInvolved",
-                    "transactionShares",
-                    "transactionPricePerShare",
-                    "transactionAcquiredDisposedCode",
-                    "exerciseDate",
-                    "expirationDate",
-                    "underlyingSecurityTitle",
-                    "underlyingSecurityValue",
-                    "valueOwnedFollowingTransaction",
-                    "directOrIndirectOwnership"
+            },
+            {
+                    "securityTitleDer",
+                    "conversionOrExercisePriceDer",
+                    "transactionDateDer",
+                    "transactionFormTypeDer",
+                    "transactionCodeDer",
+                    "equitySwapInvolvedDer",
+                    "transactionSharesDer",
+                    "transactionPricePerShareDer",
+                    "transactionAcquiredDisposedCodeDer",
+                    "exerciseDateDer",
+                    "expirationDateDer",
+                    "underlyingSecurityTitleDer",
+                    "underlyingSecurityValueDer",
+                    "valueOwnedFollowingTransactionDer",
+                    "directOrIndirectOwnershipDer"
+            }
     };
 
     public static String[][][] CSV_TAGS_TABLE = {

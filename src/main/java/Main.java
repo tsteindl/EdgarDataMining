@@ -13,7 +13,7 @@ import static util.Constants.*;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
- * @version 1
+ * @version 1.0
  * PROGRAM ARGS:
  * 1. path in EDGAR file system, suffix with "/" if there are subdirectories
  * 2. multithreading: -conc=true/false
