@@ -10,13 +10,14 @@ import java.util.stream.Stream;
 //TODO: add support for multiple tables => derivativeTable
 public class CSVTableBuilder extends CSVBuilder {
 
+
+    private final List<Table> tables;
     private final Map<List<String>, String> repTags;
-    private final Map<List<String>, String> tableTags;
+    private final Map<List<String>, String> tableTags; //NOT IN USE !!!
 
     private final List<String> documentRoot;
     private final List<String[]> tableNodeTags;
     private final Map<String, String> currRepVals;
-    private final Map<String, String> currTableVals;
 
     /**
      * Init CSV Builder with table. Repeating tags are the ones that are the same for each table entry: eg the reporter of a form
@@ -39,8 +40,7 @@ public class CSVTableBuilder extends CSVBuilder {
                            List<String[][]> tableTagsList,
                            List<String[]> tableNodeTags,
                            List<String> documentRoot,
-                           List<String> notNullTags
-    ) {
+                           List<String> notNullTags) {
         super(
                 outputPath,
                 sep,
@@ -55,11 +55,47 @@ public class CSVTableBuilder extends CSVBuilder {
         this.documentRoot = documentRoot;
         this.tableNodeTags = tableNodeTags;
         getAllRepeatingTags(repTagNames, repTags, documentRoot);
-        getAllTableTags(tableNamesList, tableTagsList);
+        this.tables = initTables(tableNamesList, tableTagsList, this.tableNodeTags);
+//        getAllTableTags(tableNamesList, tableTagsList);
 
         this.currRepVals = new HashMap<>();
-        this.currTableVals = new HashMap<>();
         resetTableBuilder();
+    }
+
+    class Table {
+        private final Map<List<String>, String> tableTags;
+        private final Map<String, String> currTableVals;
+
+
+        Table(Map<List<String>, String> tableTags) {
+            this.tableTags = tableTags;
+            this.currTableVals = new HashMap<>();
+        }
+
+        private void clear() {
+            this.currTableVals.clear();
+        }
+
+        private void reset() {
+            this.currTableVals.clear();
+            initMap(this.currTableVals, this.tableTags.values());
+        }
+
+        public int getTableTagsColSize() {
+            return this.tableTags.keySet().size();
+        }
+
+    }
+
+    private ArrayList<Table> initTables(List<String[]> tableNamesList, List<String[][]> tableTagsList, List<String[]> tableNodeTags) {
+        ArrayList<Table> result = new ArrayList<>();
+        for (int i = 0; i < tableNamesList.size(); i++) {
+            Map<List<String>, String> tags = new HashMap<>();
+            for (int j = 0; j < tableNamesList.get(i).length; j++)
+                tags.put(Stream.concat(documentRoot.stream(), Stream.concat(Arrays.stream(tableNodeTags.get(i)), Arrays.stream(tableTagsList.get(i)[j]))).toList(), tableNamesList.get(i)[j]);
+            result.add(new Table(tags));
+        }
+        return result;
     }
 
     //TODO: refactor this to be functional (return type)
@@ -98,37 +134,35 @@ public class CSVTableBuilder extends CSVBuilder {
         return this.repTags.keySet().size();
     }
 
-    public int getTableTagsColSize() {
-        return this.tableTags.keySet().size();
-    }
-
     public void resetTableBuilder() {
         this.currRepVals.clear();
-        this.currTableVals.clear();
+//        this.currTableVals.clear();
         initMap(this.currRepVals, this.repTags.values());
-        initMap(this.currTableVals, this.tableTags.values());
+        this.tables.forEach(Table::reset);
     }
 
     public void addEntryToCurrLine(List<String> tag, String value) {
-        Map<List<String>, String> table = whichTableContains(tag);
-        if (table == null) return;
-        if (table == this.repTags)
-            currRepVals.put(table.get(tag), value);
-        else if (table == this.tableTags)
-            currTableVals.put(table.get(tag), value);
-
+        if (isRepeatingTag(tag))
+            currRepVals.put(this.repTags.get(tag), value);
+        else {
+            Optional<Table> table = getTable(tag);
+            if (table.isEmpty()) return;
+            table.get().currTableVals.put(table.get().tableTags.get(tag), value);
+        }
         if (currLineFull())
             addCurrLine();
     }
 
     public boolean currLineFull() { //TODO: make sure this works if not all values are provided
         return mapFull(currRepVals, this.nullableTags)
-            && mapFull(currTableVals, this.nullableTags);
+            && this.tables.stream().allMatch(t -> mapFull(t.currTableVals, this.nullableTags));
     }
 
     public void addCurrLine() {
-        addLine(this.currRepVals, this.currTableVals);
-        initMap(this.currTableVals, this.tableTags.values());
+        this.tables.forEach(t -> {
+            addLine(this.currRepVals, t.currTableVals);
+            initMap(t.currTableVals, t.tableTags.values());
+        });
     }
 
     private void addLine(Map<String, String> repVals, Map<String, String> tableVals) {
@@ -137,10 +171,22 @@ public class CSVTableBuilder extends CSVBuilder {
         addLine(mergedMap);
     }
 
-
-    private Map<List<String>, String> whichTableContains(List<String> tag) {
-        if (containsTag(this.repTags, tag)) return this.repTags;
-        if (containsTag(this.tableTags, tag)) return this.tableTags;
-        return null;
+    /**
+     * Function that determines if tag is part of nested table or of repeating tags
+     * @param tag
+     * @return boolean
+     */
+    private boolean isRepeatingTag(List<String> tag) {
+        return containsTag(this.repTags, tag);
     }
+
+    /**
+     * Gets table that a tag belongs to (if there is one)
+     * @param tag
+     * @return Table
+     */
+    private Optional<Table> getTable(List<String> tag) {
+        return this.tables.stream().filter((Table t) -> containsTag(t.tableTags, tag)).findFirst();
+    }
+
 }

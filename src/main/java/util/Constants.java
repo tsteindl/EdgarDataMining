@@ -111,8 +111,17 @@ public class Constants { //TODO: add JSON parsing possibility instead of hard co
     };
 
     public static String[] NULLABLE_TAGS = {
+            "schemaVersion",
+            "notSubjectToSection16",
+            "footnotes",
+            "remarks",
             "deemedExecutionDate",
-            "transactionTimeliness"
+            "transactionCoding",
+            "transactionTimeliness",
+            "footnoteId",
+            "deemedExecutionDate",
+            "transactionCoding",
+            "transactionTimeliness",
     };
 
 }
