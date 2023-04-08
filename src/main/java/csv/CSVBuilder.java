@@ -160,7 +160,6 @@ public class CSVBuilder implements XMLConverter {
     private final String outputPath;
     private final List<String> tags;
     private final List<String> lines;
-
     final String sep;
 
     /**

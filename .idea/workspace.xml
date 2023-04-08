@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="adjusted fields of CSVTableBuilder and CSVBuilder">
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CodeStyleSettingsInfer">
+    <option name="done" value="true" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="6679094641734dd18852e13888b902a2f32e1716" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+  </component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
+  <component name="ProjectId" id="2M0d8Y3mFZjnkgsbgf7IRnz3NND" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "last_opened_file_path": "/home/tsteindl/Documents/Projects/EDGAR Data Mining",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Application.Main">
+    <configuration name="Main" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="Main" />
+      <module name="EDGAR Data Mining" />
+      <option name="PROGRAM_PARAMETERS" value="2022/QTR1/form.20220318.idx -conc=false" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DataRetrieval" type="MavenRunConfiguration" factoryName="Maven" nameIsGenerated="true">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list />
+            </option>
+            <option name="pomFileName" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="" />
+      <created>1676908278974</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1676908278974</updated>
+      <workItem from="1676908281230" duration="221000" />
+      <workItem from="1676908550427" duration="832000" />
+      <workItem from="1676987248181" duration="393000" />
+      <workItem from="1676988074231" duration="192000" />
+      <workItem from="1676988318625" duration="538000" />
+      <workItem from="1676989080595" duration="5532000" />
+      <workItem from="1677597834163" duration="5103000" />
+      <workItem from="1677705977269" duration="76000" />
+      <workItem from="1677706075339" duration="9862000" />
+      <workItem from="1677752219190" duration="2997000" />
+      <workItem from="1677755464690" duration="4981000" />
+      <workItem from="1680379552075" duration="200000" />
+      <workItem from="1680684365032" duration="5049000" />
+      <workItem from="1680950135471" duration="59000" />
+      <workItem from="1680950212167" duration="35000" />
+    </task>
+    <task id="LOCAL-00001" summary="working again">
+      <created>1676989735700</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1676989735700</updated>
+    </task>
+    <task id="LOCAL-00002" summary="cherry pick stash">
+      <created>1676989973190</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1676989973190</updated>
+    </task>
+    <task id="LOCAL-00003" summary="cherry pick done">
+      <created>1676990036767</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1676990036767</updated>
+    </task>
+    <task id="LOCAL-00004" summary="added comments fixed parser (by removing faulty derivative tags from table builder">
+      <created>1677600601041</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1677600601041</updated>
+    </task>
+    <task id="LOCAL-00005" summary="added time tracking with biginteger to store bigger values">
+      <created>1677601403646</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1677601403646</updated>
+    </task>
+    <task id="LOCAL-00006" summary="support for multiple tables (started)">
+      <created>1677710347274</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1677710347274</updated>
+    </task>
+    <task id="LOCAL-00007" summary="support for multiple tables maybe working&#10;refactored with guava">
+      <created>1677716005881</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1677716005881</updated>
+    </task>
+    <task id="LOCAL-00008" summary="last checkpoint">
+      <created>1680945889793</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1680945889793</updated>
+    </task>
+    <task id="LOCAL-00009" summary="adjust constants">
+      <created>1680947537774</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1680947537774</updated>
+    </task>
+    <task id="LOCAL-00010" summary="adjusted fields of CSVTableBuilder and CSVBuilder">
+      <created>1680949814254</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1680949814254</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
+    <MESSAGE value="working again" />
+    <MESSAGE value="cherry pick stash" />
+    <MESSAGE value="cherry pick done" />
+    <MESSAGE value="added comments fixed parser (by removing faulty derivative tags from table builder" />
+    <MESSAGE value="added time tracking with biginteger to store bigger values" />
+    <MESSAGE value="support for multiple tables (started)" />
+    <MESSAGE value="support for multiple tables maybe working&#10;refactored with guava" />
+    <MESSAGE value="last checkpoint" />
+    <MESSAGE value="adjust constants" />
+    <MESSAGE value="adjusted fields of CSVTableBuilder and CSVBuilder" />
+    <option name="LAST_COMMIT_MESSAGE" value="adjusted fields of CSVTableBuilder and CSVBuilder" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
+          <line>144</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
+          <line>151</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
+          <line>135</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java</url>
+          <line>148</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+    <pin-to-top-manager>
+      <pinned-members>
+        <PinnedItemInfo parentTag="EdgarScraper" memberName="FORM_TYPE" />
+      </pinned-members>
+    </pin-to-top-manager>
+    <watches-manager>
+      <configuration name="Application">
+        <watch expression="this.tableTags" language="JAVA" />
+        <watch expression="table.get().tableTags.get(tag)" language="JAVA" />
+        <watch expression="map.get(key)" language="JAVA" />
+        <watch expression="map.keySet().stream().filter(key -&gt; !exceptions.contains(key)).filter(key -&gt; map.get(key) == null).collect(Collectors.toList());" language="JAVA" />
+        <watch expression="map.keySet().stream()                         .filter(key -&gt; !exceptions.contains(key))                         .allMatch(key -&gt; map.get(key) != null);" language="JAVA" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
