@@ -3,20 +3,14 @@ package util;
 public class Constants { //TODO: add JSON parsing possibility instead of hard coding here
     public static String DEFAULT_YEAR = "2020/";
 
-    public static String[] CSV_DOCUMENT_ROOT = {
-            "ownershipDocument"
+    public static String CSV_DOCUMENT_ROOT = "ownershipDocument";
+
+    public static String[] TABLE_NODE_TAGS = {
+            "nonDerivativeTable",
+            "derivativeTable",
     };
 
-    public static String[][] TABLE_NODE_TAGS = {
-            {
-                "nonDerivativeTable",
-                "nonDerivativeTransaction"
-            },
-            {
-                "derivativeTable",
-                "derivativeHolding"
-            }
-    };
+    //TODO: add table mapping using hash table
 
 //    public static String[] NULLABLE_TAGS = {
 //            "schemaVersion",

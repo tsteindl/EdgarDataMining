@@ -8,57 +8,40 @@ import java.util.stream.Stream;
 
 //TODO: maybe refactor into composite builder with list of tablebuilders
 //TODO: add support for multiple tables => derivativeTable
-public class CSVTableBuilder extends CSVBuilder {
+public class CSVTableBuilder /*extends CSVBuilder*/ {
 
-
+    private String outputPath;
+    private String sep;
     private final List<Table> tables;
-    private final Map<List<String>, String> repTags;
-    private final Map<List<String>, String> tableTags; //NOT IN USE !!!
+    private final Map<List<String>, String> tags;
+    private final String documentRoot;
+    private final List<String> tableNodeTags;
+    private List<String> excludeTags;
 
-    private final List<String> documentRoot;
-    private final List<String[]> tableNodeTags;
-    private final Map<String, String> currRepVals;
 
     /**
      * Init CSV Builder with table. Repeating tags are the ones that are the same for each table entry: eg the reporter of a form
      * @param outputPath the output path of the generated output //TODO: change this for non CSV
      * @param sep separator
-     * @param repTagNames mapping of the repeating tags to output document names
-     * @param repTags repeating tags
-     * @param tableNamesList mapping of table tags
-     * @param tableTagsList table tags
-     * @param tableNodeTags list of list of nodes for tables
+     * @param tableNodeTags list of nodes for tables
      * @param documentRoot
-     * @param notNullTags
+     * @param excludeTags nodes that will not be parsed
      * Use Lists instead of arrays so concatenation is easier (Java doesn't offer native array concatenation
      */
     public CSVTableBuilder(String outputPath,
                            String sep,
-                           List<String> repTagNames,
-                           List<String[]> repTags,
-                           List<String[]> tableNamesList,
-                           List<String[][]> tableTagsList,
-                           List<String[]> tableNodeTags,
-                           List<String> documentRoot,
-                           List<String> notNullTags) {
-        super(
-                outputPath,
-                sep,
-                getNestedTableNames(repTagNames, tableNamesList),
-                getNestedTableTags(repTags, tableTagsList),
-                documentRoot,
-                notNullTags
-        );
-        this.repTags = new HashMap<>();
-        this.tableTags = new HashMap<>();
-
-        this.documentRoot = documentRoot;
+                           List<String> tableNodeTags,
+                           String documentRoot,
+                           List<String> excludeTags) {
+        this.tags = new HashMap<>();
+        this.outputPath = outputPath;
+        this.sep = sep;
         this.tableNodeTags = tableNodeTags;
-        getAllRepeatingTags(repTagNames, repTags, documentRoot);
-        this.tables = initTables(tableNamesList, tableTagsList, this.tableNodeTags);
-//        getAllTableTags(tableNamesList, tableTagsList);
-
-        this.currRepVals = new HashMap<>();
+        this.documentRoot = documentRoot;
+        this.excludeTags = excludeTags;
+//        getAllRepeatingTags(tags, documentRoot);
+//        this.tables = initTables(tableNamesList, tableTagsList, this.tableNodeTags);
+        this.tables = new ArrayList<Table>();
         resetTableBuilder();
     }
 
@@ -115,7 +98,7 @@ public class CSVTableBuilder extends CSVBuilder {
     }
 
     private void getAllRepeatingTags(List<String> repTagNames, List<String[]> repTags, List<String> documentRoot) {
-        Streams.forEachPair(repTagNames.stream(), repTags.stream(), (name, tags) -> this.repTags.put(Stream.concat(documentRoot.stream(), Arrays.stream(tags)).toList(), name));
+        Streams.forEachPair(repTagNames.stream(), repTags.stream(), (name, tags) -> this.tags.put(Stream.concat(documentRoot.stream(), Arrays.stream(tags)).toList(), name));
     }
 
     //TODO: refactor these 2 as 1 fct?
@@ -131,19 +114,19 @@ public class CSVTableBuilder extends CSVBuilder {
     }
 
     public int getRepTagsColSize() {
-        return this.repTags.keySet().size();
+        return this.tags.keySet().size();
     }
 
     public void resetTableBuilder() {
         this.currRepVals.clear();
 //        this.currTableVals.clear();
-        initMap(this.currRepVals, this.repTags.values());
+        initMap(this.currRepVals, this.tags.values());
         this.tables.forEach(Table::reset);
     }
 
     public void addEntryToCurrLine(List<String> tag, String value) {
         if (isRepeatingTag(tag))
-            currRepVals.put(this.repTags.get(tag), value);
+            currRepVals.put(this.tags.get(tag), value);
         else {
             Optional<Table> table = getTable(tag);
             if (table.isEmpty()) return;
@@ -177,7 +160,7 @@ public class CSVTableBuilder extends CSVBuilder {
      * @return boolean
      */
     private boolean isRepeatingTag(List<String> tag) {
-        return containsTag(this.repTags, tag);
+        return containsTag(this.tags, tag);
     }
 
     /**

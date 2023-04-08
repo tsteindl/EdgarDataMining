@@ -11,7 +11,7 @@ import interfaces.XMLConverter;
 import util.InitException;
 import util.OutputException;
 
-public class CSVBuilder implements XMLConverter {
+/*public class CSVBuilder implements XMLConverter {
     private final String outputPath;
     private final Map<List<String>, String> tags;
     private final List<String> lines;
@@ -19,7 +19,7 @@ public class CSVBuilder implements XMLConverter {
     protected final List<String> nullableTags;
     private final Map<String, String> currLine;
 
-    /**
+    *//**
      * CSVBuilder builds CSV from XML, structure in form of nodes that should be parsed is initialized here
      * @param outputPath the output path of the generated output //TODO: change this for non CSV
      * @param sep CSV separator
@@ -27,7 +27,7 @@ public class CSVBuilder implements XMLConverter {
      * @param tags  XML tags
      * @param documentRoot root of the XML document
      * @param nullableTags tags that will be overlooked if they are empty
-     */
+     *//*
     public CSVBuilder(String outputPath, String sep, List<String> names, List<String[]> tags, List<String> documentRoot, List<String> nullableTags) {
         this.outputPath = outputPath;
         if (names.size() != tags.size())
@@ -153,5 +153,65 @@ public class CSVBuilder implements XMLConverter {
 
     public String getTagName(List<String> key) {
         return this.tags.get(key);
+    }
+}*/
+
+public class CSVBuilder implements XMLConverter {
+    private final String outputPath;
+    private final List<String> tags;
+    private final List<String> lines;
+
+    final String sep;
+
+    /**
+     * CSVBuilder builds CSV from XML, structure in form of nodes that should be parsed is initialized here
+     *
+     * @param outputPath   the output path of the generated output //TODO: change this for non CSV
+     * @param sep          CSV separator
+     * @param tags         XML tags
+     * @param documentRoot root of the XML document
+     */
+    public CSVBuilder(String outputPath, String sep, List<String[]> tags, List<String> documentRoot) {
+        this.outputPath = outputPath;
+        this.sep = sep;
+        //use linked list as dynamic access will not be needed but lots of items will be added
+        this.lines = new LinkedList<>();
+        this.tags = new LinkedList<>();
+    }
+
+    public void init() throws InitException {
+        try (Writer writer = new BufferedWriter(new FileWriter(this.outputPath))) {
+            writer.write(this.getHeader());
+        } catch (IOException e) {
+            throw new InitException(e.getMessage());
+        }
+    }
+
+    public String getHeader() {
+        return String.join(this.sep, this.tags);
+    }
+
+    public void outputForm() throws OutputException {
+        String output = outputCsv();
+        if (output == null) return;
+        try (Writer writer = new BufferedWriter(new FileWriter(outputPath, true))) {
+            writer.append(output);
+        } catch (IOException e) {
+            throw new OutputException(e.getMessage());
+        }
+    }
+
+    public String outputCsv() {
+        if (this.lines.isEmpty()) return null;
+        String result = String.join("\n", this.lines);
+        reset();
+        return "\n" + result;
+    }
+
+    //TODO: implement
+    public void reset() {
+//        currLine.clear();
+//        initMap(this.currLine, this.tags.values());
+//        this.lines.clear();
     }
 }

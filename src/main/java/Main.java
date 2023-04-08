@@ -89,13 +89,9 @@ public class Main {
                 XMLConverter csvTableBuilder = new CSVTableBuilder(
                         outputPath,
                         ";",
-                        List.of(CSV_TAG_NAMES_REP),
-                        List.of(CSV_TAGS_REP),
-                        List.of(CSV_TAG_NAMES_TABLE),
-                        List.of(CSV_TAGS_TABLE),
                         List.of(TABLE_NODE_TAGS),
-                        List.of(CSV_DOCUMENT_ROOT),
-                        List.of(NULLABLE_TAGS)
+                        CSV_DOCUMENT_ROOT,
+                        List.of(EXCLUDE_TAGS)
                 );
                 Form4Parser form4Parser = new Form4Parser(csvTableBuilder);
                 form4Parser.init();
