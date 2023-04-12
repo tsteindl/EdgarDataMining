@@ -91,7 +91,9 @@ public class Main {
                         ";",
                         List.of(TABLE_NODE_TAGS),
                         CSV_DOCUMENT_ROOT,
-                        List.of(EXCLUDE_TAGS)
+                        List.of(EXCLUDE_TAGS),
+                        FORM_PATH,
+                        List.of(NULLABLE_TAGS)
                 );
                 Form4Parser form4Parser = new Form4Parser(csvTableBuilder);
                 form4Parser.init();

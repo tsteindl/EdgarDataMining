@@ -5,14 +5,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="adjusted fields of CSVTableBuilder and CSVBuilder">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/Project.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/documentation/doc4.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/csv/Table.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/util/DerivativeTransaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/util/NonDerivativeTransaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/util/ReportingOwner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/util/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/util/Constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Form4Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Form4Parser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder$Table.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/statistics/StatisticsClass.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/util/Constants.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/util/Constants.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +32,13 @@
   <component name="CodeStyleSettingsInfer">
     <option name="done" value="true" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
       <map>
@@ -30,6 +47,9 @@
     </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
+  </component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/documentation/EDGAR Reduced Content XML Schema Files/ownership4Document.xsd.xml" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
@@ -52,27 +72,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "/home/tsteindl/Documents/Projects/EDGAR Data Mining",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/tsteindl/Documents/Projects/EDGAR Data Mining/documentation&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/documentation" />
+    </key>
+  </component>
   <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Main" />
-      <module name="EDGAR Data Mining" />
+      <module name="DataRetrieval" />
       <option name="PROGRAM_PARAMETERS" value="2022/QTR1/form.20220318.idx -conc=false" />
       <method v="2">
         <option name="Make" enabled="true" />
@@ -101,6 +126,10 @@
       </MavenSettings>
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Application.Main" />
+      <item itemvalue="Maven.DataRetrieval" />
+    </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -124,7 +153,10 @@
       <workItem from="1680379552075" duration="200000" />
       <workItem from="1680684365032" duration="5049000" />
       <workItem from="1680950135471" duration="59000" />
-      <workItem from="1680950212167" duration="35000" />
+      <workItem from="1680950212167" duration="4465000" />
+      <workItem from="1680958611181" duration="12051000" />
+      <workItem from="1681142194812" duration="1209000" />
+      <workItem from="1681301522802" duration="12723000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -233,23 +265,23 @@
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
-          <line>144</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
-          <line>151</line>
+          <line>205</line>
           <option name="timeStamp" value="7" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
-          <line>135</line>
-          <option name="timeStamp" value="10" />
+          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java</url>
+          <line>139</line>
+          <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java</url>
-          <line>148</line>
-          <option name="timeStamp" value="18" />
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>99</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>149</line>
+          <option name="timeStamp" value="55" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -260,16 +292,23 @@
     </pin-to-top-manager>
     <watches-manager>
       <configuration name="Application">
-        <watch expression="this.tableTags" language="JAVA" />
-        <watch expression="table.get().tableTags.get(tag)" language="JAVA" />
-        <watch expression="map.get(key)" language="JAVA" />
-        <watch expression="map.keySet().stream().filter(key -&gt; !exceptions.contains(key)).filter(key -&gt; map.get(key) == null).collect(Collectors.toList());" language="JAVA" />
-        <watch expression="map.keySet().stream()                         .filter(key -&gt; !exceptions.contains(key))                         .allMatch(key -&gt; map.get(key) != null);" language="JAVA" />
+        <watch expression="(Element) currNode" language="JAVA" />
+        <watch expression="((Element)currNode).getTagName()" language="JAVA" />
+        <watch expression="currNode.getNodeValue()" language="JAVA" />
+        <watch expression="nodeElem.getTagName()" language="JAVA" />
+        <watch expression="((Element)node).getTagName()" language="JAVA" />
+        <watch expression="this.curr" language="JAVA" />
+        <watch expression="this.nxt" language="JAVA" />
+        <watch expression="this.nxtTag" language="JAVA" />
+        <watch expression="children.item(i)" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
     <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/EDGAR_Data_Mining$Main.ic" NAME="Main Coverage Results" MODIFIED="1681143570141" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

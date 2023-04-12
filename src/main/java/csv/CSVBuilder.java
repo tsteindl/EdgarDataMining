@@ -19,15 +19,6 @@ import util.OutputException;
     protected final List<String> nullableTags;
     private final Map<String, String> currLine;
 
-    *//**
-     * CSVBuilder builds CSV from XML, structure in form of nodes that should be parsed is initialized here
-     * @param outputPath the output path of the generated output //TODO: change this for non CSV
-     * @param sep CSV separator
-     * @param names CSV column names
-     * @param tags  XML tags
-     * @param documentRoot root of the XML document
-     * @param nullableTags tags that will be overlooked if they are empty
-     *//*
     public CSVBuilder(String outputPath, String sep, List<String> names, List<String[]> tags, List<String> documentRoot, List<String> nullableTags) {
         this.outputPath = outputPath;
         if (names.size() != tags.size())
@@ -170,7 +161,7 @@ public class CSVBuilder implements XMLConverter {
      * @param tags         XML tags
      * @param documentRoot root of the XML document
      */
-    public CSVBuilder(String outputPath, String sep, List<String[]> tags, List<String> documentRoot) {
+    public CSVBuilder(String outputPath, String sep, List<String> tags, String documentRoot) {
         this.outputPath = outputPath;
         this.sep = sep;
         //use linked list as dynamic access will not be needed but lots of items will be added
@@ -205,6 +196,11 @@ public class CSVBuilder implements XMLConverter {
         String result = String.join("\n", this.lines);
         reset();
         return "\n" + result;
+    }
+
+    public boolean containsTag(List<String> tagList, String tag) {
+        if (tagList == null || tag == null) return false;
+        return tagList.contains(tag);
     }
 
     //TODO: implement
