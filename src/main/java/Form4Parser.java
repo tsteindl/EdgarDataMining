@@ -1,3 +1,4 @@
+import csv.CSVTableBuilder;
 import interfaces.FormParser;
 import interfaces.XMLConverter;
 import org.w3c.dom.*;
@@ -9,6 +10,8 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.*;
+
+import static util.Constants.*;
 
 public class Form4Parser extends FormParser {
     //TODO: types (!!!!!)
@@ -28,9 +31,9 @@ public class Form4Parser extends FormParser {
     private Node nxt;
     private String nxtTag;
 
-    public Form4Parser(XMLConverter csvTableBuilder) {
-        super("4", csvTableBuilder);
-        this.input = "";
+    public Form4Parser(String input) {
+        super("4");
+        this.input = input;
         this.fields = new HashMap<>();
         //used LinkedLists here because mainly add operations are used and not random access
         this.reportingOwners = new LinkedList<>();
@@ -40,16 +43,16 @@ public class Form4Parser extends FormParser {
         this.derivativeHoldings = new LinkedList<>();
     }
 
-    /**
-     * inits outputter passed in constructor
-     * @throws InitException
-     */
+//    /**
+//     * inits outputter passed in constructor
+//     * @throws InitException
+//     */
+//    @Override
+//    public void init() throws InitException {
+//        outputter.init();
+//    }
     @Override
-    public void init() throws InitException {
-        outputter.init();
-    }
-    @Override
-    public void parseForm(String input) throws OutputException, ParseFormException {
+    public void parseForm() throws ParseFormException {
         if (input == null) return;
         String xml = testXMLTag(input, XML_TAG);
         if (xml == null) {
@@ -66,9 +69,26 @@ public class Form4Parser extends FormParser {
             Element xmlRoot = getXMLTreeFromString(xml);
 
             parseXMLNodes(xmlRoot);
-            outputter.outputForm(); //TODO: maybe extract this into parent function
+//            outputter.outputForm(); //TODO: maybe extract this into parent function
         } catch (ParserConfigurationException | IOException | SAXException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Override
+    public XMLConverter output(String outputPath) throws OutputException {
+        try {
+            return new CSVTableBuilder(
+                    outputPath,
+                    ";",
+                    List.of(TABLE_NODE_TAGS),
+                    CSV_DOCUMENT_ROOT,
+                    List.of(EXCLUDE_TAGS),
+                    FORM_PATH,
+                    List.of(NULLABLE_TAGS)
+            );
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            throw new OutputException(e.getMessage());
         }
     }
 

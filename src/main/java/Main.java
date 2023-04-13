@@ -87,20 +87,21 @@ public class Main {
             try {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
                 String outputPath = "data/output" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
-                XMLConverter csvTableBuilder = new CSVTableBuilder(
-                        outputPath,
-                        ";",
-                        List.of(TABLE_NODE_TAGS),
-                        CSV_DOCUMENT_ROOT,
-                        List.of(EXCLUDE_TAGS),
-                        FORM_PATH,
-                        List.of(NULLABLE_TAGS)
-                );
-                Form4Parser form4Parser = new Form4Parser(csvTableBuilder);
-                form4Parser.init();
+//                XMLConverter csvTableBuilder = new CSVTableBuilder(
+//                        outputPath,
+//                        ";",
+//                        List.of(TABLE_NODE_TAGS),
+//                        CSV_DOCUMENT_ROOT,
+//                        List.of(EXCLUDE_TAGS),
+//                        FORM_PATH,
+//                        List.of(NULLABLE_TAGS)
+//                );
                 for (DailyData dailyData : dailyDataList) {
                     String responseData = edgarScraper.downloadData(dailyData);
-                    form4Parser.parseForm(responseData);
+                    Form4Parser form4Parser = new Form4Parser(responseData);
+                    form4Parser.parseForm();
+                    XMLConverter outputter = form4Parser.output(outputPath);
+                    outputter.outputForm();
                     nOForms++;
                 }
             } catch (Exception e) {

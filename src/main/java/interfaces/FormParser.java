@@ -6,13 +6,13 @@ import util.ParseFormException;
 
 public abstract class FormParser {
     public final String FORM_TYPE;
-    protected final XMLConverter outputter;
 
-    protected FormParser(String formType, XMLConverter outputter) {
+    protected FormParser(String formType) {
         FORM_TYPE = formType;
-        this.outputter = outputter;
     }
-    public abstract void init() throws InitException;
+//    public abstract void init() throws InitException;
 
-    public abstract void parseForm(String input) throws OutputException, ParseFormException;
+    public abstract void parseForm() throws ParseFormException;
+
+    public abstract XMLConverter output(String outputPath) throws OutputException;
 }
