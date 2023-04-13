@@ -5,13 +5,12 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-import interfaces.XMLConverter;
+
+import interfaces.FormConverter;
 import util.InitException;
 import util.OutputException;
 
-/*public class CSVBuilder implements XMLConverter {
+/*public class CSVBuilder implements FormConverter {
     private final String outputPath;
     private final Map<List<String>, String> tags;
     private final List<String> lines;
@@ -147,7 +146,7 @@ import util.OutputException;
     }
 }*/
 
-public class CSVBuilder implements XMLConverter {
+public class CSVBuilder implements FormConverter {
     private final String outputPath;
     private final List<String> tags;
     private final List<String> lines;
@@ -159,9 +158,8 @@ public class CSVBuilder implements XMLConverter {
      * @param outputPath   the output path of the generated output //TODO: change this for non CSV
      * @param sep          CSV separator
      * @param tags         XML tags
-     * @param documentRoot root of the XML document
      */
-    public CSVBuilder(String outputPath, String sep, List<String> tags, String documentRoot) {
+    public CSVBuilder(String outputPath, String sep, List<String> tags) {
         this.outputPath = outputPath;
         this.sep = sep;
         //use linked list as dynamic access will not be needed but lots of items will be added

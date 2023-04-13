@@ -1,6 +1,6 @@
 import csv.CSVTableBuilder;
 import interfaces.FormParser;
-import interfaces.XMLConverter;
+import interfaces.FormConverter;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -10,8 +10,8 @@ import javax.xml.XMLConstants;
 import javax.xml.parsers.*;
 import java.io.*;
 import java.util.*;
-
-import static util.Constants.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Form4Parser extends FormParser {
     //TODO: types (!!!!!)
@@ -76,8 +76,18 @@ public class Form4Parser extends FormParser {
     }
 
     @Override
-    public XMLConverter output(String outputPath) throws OutputException {
+    public FormConverter output(String outputPath) throws OutputException {
         try {
+            return new CSVTableBuilder(
+                    outputPath,
+                    ";",
+                    fields,
+                    Stream.of(reportingOwners, nonDerivativeTransactions, nonDerivativeHoldings, derivativeTransactions, derivativeHoldings)
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toList())
+            );
+
+/*
             return new CSVTableBuilder(
                     outputPath,
                     ";",
@@ -87,6 +97,7 @@ public class Form4Parser extends FormParser {
                     FORM_PATH,
                     List.of(NULLABLE_TAGS)
             );
+*/
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new OutputException(e.getMessage());
         }

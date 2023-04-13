@@ -1,16 +1,12 @@
-import interfaces.XMLConverter;
+import interfaces.FormConverter;
 import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
 import util.Constants;
-import csv.CSVTableBuilder;
 import util.DailyData;
-import util.ParseFormException;
 
 import java.io.*;
 import java.math.BigInteger;
 import java.util.List;
-
-import static util.Constants.*;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
@@ -87,20 +83,11 @@ public class Main {
             try {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
                 String outputPath = "data/output" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
-//                XMLConverter csvTableBuilder = new CSVTableBuilder(
-//                        outputPath,
-//                        ";",
-//                        List.of(TABLE_NODE_TAGS),
-//                        CSV_DOCUMENT_ROOT,
-//                        List.of(EXCLUDE_TAGS),
-//                        FORM_PATH,
-//                        List.of(NULLABLE_TAGS)
-//                );
                 for (DailyData dailyData : dailyDataList) {
                     String responseData = edgarScraper.downloadData(dailyData);
                     Form4Parser form4Parser = new Form4Parser(responseData);
                     form4Parser.parseForm();
-                    XMLConverter outputter = form4Parser.output(outputPath);
+                    FormConverter outputter = form4Parser.output(outputPath);
                     outputter.outputForm();
                     nOForms++;
                 }

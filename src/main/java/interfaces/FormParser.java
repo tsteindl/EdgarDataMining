@@ -1,6 +1,5 @@
 package interfaces;
 
-import util.InitException;
 import util.OutputException;
 import util.ParseFormException;
 
@@ -14,5 +13,11 @@ public abstract class FormParser {
 
     public abstract void parseForm() throws ParseFormException;
 
-    public abstract XMLConverter output(String outputPath) throws OutputException;
+    /**
+     * Initialize outputter that can output Forms and return it so it can be used
+     * @param outputPath
+     * @return FormConverter
+     * @throws OutputException
+     */
+    public abstract FormConverter output(String outputPath) throws OutputException;
 }

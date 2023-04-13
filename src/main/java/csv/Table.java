@@ -6,8 +6,8 @@ class Table {
     private String tag;
     public final List<String> tableTags;
 
-    Table(String tag, List<String> tableTags) {
-        this.tag = tag;
+    Table(List<String> tableTags) {
+        this.tag = "";
         this.tableTags = tableTags;
     }
 

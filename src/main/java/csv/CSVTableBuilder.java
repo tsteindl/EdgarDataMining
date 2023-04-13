@@ -24,16 +24,13 @@ import java.util.stream.Stream;
 public class CSVTableBuilder extends CSVBuilder {
 
     private final List<Table> tables;
-    private final List<String> tags;
-    private final List<String> tableNodeTags;
-    private List<String> excludeTags;
 
 
     /**
      * Init CSV Builder with table. Repeating tags are the ones that are the same for each table entry: eg the reporter of a form
      * @param outputPath the output path of the generated output //TODO: change this for non CSV
      * @param sep separator
-     * @param tableNodeTags list of nodes for tables
+     * @param tables list of nodes for tables
      * @param documentRoot
      * @param excludeTags nodes that will not be parsed
      * @param initFormPath path to form that has desired structure
@@ -41,23 +38,20 @@ public class CSVTableBuilder extends CSVBuilder {
      */
     public CSVTableBuilder(String outputPath,
                            String sep,
-                           List<String> tableNodeTags,
-                           String documentRoot,
-                           List<String> excludeTags,
-                           String initFormPath,
-                           List<String> nullableTags
+                           Map<String, String> nonNestedTags,
+                           List<Map<String, String>> tables
     ) throws ParserConfigurationException, IOException, SAXException {
         super(
                 outputPath,
                 sep,
-                getAllTags(initFormPath, tableNodeTags, nullableTags),
-                documentRoot
+                getAllTags(nonNestedTags, tables)
         );
-        this.tags = new ArrayList<>();
-        this.tableNodeTags = tableNodeTags;
-        this.excludeTags = excludeTags;
-        this.tables = new ArrayList<Table>();
+        this.tables = tables.stream().map(m -> new Table(new ArrayList<>(m.values()))).collect(Collectors.toList());
         resetTableBuilder();
+    }
+
+    private static List<String> getAllTags(Map<String, String> nonNestedTags, List<Map<String, String>> tables) {
+        return null;
     }
 
 
@@ -100,6 +94,7 @@ public class CSVTableBuilder extends CSVBuilder {
                 .collect(Collectors.toList());
     }
 
+/*
     private static List<String> getAllTags(String formPath, List<String> tableTags, List<String> nullableTags) throws ParserConfigurationException, IOException, SAXException {
         String xml = Files.readString(Path.of(formPath));
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -116,6 +111,7 @@ public class CSVTableBuilder extends CSVBuilder {
         getAllTagsRec(docEl, docEl.getTagName(),nestedTableTags, allTags,false, null, tableTags, nullableTags);
         return new ArrayList<>(allTags);
     }
+*/
 
     /**
      * Fills map of tables with nested table tags and set of all tags
