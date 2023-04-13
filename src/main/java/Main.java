@@ -4,6 +4,7 @@ import statistics.Stats;
 import util.Constants;
 import csv.CSVTableBuilder;
 import util.DailyData;
+import util.ParseFormException;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -102,7 +103,7 @@ public class Main {
                     form4Parser.parseForm(responseData);
                     nOForms++;
                 }
-            } catch (Exception e) {
+            } catch (Exception | ParseFormException e) {
                 e.printStackTrace();
             }
         }

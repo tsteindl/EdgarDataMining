@@ -15,6 +15,7 @@ public class Form4Parser extends FormParser {
     private static String XML_TAG = "XML";
     private static String WELL_FORMED_XML_TAG = "SEC-DOCUMENT";
     private static String XML_DOC_STARTING_TAG = "<?xml version";
+    private String input;
 
     private Map<String, String> fields;
     private List<Map<String, String>> reportingOwners;
@@ -29,6 +30,7 @@ public class Form4Parser extends FormParser {
 
     public Form4Parser(XMLConverter csvTableBuilder) {
         super("4", csvTableBuilder);
+        this.input = "";
         this.fields = new HashMap<>();
         //used LinkedLists here because mainly add operations are used and not random access
         this.reportingOwners = new LinkedList<>();
@@ -59,6 +61,7 @@ public class Form4Parser extends FormParser {
             parseWellFormedXML(xml);
         }
         try {
+            this.input = input;
             xml = getXMLBody(xml);
             Element xmlRoot = getXMLTreeFromString(xml);
 
@@ -274,8 +277,10 @@ public class Form4Parser extends FormParser {
 
     private void postTransactionAmounts(Map<String, String> result) {
         scan(); //go inside <postTransactionAmounts>
-        sharesOwnedFollowingTransaction(result);
-        valueOwnedFollowingTransaction(result);
+        if (nxtTag.equals("sharesOwnedFollowingTransaction"))
+            sharesOwnedFollowingTransaction(result);
+        else
+            valueOwnedFollowingTransaction(result);
     }
 
     private void valueOwnedFollowingTransaction(Map<String, String> result) {

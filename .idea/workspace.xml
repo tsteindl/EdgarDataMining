@@ -4,10 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="nonderivative table parsable">
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="added error, small bug fixes">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/Form4Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Form4Parser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,6 +77,9 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CreateClassDialog.RecentsKey">
+      <recent name="util" />
+    </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/documentation" />
     </key>
@@ -142,7 +147,7 @@
       <workItem from="1680958611181" duration="12051000" />
       <workItem from="1681142194812" duration="1209000" />
       <workItem from="1681301522802" duration="17775000" />
-      <workItem from="1681382507051" duration="2996000" />
+      <workItem from="1681382507051" duration="4032000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -235,7 +240,21 @@
       <option name="project" value="LOCAL" />
       <updated>1681384783394</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="derivative table parsed">
+      <created>1681385537528</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1681385537528</updated>
+    </task>
+    <task id="LOCAL-00015" summary="added error, small bug fixes">
+      <created>1681385889180</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1681385889180</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -268,7 +287,9 @@
     <MESSAGE value="implemented scanner, and parser TODO: types" />
     <MESSAGE value="nonderivative table parsed" />
     <MESSAGE value="nonderivative table parsable" />
-    <option name="LAST_COMMIT_MESSAGE" value="nonderivative table parsable" />
+    <MESSAGE value="derivative table parsed" />
+    <MESSAGE value="added error, small bug fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="added error, small bug fixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -285,8 +306,43 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
-          <line>100</line>
+          <line>104</line>
           <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>106</line>
+          <option name="timeStamp" value="63" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>385</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>161</line>
+          <option name="timeStamp" value="65" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>159</line>
+          <option name="timeStamp" value="66" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>474</line>
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>158</line>
+          <option name="timeStamp" value="68" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>233</line>
+          <option name="timeStamp" value="69" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
