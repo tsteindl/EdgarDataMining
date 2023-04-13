@@ -1,7 +1,9 @@
 package util;
 
-public class ParseFormException extends Throwable {
-    public ParseFormException(String message) {
-        super(message);
+import org.w3c.dom.Node;
+
+public class ParseFormException extends Exception {
+    public ParseFormException(Node n) {
+        super("Node should be null but is " + n);
     }
 }

@@ -103,7 +103,7 @@ public class Main {
                     form4Parser.parseForm(responseData);
                     nOForms++;
                 }
-            } catch (Exception | ParseFormException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }

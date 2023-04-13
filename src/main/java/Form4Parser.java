@@ -102,10 +102,9 @@ public class Form4Parser extends FormParser {
 
         ownershipDocument();
         if (this.nxt != null)
-            throw new ParseFormException("Form has not been parsed entirely");
+            throw new ParseFormException(this.nxt);
         else
             System.out.println("debug");
-
     }
 
     /**
@@ -191,6 +190,9 @@ public class Form4Parser extends FormParser {
         }
     }
     private void parseNode(Map<String, String> map, String key) {
+        String tag = ((Element) this.nxt).getTagName();
+        if (!key.equals(tag) && !tag.equals("value"))
+            System.out.println("Tag should be: " + key + " but is: " + tag);
         map.put(key, getText(this.nxt));
         scan();
     }
@@ -208,19 +210,17 @@ public class Form4Parser extends FormParser {
     private void reportingOwner() {
         Map<String, String> result = new HashMap<>();
         scan(); //go inside <reportingOwner>
-        scan(); //go inside <reportingOwnerId>
-        parseNode(result, "rptOwnerCik");
-        parseNode(result, "rptOwnerCcc");
-        if (nxtTag.equals("reportingOwnerAddress")) {
-            scan(); //go inside <reportingOwnerAddress>
-            parseNode(result, "rptOwnerStreet1");
-            parseNode(result, "rptOwnerStreet2");
-            parseNode(result, "rptOwnerCity");
-            parseNode(result, "rptOwnerState");
-            parseNode(result, "rptOwnerZipCode");
-            if (nxtTag.equals("rptOwnerStateDescription")) scan(); //skip
-            if (nxtTag.equals("rptOwnerGoodAddress")) scan(); //skip
-        }
+        reportingOwnerId(result);
+        if (nxtTag.equals("reportingOwnerAddress")) reportingOwnerAddress(result);
+        reportingOwnerRelationship(result);
+        this.reportingOwners.add(result);
+    }
+
+    private void reportingOwnerRelationship(Map<String, String> result) {
+        reportingRelationship(result, "reportingOwnerRelationship");
+    }
+
+    private void reportingRelationship(Map<String, String> result, String tag) {
         scan(); //go inside <reportingOwnerRelationship>
         if (nxtTag.equals("isDirector")) parseNode(result, "isDirector");
         if (nxtTag.equals("isOfficer")) parseNode(result, "isOfficer");
@@ -228,8 +228,41 @@ public class Form4Parser extends FormParser {
         if (nxtTag.equals("isOther")) parseNode(result, "isOther");
         if (nxtTag.equals("officerTitle")) parseNode(result, "officerTitle");
         if (nxtTag.equals("otherText")) parseNode(result, "otherText");
-        this.reportingOwners.add(result);
     }
+
+    private void reportingOwnerAddress(Map<String, String> result) {
+        scan();
+        reportingAddress(result);
+    }
+
+    private void reportingAddress(Map<String, String> result) {
+        if (nxtTag.equals("rptOwnerStreet1"))
+            parseNode(result, "rptOwnerStreet1");
+        if (nxtTag.equals("rptOwnerStreet2"))
+            parseNode(result, "rptOwnerStreet2");
+        if (nxtTag.equals("rptOwnerCity"))
+            parseNode(result, "rptOwnerCity");
+        if (nxtTag.equals("rptOwnerState"))
+            parseNode(result, "rptOwnerState");
+        if (nxtTag.equals("rptOwnerZipCode"))
+            parseNode(result, "rptOwnerZipCode");
+        if (nxtTag.equals("rptOwnerStateDescription")) scan(); //skip
+        if (nxtTag.equals("rptOwnerGoodAddress")) scan(); //skip
+    }
+
+    private void reportingOwnerId(Map<String, String> result) {
+        scan(); //go inside <reportingOwner>
+        reportingId(result);
+    }
+
+    private void reportingId(Map<String, String> result) {
+        parseNode(result, "rptOwnerCik");
+        if (nxtTag.equals("rptOwnerCik"))
+            parseNode(result, "rptOwnerCcc");
+        if (nxtTag.equals("rptOwnerName"))
+            parseNode(result, "rptOwnerName");
+    }
+
     private void nonDerivativeTable() {
         scan(); //go inside <nonDerivativeTable>
         while (nxtTag.equals("nonDerivativeTransaction") || nxtTag.equals("nonDerivativeHolding")) {
@@ -246,7 +279,7 @@ public class Form4Parser extends FormParser {
         if (nxtTag.equals("deemedExecutionDate")) deemedExecutionDate(result);
         if (nxtTag.equals("transactionCoding")) transactionCoding(result);
         if (nxtTag.equals("transactionTimeliness")) transactionTimeliness(result);
-        transactionAmounts(result);
+        nonDerivTransactAmounts(result);
         postTransactionAmounts(result);
         ownershipNature(result);
         this.nonDerivativeTransactions.add(result);
@@ -296,28 +329,44 @@ public class Form4Parser extends FormParser {
         while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
-    private void transactionAmounts(Map<String, String> result) {
+    private void derivTransactAmounts(Map<String, String> result) {
+        scan(); //go inside <transactionAmounts>
+        if (nxtTag.equals("transactionShares"))
+            transactionShares(result);
+        else
+            transactionTotalValue(result);
+        transactionPricePerShare(result);
+        derAcqDispCode(result, "transactionAcquiredDisposedCode");
+    }
+
+    private void transactionTotalValue(Map<String, String> result) {
+        numberWithFootnote(result, "transactionTotalValue");
+    }
+
+    private void nonDerivTransactAmounts(Map<String, String> result) {
         scan(); //go inside <transactionAmounts>
         transactionShares(result);
         transactionPricePerShare(result);
-        transactionAcquiredDisposedCode(result);
+        nonDerAcqDispCode(result, "transactionAcquiredDisposedCode");
     }
 
-    private void transactionAcquiredDisposedCode(Map<String, String> result) {
-        acqDispCode(result, "transactionAcquiredDisposedCode");
-    }
-
-    private void acqDispCode(Map<String, String> result, String tag) {
+    private void nonDerAcqDispCode(Map<String, String> result, String tag) {
         parseValueNode(result, tag);
-        footnodeId();
+        if (nxtTag.equals("footnoteId"))
+            footnodeId();
+    }
+
+    private void derAcqDispCode(Map<String, String> result, String tag) {
+        parseValueNode(result, tag);
     }
 
     private void transactionPricePerShare(Map<String, String> result) {
+        scan();
         optNumberWithFootnote(result, "transactionPricePerShare");
     }
 
     private void optNumberWithFootnote(Map<String, String> result, String tag) {
-        if (nxtTag.equals("value")) parseValueNode(result, tag);
+        if (nxtTag.equals("value")) parseNode(result, tag);
         else footnodeId();
         while (nxtTag.equals("footnoteId"))
             footnodeId();
@@ -399,7 +448,7 @@ public class Form4Parser extends FormParser {
         if (nxtTag.equals("deemedExecutionDate")) deemedExecutionDate(result);
         if (nxtTag.equals("transactionCoding")) transactionCoding(result);
         if (nxtTag.equals("transactionTimeliness")) transactionTimeliness(result);
-        transactionAmounts(result);
+        derivTransactAmounts(result);
         exerciseDate(result);
         expirationDate(result);
         underlyingSecurity(result);
@@ -472,6 +521,7 @@ public class Form4Parser extends FormParser {
     }
 
     private void footnotes() {
+        scan();
         while (nxtTag.equals("footnote")) footnote();
     }
 
