@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="implemented scanner, and parser TODO: types">
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="nonderivative table parsable">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Form4Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Form4Parser.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -141,7 +142,7 @@
       <workItem from="1680958611181" duration="12051000" />
       <workItem from="1681142194812" duration="1209000" />
       <workItem from="1681301522802" duration="17775000" />
-      <workItem from="1681382507051" duration="1987000" />
+      <workItem from="1681382507051" duration="2996000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -220,7 +221,21 @@
       <option name="project" value="LOCAL" />
       <updated>1681324775999</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="nonderivative table parsed">
+      <created>1681384498070</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1681384498070</updated>
+    </task>
+    <task id="LOCAL-00013" summary="nonderivative table parsable">
+      <created>1681384783394</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1681384783394</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -251,7 +266,9 @@
     <MESSAGE value="adjust constants" />
     <MESSAGE value="adjusted fields of CSVTableBuilder and CSVBuilder" />
     <MESSAGE value="implemented scanner, and parser TODO: types" />
-    <option name="LAST_COMMIT_MESSAGE" value="implemented scanner, and parser TODO: types" />
+    <MESSAGE value="nonderivative table parsed" />
+    <MESSAGE value="nonderivative table parsable" />
+    <option name="LAST_COMMIT_MESSAGE" value="nonderivative table parsable" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

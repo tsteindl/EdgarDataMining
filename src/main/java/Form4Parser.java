@@ -231,7 +231,7 @@ public class Form4Parser extends FormParser {
     private void nonDerivativeTransaction() {
         Map<String, String> result = new HashMap<>();
         scan(); //go inside <nonDerivativeTransaction>
-        securityTitle(result);
+        securityTitle(result, "securityTitle");
         transactionDate(result);
         if (nxtTag.equals("deemedExecutionDate")) deemedExecutionDate(result);
         if (nxtTag.equals("transactionCoding")) transactionCoding(result);
@@ -359,8 +359,8 @@ public class Form4Parser extends FormParser {
         if (nxtTag.equals("footnoteId")) footnodeId();
     }
 
-    private void securityTitle(Map<String, String> result) {
-        parseValueNode(result, "securityTitle");
+    private void securityTitle(Map<String, String> result, String tag) {
+        parseValueNode(result, tag);
     }
 
     private void parseNonDerivativeHolding() {
@@ -380,30 +380,68 @@ public class Form4Parser extends FormParser {
 
     private void parseDerivativeTransaction() {
         Map<String, String> result = new HashMap<>();
-        parseNode(result, "securityTitle");
-        parseNode(result, "conversionOrExercisePrice");
-        parseNode(result, "transactionDate");
-        if (nxtTag.equals("deemedExecutionDate")) parseNode(result, "deemedExecutionDate");
-        if (nxtTag.equals("transactionCoding")) parseNode(result, "transactionCoding");
-        if (nxtTag.equals("transactionTimeliness")) parseNode(result, "transactionTimeliness");
-        parseNode(result, "transactionAmounts");
-        parseNode(result, "exerciseDate");
-        parseNode(result, "expirationDate");
-        parseNode(result, "underlyingSecurity");
-        parseNode(result, "postTransactionAmounts");
-        parseNode(result, "ownershipNature");
+        scan(); //go inside
+        securityTitle(result, "securityTitle");
+        conversionOrExercisePrice(result);
+        transactionDate(result);
+        if (nxtTag.equals("deemedExecutionDate")) deemedExecutionDate(result);
+        if (nxtTag.equals("transactionCoding")) transactionCoding(result);
+        if (nxtTag.equals("transactionTimeliness")) transactionTimeliness(result);
+        transactionAmounts(result);
+        exerciseDate(result);
+        expirationDate(result);
+        underlyingSecurity(result);
+        postTransactionAmounts(result);
+        ownershipNature(result);
         this.derivativeTransactions.add(result);
+    }
+
+    private void underlyingSecurity(Map<String, String> result) {
+        underlyingSecurityTitle(result);
+        if (nxtTag.equals("underlyingSecurityShares")) underlyingSecurityShares(result);
+        if (nxtTag.equals("underlyingSecurityValue")) underlyingSecurityValue(result);
+    }
+
+    private void underlyingSecurityValue(Map<String, String> result) {
+        optNumberWithFootnote(result, "underlyingSecurityValue");
+    }
+
+    private void underlyingSecurityShares(Map<String, String> result) {
+        optNumberWithFootnote(result, "underlyingSecurityShares");
+    }
+
+    private void underlyingSecurityTitle(Map<String, String> result) {
+        securityTitle(result, "underlyingSecurityTitle");
+    }
+
+    private void expirationDate(Map<String, String> result) {
+        optDateWithFootNote(result, "expirationDate");
+    }
+
+    private void exerciseDate(Map<String, String> result) {
+        optDateWithFootNote(result, "exerciseDate");
+    }
+
+    private void optDateWithFootNote(Map<String, String> result, String tag) {
+        if (nxtTag.equals("value")) parseValueNode(result, tag);
+        else footnodeId();
+        while (nxtTag.equals("footnoteId")) footnodeId();
+    }
+
+    private void conversionOrExercisePrice(Map<String, String> result) {
+        optNumberWithFootnote(result, "conversionOrExercisePrice");
     }
 
     private void parseDerivativeHolding() {
         Map<String, String> result = new HashMap<>();
-        parseNode(result, "securityTitle");
-        parseNode(result, "conversionOrExercisePrice");
-        parseNode(result, "exerciseDate");
-        parseNode(result, "expirationDate");
-        parseNode(result, "underlyingSecurity");
-        parseNode(result, "postTransactionAmounts");
-        parseNode(result, "ownershipNature");
+        scan(); //go inside
+        securityTitle(result, "securityTitle");
+        conversionOrExercisePrice(result);
+        exerciseDate(result);
+        expirationDate(result);
+        underlyingSecurity(result);
+        postTransactionAmounts(result);
+        ownershipNature(result);
         this.derivativeHoldings.add(result);
     }
 
