@@ -4,25 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="adjusted fields of CSVTableBuilder and CSVBuilder">
-      <change afterPath="$PROJECT_DIR$/documentation/doc4.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/csv/Table.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/util/DerivativeTransaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/util/NonDerivativeTransaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/util/ReportingOwner.java" afterDir="false" />
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="implemented scanner, and parser TODO: types">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/util/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/util/Constants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Form4Parser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Form4Parser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder$Table.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/statistics/StatisticsClass.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/util/Constants.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/util/Constants.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -156,7 +140,8 @@
       <workItem from="1680950212167" duration="4465000" />
       <workItem from="1680958611181" duration="12051000" />
       <workItem from="1681142194812" duration="1209000" />
-      <workItem from="1681301522802" duration="12723000" />
+      <workItem from="1681301522802" duration="17775000" />
+      <workItem from="1681382507051" duration="1987000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -228,7 +213,14 @@
       <option name="project" value="LOCAL" />
       <updated>1680949814254</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="implemented scanner, and parser TODO: types">
+      <created>1681324775999</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1681324775999</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -258,7 +250,8 @@
     <MESSAGE value="last checkpoint" />
     <MESSAGE value="adjust constants" />
     <MESSAGE value="adjusted fields of CSVTableBuilder and CSVBuilder" />
-    <option name="LAST_COMMIT_MESSAGE" value="adjusted fields of CSVTableBuilder and CSVBuilder" />
+    <MESSAGE value="implemented scanner, and parser TODO: types" />
+    <option name="LAST_COMMIT_MESSAGE" value="implemented scanner, and parser TODO: types" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -275,13 +268,8 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
-          <line>99</line>
+          <line>100</line>
           <option name="timeStamp" value="51" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
-          <line>149</line>
-          <option name="timeStamp" value="55" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

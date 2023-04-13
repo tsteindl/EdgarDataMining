@@ -11,6 +11,7 @@ import java.io.*;
 import java.util.*;
 
 public class Form4Parser extends FormParser {
+    //TODO: types (!!!!!)
     private static String XML_TAG = "XML";
     private static String WELL_FORMED_XML_TAG = "SEC-DOCUMENT";
     private static String XML_DOC_STARTING_TAG = "<?xml version";
@@ -185,6 +186,10 @@ public class Form4Parser extends FormParser {
         map.put(key, getText(this.nxt));
         scan();
     }
+    private void parseValueNode(Map<String, String> map, String key) {
+        scan();
+        parseNode(map, key);
+    }
 
     private void issuer() {
         scan(); //go inside issuer tag
@@ -220,23 +225,144 @@ public class Form4Parser extends FormParser {
     private void nonDerivativeTable() {
         scan(); //go inside <nonDerivativeTable>
         while (nxtTag.equals("nonDerivativeTransaction") || nxtTag.equals("nonDerivativeHolding")) {
-            if (nxtTag.equals("nonDerivativeTransaction")) parseNonDerivativeTransaction();
+            if (nxtTag.equals("nonDerivativeTransaction")) nonDerivativeTransaction();
             else parseNonDerivativeHolding();
         }
     }
 
-    private void parseNonDerivativeTransaction() {
+    private void nonDerivativeTransaction() {
         Map<String, String> result = new HashMap<>();
         scan(); //go inside <nonDerivativeTransaction>
-        parseNode(result, "securityTitle");
-        parseNode(result, "transactionDate");
-        if (nxtTag.equals("deemedExecutionDate")) parseNode(result, "deemedExecutionDate");
-        if (nxtTag.equals("transactionCoding")) parseNode(result, "transactionCoding");
-        if (nxtTag.equals("transactionTimeliness")) parseNode(result, "transactionTimeliness");
-        parseNode(result, "transactionAmounts");
-        parseNode(result, "postTransactionAmounts");
-        parseNode(result, "ownershipNature");
+        securityTitle(result);
+        transactionDate(result);
+        if (nxtTag.equals("deemedExecutionDate")) deemedExecutionDate(result);
+        if (nxtTag.equals("transactionCoding")) transactionCoding(result);
+        if (nxtTag.equals("transactionTimeliness")) transactionTimeliness(result);
+        transactionAmounts(result);
+        postTransactionAmounts(result);
+        ownershipNature(result);
         this.nonDerivativeTransactions.add(result);
+    }
+
+    private void ownershipNature(Map<String, String> result) {
+        scan(); //go inside ownershipNature
+        directOrIndirectOwnership(result);
+        if (nxtTag.equals("natureOfOwnership")) natureOfOwnership(result);
+    }
+
+    private void natureOfOwnership(Map<String, String> result) {
+        indirectNature(result, "natureOfOwnership");
+    }
+
+    private void indirectNature(Map<String, String> result, String tag) {
+        parseValueNode(result, tag);
+        footnodeId();
+    }
+
+    private void directOrIndirectOwnership(Map<String, String> result) {
+        ownershipType(result, "directOrIndirectOwnership");
+    }
+
+    private void ownershipType(Map<String, String> result, String key) {
+        parseValueNode(result, key);
+    }
+
+    private void postTransactionAmounts(Map<String, String> result) {
+        scan(); //go inside <postTransactionAmounts>
+        sharesOwnedFollowingTransaction(result);
+        valueOwnedFollowingTransaction(result);
+    }
+
+    private void valueOwnedFollowingTransaction(Map<String, String> result) {
+        numberWithFootnote(result, "valueOwnedFollowingTransaction");
+    }
+
+    private void sharesOwnedFollowingTransaction(Map<String, String> result) {
+        numberWithFootnote(result, "sharesOwnedFollowingTransaction");
+    }
+
+    private void numberWithFootnote(Map<String, String> result, String tag) {
+        parseValueNode(result, tag);
+        while (nxtTag.equals("footnoteId")) footnodeId();
+    }
+
+    private void transactionAmounts(Map<String, String> result) {
+        scan(); //go inside <transactionAmounts>
+        transactionShares(result);
+        transactionPricePerShare(result);
+        transactionAcquiredDisposedCode(result);
+    }
+
+    private void transactionAcquiredDisposedCode(Map<String, String> result) {
+        acqDispCode(result, "transactionAcquiredDisposedCode");
+    }
+
+    private void acqDispCode(Map<String, String> result, String tag) {
+        parseValueNode(result, tag);
+        footnodeId();
+    }
+
+    private void transactionPricePerShare(Map<String, String> result) {
+        optNumberWithFootnote(result, "transactionPricePerShare");
+    }
+
+    private void optNumberWithFootnote(Map<String, String> result, String tag) {
+        if (nxtTag.equals("value")) parseValueNode(result, tag);
+        else footnodeId();
+        while (nxtTag.equals("footnoteId"))
+            footnodeId();
+    }
+
+    private void transactionShares(Map<String, String> result) {
+        numberWithFootnote(result, "transactionShares");
+    }
+
+    private void transactionTimeliness(Map<String, String> result) {
+        transTimelyPicklist(result, "transactionTimeliness");
+        if (nxtTag.equals("footnoteId")) footnodeId();
+    }
+
+    private void transTimelyPicklist(Map<String, String> result, String tag) {
+        parseValueNode(result, tag);
+    }
+
+    private void transactionCoding(Map<String, String> result) {
+        scan(); //go inside <transactionCoding>
+        transactionFormType(result);
+        transactionCode(result);
+        equitySwapInvolved(result);
+        if (nxtTag.equals("footnoteId")) footnodeId();
+    }
+
+    private void equitySwapInvolved(Map<String, String> result) {
+        parseNode(result, "equitySwapInvolved"); //is boolean value
+    }
+
+    private void transactionCode(Map<String, String> result) {
+        parseNode(result, "transactionCode");
+    }
+
+    private void transactionFormType(Map<String, String> result) {
+        parseNode(result, "transactionFormType");
+    }
+
+    private void deemedExecutionDate(Map<String, String> result) {
+        if (nxtTag.equals("value")) parseValueNode(result, "transactionDate");
+        if (nxtTag.equals("footnoteId")) footnodeId();
+    }
+
+    private void footnodeId() {
+        scan(); //skip
+    }
+
+
+    private void transactionDate(Map<String, String> result) {
+        parseValueNode(result, "transactionDate");
+        if (nxtTag.equals("footnoteId")) footnodeId();
+    }
+
+    private void securityTitle(Map<String, String> result) {
+        parseValueNode(result, "securityTitle");
     }
 
     private void parseNonDerivativeHolding() {
