@@ -150,12 +150,10 @@ public class Form4Parser extends FormParser {
         reportingOwner();
         if (nxtTag.equals("nonDerivativeTable")) nonDerivativeTable();
         if (nxtTag.equals("derivativeTable")) derivativeTable();
-        if (nxtTag.equals("footnotes")) scan(); //footnotes not parsed
-        if (nxtTag.equals("remarks")) parseNode(this.fields, "remarks");
-        //signature not parsed
-        scan();
+        if (nxtTag.equals("footnotes")) footnotes();
+        if (nxtTag.equals("remarks")) remarks();
+        ownerSignature();
     }
-
 
     private Node next(Node n) {
         Node next = null;
@@ -407,6 +405,27 @@ public class Form4Parser extends FormParser {
         parseNode(result, "postTransactionAmounts");
         parseNode(result, "ownershipNature");
         this.derivativeHoldings.add(result);
+    }
+
+    private void ownerSignature() {
+        signature();
+    }
+
+    private void signature() {
+        scan(); //skip signatureName
+        scan(); //skip signatureDate
+    }
+
+    private void remarks() {
+        parseNode(this.fields, "remarks");
+    }
+
+    private void footnotes() {
+        while (nxtTag.equals("footnote")) footnote();
+    }
+
+    private void footnote() {
+        scan(); //skip footnote
     }
 
     private static String getText(Node node) {
