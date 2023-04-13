@@ -47,7 +47,7 @@ public class Form4Parser extends FormParser {
         outputter.init();
     }
     @Override
-    public void parseForm(String input) throws OutputException {
+    public void parseForm(String input) throws OutputException, ParseFormException {
         if (input == null) return;
         String xml = testXMLTag(input, XML_TAG);
         if (xml == null) {
@@ -89,7 +89,7 @@ public class Form4Parser extends FormParser {
      * Parses document as node-by-node parsing according to the provided schema
      * @param {Node} ownershipDocument root node of document
      */
-    private void parseXMLNodes(Node ownershipDocument) {
+    private void parseXMLNodes(Node ownershipDocument) throws ParseFormException {
         //setup scanner
         this.scanner = new Scanner(ownershipDocument);
         //setup parser
@@ -98,7 +98,11 @@ public class Form4Parser extends FormParser {
         scan();
 
         ownershipDocument();
-        System.out.println("debug");
+        if (this.nxt != null)
+            throw new ParseFormException("Form has not been parsed entirely");
+        else
+            System.out.println("debug");
+
     }
 
     /**
@@ -175,7 +179,10 @@ public class Form4Parser extends FormParser {
 //        while (getText(this.nxt).equals(""))
 //            this.nxt = next(this.nxt);
         try {
-            this.nxtTag = ((Element) this.nxt).getTagName();
+            Element nxtEl = ((Element) this.nxt);
+            if (nxtEl != null)
+                this.nxtTag = nxtEl.getTagName();
+            else this.nxtTag = "";
         } catch (ClassCastException e) {
             this.nxtTag = "";
         }
@@ -446,6 +453,7 @@ public class Form4Parser extends FormParser {
     }
 
     private void ownerSignature() {
+        scan(); //go inside
         signature();
     }
 
