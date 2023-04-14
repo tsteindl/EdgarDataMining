@@ -70,7 +70,7 @@ public class Form4Parser extends FormParser {
 
             parseXMLNodes(xmlRoot);
 //            outputter.outputForm(); //TODO: maybe extract this into parent function
-        } catch (ParserConfigurationException | IOException | SAXException e) {
+        } catch (ParserConfigurationException | IOException | SAXException | ParseFormException e) {
             e.printStackTrace();
         }
     }
