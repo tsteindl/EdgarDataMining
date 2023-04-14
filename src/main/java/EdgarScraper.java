@@ -58,7 +58,6 @@ public class EdgarScraper {
                     String indexData = FTPCommunicator.loadNavFile(path);
                     if (indexData == null) {
                         failedIndexFiles++;
-//                        throw new Exception("index json not available");
                     }
                     JsonObject indexJson = getJsonObjectFromString(indexData);
                     JsonArray itemArray = indexJson.get("directory").getAsJsonObject().get("item").getAsJsonArray();

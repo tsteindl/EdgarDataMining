@@ -43,14 +43,6 @@ public class Form4Parser extends FormParser {
         this.derivativeHoldings = new LinkedList<>();
     }
 
-//    /**
-//     * inits outputter passed in constructor
-//     * @throws InitException
-//     */
-//    @Override
-//    public void init() throws InitException {
-//        outputter.init();
-//    }
     @Override
     public void parseForm() throws ParseFormException {
         if (input == null) return;
@@ -152,19 +144,6 @@ public class Form4Parser extends FormParser {
             }
         }
 
-        /*
-        Node next = null;
-        if (n.hasChildNodes()) {
-            NodeList children = n.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++)
-                if (children.item(i).getNodeType() == Node.ELEMENT_NODE)
-                    return children.item(i);
-        }
-        next = n.getNextSibling(); //returns null if node doesnt have sibling
-        while (next.getNodeType() != Node.ELEMENT_NODE)
-            next = next.getNextSibling();
-        return next;
-         */
         public Node next() {
             return nodes.poll();
         }
@@ -184,27 +163,10 @@ public class Form4Parser extends FormParser {
         ownerSignature();
     }
 
-/*
-    private Node next(Node n) {
-        Node next = null;
-        if (n.hasChildNodes()) {
-            NodeList children = n.getChildNodes();
-            for (int i = 0; i < children.getLength(); i++)
-                if (children.item(i).getNodeType() == Node.ELEMENT_NODE)
-                    return children.item(i);
-        }
-        next = n.getNextSibling(); //returns null if node doesnt have sibling
-        while (next.getNodeType() != Node.ELEMENT_NODE)
-            next = next.getNextSibling();
-        return next;
-    }
-*/
 
     private void scan() {
         this.curr = this.nxt;
         this.nxt = this.scanner.next();
-//        while (getText(this.nxt).equals(""))
-//            this.nxt = next(this.nxt);
         try {
             Element nxtEl = ((Element) this.nxt);
             if (nxtEl != null)

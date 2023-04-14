@@ -5,11 +5,6 @@ public class Constants { //TODO: add JSON parsing possibility instead of hard co
 
     public static String CSV_DOCUMENT_ROOT = "ownershipDocument";
 
-    public static String[] TABLE_NODE_TAGS = {
-            "reportingOwner",
-            "nonDerivativeTable",
-            "derivativeTable",
-    };
 
     //TODO: add table mapping using hash table
 
