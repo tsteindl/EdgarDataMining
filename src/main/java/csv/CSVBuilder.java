@@ -148,7 +148,7 @@ import util.OutputException;
 
 public class CSVBuilder implements FormConverter {
     private final String outputPath;
-    private final List<String> tags;
+    protected final List<String> cols;
     private final List<String> lines;
     final String sep;
 
@@ -157,14 +157,14 @@ public class CSVBuilder implements FormConverter {
      *
      * @param outputPath   the output path of the generated output //TODO: change this for non CSV
      * @param sep          CSV separator
-     * @param tags         XML tags
+     * @param cols         XML tags
      */
-    public CSVBuilder(String outputPath, String sep, List<String> tags) {
+    public CSVBuilder(String outputPath, String sep, List<String> cols) {
         this.outputPath = outputPath;
         this.sep = sep;
         //use linked list as dynamic access will not be needed but lots of items will be added
         this.lines = new LinkedList<>();
-        this.tags = new LinkedList<>();
+        this.cols = new LinkedList<>();
     }
 
     public void init() throws InitException {
@@ -176,7 +176,7 @@ public class CSVBuilder implements FormConverter {
     }
 
     public String getHeader() {
-        return String.join(this.sep, this.tags);
+        return String.join(this.sep, this.cols);
     }
 
     public void outputForm() throws OutputException {

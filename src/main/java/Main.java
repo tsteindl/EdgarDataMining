@@ -87,7 +87,7 @@ public class Main {
                     String responseData = edgarScraper.downloadData(dailyData);
                     Form4Parser form4Parser = new Form4Parser(responseData);
                     form4Parser.parseForm();
-                    FormConverter outputter = form4Parser.output(outputPath);
+                    FormConverter outputter = form4Parser.configureOutput(outputPath);
                     outputter.outputForm();
                     nOForms++;
                 }

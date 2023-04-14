@@ -76,28 +76,20 @@ public class Form4Parser extends FormParser {
     }
 
     @Override
-    public FormConverter output(String outputPath) throws OutputException {
+    public FormConverter configureOutput(String outputPath) throws OutputException {
         try {
+            Map<String, List<Map<String, String>>> tables = new HashMap<>();
+            tables.put("reportingOwners", reportingOwners);
+            tables.put("nonDerivativeTransactions", nonDerivativeTransactions);
+            tables.put("nonDerivativeHoldings", nonDerivativeHoldings);
+            tables.put("derivativeTransactions", derivativeTransactions);
+            tables.put("derivativeHoldings", derivativeHoldings);
             return new CSVTableBuilder(
                     outputPath,
                     ";",
                     fields,
-                    Stream.of(reportingOwners, nonDerivativeTransactions, nonDerivativeHoldings, derivativeTransactions, derivativeHoldings)
-                            .flatMap(Collection::stream)
-                            .collect(Collectors.toList())
+                    tables
             );
-
-/*
-            return new CSVTableBuilder(
-                    outputPath,
-                    ";",
-                    List.of(TABLE_NODE_TAGS),
-                    CSV_DOCUMENT_ROOT,
-                    List.of(EXCLUDE_TAGS),
-                    FORM_PATH,
-                    List.of(NULLABLE_TAGS)
-            );
-*/
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new OutputException(e.getMessage());
         }
@@ -192,6 +184,7 @@ public class Form4Parser extends FormParser {
         ownerSignature();
     }
 
+/*
     private Node next(Node n) {
         Node next = null;
         if (n.hasChildNodes()) {
@@ -205,6 +198,7 @@ public class Form4Parser extends FormParser {
             next = next.getNextSibling();
         return next;
     }
+*/
 
     private void scan() {
         this.curr = this.nxt;

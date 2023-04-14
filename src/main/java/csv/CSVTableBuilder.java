@@ -1,20 +1,13 @@
 package csv;
 
-import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import util.OutputException;
 
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.StringReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -23,7 +16,29 @@ import java.util.stream.Stream;
 //TODO: add support for multiple tables => derivativeTable
 public class CSVTableBuilder extends CSVBuilder {
 
-    private final List<Table> tables;
+    static class Table<T> {
+        private String id;
+        public final List<String> tags;
+        public final Map<String, T> map;
+
+        Table(String id, Map<String, T> map) {
+            this.id = id;
+            this.map = map;
+            this.tags = new ArrayList<>(map.keySet());
+        }
+
+        public List<String> getLine() {
+//            return map.values().stream().map(v -> this.id + "_" + v).collect(Collectors.toList());
+            return map.values().stream().map(v -> (String) v).collect(Collectors.toList()); //TODO: check if this is good code
+        }
+        public int getNoCols() {
+            return this.tags.size();
+        }
+    }
+
+
+    private final Map<String, String> nonNestedTags;
+    private final List<Table<String>> tables;
 
 
     /**
@@ -31,29 +46,111 @@ public class CSVTableBuilder extends CSVBuilder {
      * @param outputPath the output path of the generated output //TODO: change this for non CSV
      * @param sep separator
      * @param tables list of nodes for tables
-     * @param documentRoot
-     * @param excludeTags nodes that will not be parsed
-     * @param initFormPath path to form that has desired structure
      * Use Lists instead of arrays so concatenation is easier (Java doesn't offer native array concatenation
      */
     public CSVTableBuilder(String outputPath,
                            String sep,
                            Map<String, String> nonNestedTags,
-                           List<Map<String, String>> tables
+                           Map<String, List<Map<String, String>>> tables
     ) throws ParserConfigurationException, IOException, SAXException {
         super(
                 outputPath,
                 sep,
                 getAllTags(nonNestedTags, tables)
         );
-        this.tables = tables.stream().map(m -> new Table(new ArrayList<>(m.values()))).collect(Collectors.toList());
-        resetTableBuilder();
+        this.nonNestedTags = nonNestedTags;
+        this.tables = new ArrayList<>();
+        tables.keySet().forEach(k -> tables.get(k).forEach(table -> this.tables.add(new Table<>(k, table))));
     }
 
-    private static List<String> getAllTags(Map<String, String> nonNestedTags, List<Map<String, String>> tables) {
-        return null;
+    private static List<String> getAllTags(Map<String, String> nonNestedTags, Map<String, List<Map<String, String>>> tables) {
+        List<String> result = new ArrayList<>();
+        result.addAll(nonNestedTags.keySet());
+        tables.keySet().forEach(k ->
+                tables.get(k).forEach(t ->
+                        result.addAll(t.keySet())));
+        return result;
     }
 
+    @Override
+    public void outputForm() throws OutputException { //TODO: think abt implementation with one string instead of List<List<String>>, also measure the speedup
+        List<List<String>> tables1 = tables.stream().map(t -> t.getLine()).collect(Collectors.toList());
+        List<List<String>> lines = computeCrossProduct(tables1);
+        lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
+        System.out.println(lines);
+//        super.outputForm(lines);
+    }
+
+    /**
+     * Method computes cross product, in this case used for cross product of tables, which is used to display tree-like datastructure (XML) as flat list (CSV)
+     * This leads to an exponential space complexity which is not advisable (consider using a different way of converting Forms (eg database, hierarchical)
+     * @param tables
+     * @return
+     */
+    private <T> List<List<T>> computeCrossProduct(List<List<T>> elems) {
+        if (elems.size() == 1)
+            return elems;
+
+        List<List<T>> result = new ArrayList<>();
+
+        List<T> firstElem = elems.get(0);
+        //elems only contain rest of elements without first element
+        List<List<T>> restOfProduct = computeCrossProduct(elems.subList(1, elems.size()));
+
+//        for (List<T> elem : elems) {
+        for (List<T> restElem : restOfProduct) {
+            List<T> newLine = new ArrayList<T>();
+            newLine.addAll(firstElem);
+            newLine.addAll(restElem);
+            result.add(newLine);
+        }
+//        }
+
+        return result;
+    }
+
+//    private List<List<String>> computeCrossProduct(List<List<String>> tables) {
+//        if (tables.size() == 1) {
+//            return tables;
+//        }
+//
+//        List<List<String>> result = new ArrayList<>();
+//
+//        List<String> firstTable = tables.get(0);
+//        List<List<String>> restOfTables = tables.subList(1, tables.size());
+//
+//        List<List<String>> restOfProduct = computeCrossProduct(restOfTables);
+//
+//
+//        for (String element : firstTable) {
+//            for (List<String> rest : restOfProduct) {
+//                List<String> newSet = new ArrayList<>();
+//                newSet.add(element);
+//                newSet.addAll(rest);
+//                result.add(newSet);
+//            }
+//        }
+//        return result;
+//    }
+/*
+    private void computeCrossProduct(List<Table<String>> tables, List<List<String>> crossProduct, ArrayList<String> currentRow, int index) {
+        // if we have reached the end of the tables, add the current row to the cross product and return
+        if (index == tables.size()) {
+            crossProduct.add(new ArrayList<>(currentRow));
+            return;
+        }
+
+        // iterate over each row in the current table
+        for (String value : tables.get(index).getLine()) {
+            // add the current value to the current row
+            currentRow.add(value);
+            // recursively call the function with the next table
+            computeCrossProduct(tables, crossProduct, currentRow, index + 1);
+            // remove the current value from the current row
+            currentRow.remove(currentRow.size() - 1);
+        }
+    }
+*/
 
     /*private ArrayList<Table> initTables(List<String[]> tableNamesList, List<String[][]> tableTagsList, List<String[]> tableNodeTags) {
         ArrayList<Table> result = new ArrayList<>();
@@ -176,11 +273,9 @@ public class CSVTableBuilder extends CSVBuilder {
     }
 
     public int getRepTagsColSize() {
-        return this.tags.size();
+        return cols.size();
     }
 
-    public void resetTableBuilder() {
-    }
 
 //    public void addEntry(String tag, String value) {
 //        if (isNestedTableTag(tag)) {//TODO: List access is O(n) => bad
@@ -210,16 +305,8 @@ public class CSVTableBuilder extends CSVBuilder {
      * @return boolean
      */
     private boolean isNestedTableTag(String tag) {
-        return containsTag(this.tags, tag);
+        return containsTag(this.cols, tag);
     }
 
-    /**
-     * Gets table that a tag belongs to (if there is one)
-     * @param tag
-     * @return Table
-     */
-    private Optional<Table> getTable(String tag) {
-        return this.tables.stream().filter((Table t) -> containsTag(t.tableTags, tag)).findFirst();
-    }
 
 }
