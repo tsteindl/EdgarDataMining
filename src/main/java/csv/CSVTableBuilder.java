@@ -56,11 +56,14 @@ public class CSVTableBuilder extends CSVBuilder {
         super(
                 outputPath,
                 sep,
-                getAllTags(nonNestedTags, tables)
+                getAllTags(nonNestedTags, tables),
+                getLines(tables, nonNestedTags)
         );
         this.nonNestedTags = nonNestedTags;
         this.tables = new ArrayList<>();
         tables.keySet().forEach(k -> tables.get(k).forEach(table -> this.tables.add(new Table<>(k, table))));
+
+        System.out.println(this.lines);
     }
 
     private static List<String> getAllTags(Map<String, String> nonNestedTags, Map<String, List<Map<String, String>>> tables) {
@@ -72,13 +75,22 @@ public class CSVTableBuilder extends CSVBuilder {
         return result;
     }
 
-    @Override
-    public void outputForm() throws OutputException { //TODO: think abt implementation with one string instead of List<List<String>>, also measure the speedup
+    private static List<List<String>> getLines(List<Table<String>> tables, Map<String, String> nonNestedTags) {
         List<List<String>> tables1 = tables.stream().map(Table::getLine).collect(Collectors.toList());
         List<List<String>> lines = computeCrossProduct(tables1);
         lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
-        System.out.println(lines);
-//        super.outputForm(lines);
+        return lines;
+    }
+
+    private static List<List<String>> getLines(Map<String, List<Map<String, String>>> tables, Map<String, String> nonNestedTags) {
+        //get only values of tables
+        List<List<String>> tableVals = tables.values().stream()
+                .flatMap(List::stream)
+                .map(m -> new ArrayList<>(m.values()))
+                .collect(Collectors.toList());
+        List<List<String>> lines = computeCrossProduct(tableVals);
+        lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
+        return lines;
     }
 
     /**
@@ -87,7 +99,7 @@ public class CSVTableBuilder extends CSVBuilder {
      * @param elems
      * @return
      */
-    private <T> List<List<T>> computeCrossProduct(List<List<T>> elems) {
+    public static <T> List<List<T>> computeCrossProduct(List<List<T>> elems) {
         // if we have reached the end of the tables, add the current row to the cross product and return
         if (elems.size() == 1)
             return elems;
@@ -106,163 +118,4 @@ public class CSVTableBuilder extends CSVBuilder {
         }
         return result;
     }
-
-
-    /*private ArrayList<Table> initTables(List<String[]> tableNamesList, List<String[][]> tableTagsList, List<String[]> tableNodeTags) {
-        ArrayList<Table> result = new ArrayList<>();
-        for (int i = 0; i < tableNamesList.size(); i++) {
-            Map<List<String>, String> tags = new HashMap<>();
-            for (int j = 0; j < tableNamesList.get(i).length; j++)
-                tags.put(Stream.concat(documentRoot.stream(), Stream.concat(Arrays.stream(tableNodeTags.get(i)), Arrays.stream(tableTagsList.get(i)[j]))).toList(), tableNamesList.get(i)[j]);
-            result.add(new Table(tags));
-        }
-        return result;
-    }*/
-
-    //TODO: refactor this to be functional (return type)
-    // refactor this to map collect https://stackoverflow.com/questions/14513475/how-do-i-iterate-over-multiple-lists-in-parallel-in-java
-    // find way to use one generic function for both get All functions
-/*
-    private void getAllTableTags(List<String[]> tableNamesList, List<String[][]> tableTagsList) {
-        for (int i = 0; i < tableNamesList.size(); i++)
-            for(int j = 0; j < tableNamesList.get(i).length; j++)
-                this.tableTags.put(Stream.concat(documentRoot.stream(), Stream.concat(Arrays.stream(tableNodeTags.get(i)), Arrays.stream(tableTagsList.get(i)[j]))).toList(), tableNamesList.get(i)[j]); //TODO: Stream concat twice is ugly => refactor
-//        this.tableTags = Streams.zip(tableNamesList.stream(), tableTagsList.stream(), (tableNames, tableTags) -> {
-//            return tableTags
-//        }).collect(Collectors.toMap());
-//        Streams.forEachPair(tableNamesList.stream(), tableTagsList.stream(),
-//                (tableNames, tableTags) -> Streams.forEachPair(Arrays.stream(tableNames), Arrays.stream(tableTags),
-//                                            (name, tags) -> this.tableTags.put(Stream.of(documentRoot, tableNodeTags, Arrays.stream(tags)), name))
-//        );
-    }
-*/
-
-    private void getAllRepeatingTags(List<String> repTagNames, List<String[]> repTags, List<String> documentRoot) {
-//        Streams.forEachPair(repTagNames.stream(), repTags.stream(), (name, tags) -> this.tags.put(Stream.concat(documentRoot.stream(), Arrays.stream(tags)).toList(), name));
-    }
-
-    //TODO: refactor these 2 as 1 fct?
-    private static List<String> getNestedTableNames(List<String> repTagNames, List<String[]> tableNames) {
-        return Stream.concat(repTagNames.stream(), tableNames.stream().map(Arrays::asList).flatMap(List::stream))
-                .collect(Collectors.toList());
-    }
-
-/*
-    private static List<String> getAllTags(String formPath, List<String> tableTags, List<String> nullableTags) throws ParserConfigurationException, IOException, SAXException {
-        String xml = Files.readString(Path.of(formPath));
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        InputSource data = new InputSource(new StringReader(xml));
-        Document doc = db.parse(data);
-
-        doc.getDocumentElement().normalize();
-
-        Map<String, List<String>> nestedTableTags = new HashMap<>();
-        Set<String> allTags = new HashSet<>();
-        Element docEl = doc.getDocumentElement();
-        getAllTagsRec(docEl, docEl.getTagName(),nestedTableTags, allTags,false, null, tableTags, nullableTags);
-        return new ArrayList<>(allTags);
-    }
-*/
-
-    /**
-     * Fills map of tables with nested table tags and set of all tags
-     */
-    private static void getAllTagsRec(Node node, String tag, Map<String, List<String>> tables, Set<String> allTags, boolean inTable, String currTable, List<String> tableNodeTags, List<String> nullableTags) {
-        if (node == null)
-            return;
-        if (isTextNode(node)) {
-            if (nullableTags.contains(tag) || isEmpty(tag))
-                return;
-            if (inTable)
-                tables.get(currTable).add(tag);
-            allTags.add(tag);
-        }
-        else if (node.getNodeType() == Node.ELEMENT_NODE) {
-            Element nodeElem = (Element) node;
-            NodeList childNodes = node.getChildNodes();
-            if (tableNodeTags.contains(nodeElem.getTagName()))
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    String tagName = nodeElem.getTagName();
-                    tables.put(tagName, new ArrayList<>());
-//                    getTableTagsRec(childNodes.item(i), tables, allTags, true, nodeElem.getTagName(), tableNodeTags, nullableTags);
-                    getAllTagsRec(childNodes.item(i), tagName, tables, allTags, true, nodeElem.getTagName(), tableNodeTags, nullableTags);
-                }
-            else
-                for (int i = 0; i < childNodes.getLength(); i++) {
-                    Element nextEl = null;
-                    try {
-                        nextEl = (Element) childNodes.item(i);
-                        if (nextEl.getTagName().equals("value"))
-                            getAllTagsRec(childNodes.item(i), tag, tables, allTags, inTable, currTable, tableNodeTags, nullableTags);
-                        else
-                            getAllTagsRec(childNodes.item(i), nextEl.getTagName(), tables, allTags, inTable, currTable, tableNodeTags, nullableTags);
-                    } catch (ClassCastException e) {}
-
-                }
-        }
-    }
-
-    private static void getTableTagsRec(Node node, Map<String, List<String>> tables, Set<String> allTags, boolean inTable, String currTable, List<String> tableNodeTags, List<String> nullableTags) {
-        if (node == null)
-            return;
-        if (isTextNode(node)) {
-            String tag = "";
-
-        }
-    }
-
-    private static boolean isEmpty(String s) {
-        return s.trim().isEmpty();
-    }
-
-    //TODO: copied method from FORM4Parser
-    private static boolean isTextNode(Node n) {
-//        return n.getNodeName().equals("#text");
-        return n.getNodeName().equals("#text");
-    }
-
-    //TODO: copied method from FORM4Parser
-    private static String getText(Node node) {
-        return node.getTextContent().trim().replaceAll("[\\n\\t]", "");
-    }
-
-    public int getRepTagsColSize() {
-        return cols.size();
-    }
-
-
-//    public void addEntry(String tag, String value) {
-//        if (isNestedTableTag(tag)) {//TODO: List access is O(n) => bad
-//            Table table = getTable(tag).get();
-//            table.
-//        }
-//    }
-
-    public boolean currLineFull() { //TODO: make sure this works if not all values are provided
-        return false;
-    }
-
-    public void addCurrLine() {
-        this.tables.forEach(t -> {
-        });
-    }
-
-    private void addLine(Map<String, String> tableVals) {
-//        Map<String, String> mergedMap = new HashMap<>(repVals);
-//        mergedMap.putAll(tableVals);
-//        addLine(mergedMap);
-    }
-
-    /**
-     * Function that determines if tag is part of nested table or of repeating tags
-     * @param tag
-     * @return boolean
-     */
-    private boolean isNestedTableTag(String tag) {
-        return containsTag(this.cols, tag);
-    }
-
-
 }
