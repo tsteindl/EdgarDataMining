@@ -74,7 +74,7 @@ public class CSVTableBuilder extends CSVBuilder {
 
     @Override
     public void outputForm() throws OutputException { //TODO: think abt implementation with one string instead of List<List<String>>, also measure the speedup
-        List<List<String>> tables1 = tables.stream().map(t -> t.getLine()).collect(Collectors.toList());
+        List<List<String>> tables1 = tables.stream().map(Table::getLine).collect(Collectors.toList());
         List<List<String>> lines = computeCrossProduct(tables1);
         lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
         System.out.println(lines);

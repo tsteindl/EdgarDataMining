@@ -85,7 +85,7 @@ public class Main {
                 String outputPath = "data/output" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
                 for (DailyData dailyData : dailyDataList) {
                     String responseData = edgarScraper.downloadData(dailyData);
-                    Form4Parser form4Parser = new Form4Parser(responseData);
+                    Form4Parser form4Parser = new Form4Parser(dailyData.folderPath(), responseData);
                     form4Parser.parseForm();
                     FormConverter outputter = form4Parser.configureOutput(outputPath);
                     outputter.outputForm();

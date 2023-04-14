@@ -20,19 +20,19 @@ public class Form4Parser extends FormParser {
     private static String XML_DOC_STARTING_TAG = "<?xml version";
     private String input;
 
-    private Map<String, String> fields;
-    private List<Map<String, String>> reportingOwners;
-    private List<Map<String, String>> nonDerivativeTransactions;
-    private List<Map<String, String>> nonDerivativeHoldings;
-    private List<Map<String, String>> derivativeTransactions;
-    private List<Map<String, String>> derivativeHoldings;
+    private final Map<String, String> fields;
+    private final List<Map<String, String>> reportingOwners;
+    private final List<Map<String, String>> nonDerivativeTransactions;
+    private final List<Map<String, String>> nonDerivativeHoldings;
+    private final List<Map<String, String>> derivativeTransactions;
+    private final List<Map<String, String>> derivativeHoldings;
     Scanner scanner = null;
     private Node curr;
     private Node nxt;
     private String nxtTag;
 
-    public Form4Parser(String input) {
-        super("4");
+    public Form4Parser(String name, String input) {
+        super(name, "4");
         this.input = input;
         this.fields = new HashMap<>();
         //used LinkedLists here because mainly add operations are used and not random access
@@ -125,7 +125,7 @@ public class Form4Parser extends FormParser {
 
         ownershipDocument();
         if (this.nxt != null)
-            throw new ParseFormException(this.nxt);
+            throw new ParseFormException(this.name, this.nxt);
         else
             System.out.println("debug");
     }
