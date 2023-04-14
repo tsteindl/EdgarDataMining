@@ -84,73 +84,29 @@ public class CSVTableBuilder extends CSVBuilder {
     /**
      * Method computes cross product, in this case used for cross product of tables, which is used to display tree-like datastructure (XML) as flat list (CSV)
      * This leads to an exponential space complexity which is not advisable (consider using a different way of converting Forms (eg database, hierarchical)
-     * @param tables
+     * @param elems
      * @return
      */
     private <T> List<List<T>> computeCrossProduct(List<List<T>> elems) {
+        // if we have reached the end of the tables, add the current row to the cross product and return
         if (elems.size() == 1)
             return elems;
 
         List<List<T>> result = new ArrayList<>();
 
-        List<T> firstElem = elems.get(0);
+        List<T> firstElem = elems.remove(0);
         //elems only contain rest of elements without first element
-        List<List<T>> restOfProduct = computeCrossProduct(elems.subList(1, elems.size()));
+        List<List<T>> restOfProduct = computeCrossProduct(elems);
 
-//        for (List<T> elem : elems) {
         for (List<T> restElem : restOfProduct) {
             List<T> newLine = new ArrayList<T>();
             newLine.addAll(firstElem);
             newLine.addAll(restElem);
             result.add(newLine);
         }
-//        }
-
         return result;
     }
 
-//    private List<List<String>> computeCrossProduct(List<List<String>> tables) {
-//        if (tables.size() == 1) {
-//            return tables;
-//        }
-//
-//        List<List<String>> result = new ArrayList<>();
-//
-//        List<String> firstTable = tables.get(0);
-//        List<List<String>> restOfTables = tables.subList(1, tables.size());
-//
-//        List<List<String>> restOfProduct = computeCrossProduct(restOfTables);
-//
-//
-//        for (String element : firstTable) {
-//            for (List<String> rest : restOfProduct) {
-//                List<String> newSet = new ArrayList<>();
-//                newSet.add(element);
-//                newSet.addAll(rest);
-//                result.add(newSet);
-//            }
-//        }
-//        return result;
-//    }
-/*
-    private void computeCrossProduct(List<Table<String>> tables, List<List<String>> crossProduct, ArrayList<String> currentRow, int index) {
-        // if we have reached the end of the tables, add the current row to the cross product and return
-        if (index == tables.size()) {
-            crossProduct.add(new ArrayList<>(currentRow));
-            return;
-        }
-
-        // iterate over each row in the current table
-        for (String value : tables.get(index).getLine()) {
-            // add the current value to the current row
-            currentRow.add(value);
-            // recursively call the function with the next table
-            computeCrossProduct(tables, crossProduct, currentRow, index + 1);
-            // remove the current value from the current row
-            currentRow.remove(currentRow.size() - 1);
-        }
-    }
-*/
 
     /*private ArrayList<Table> initTables(List<String[]> tableNamesList, List<String[][]> tableTagsList, List<String[]> tableNodeTags) {
         ArrayList<Table> result = new ArrayList<>();
