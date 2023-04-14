@@ -20,5 +20,5 @@ public abstract class FormParser {
      * @return FormConverter
      * @throws OutputException
      */
-    public abstract FormConverter configureOutput(String outputPath) throws OutputException;
+    public abstract FormConverter configureOutputter(String outputPath, FormConverter.Outputter type) throws OutputException;
 }

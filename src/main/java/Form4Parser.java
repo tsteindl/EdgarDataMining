@@ -1,4 +1,5 @@
 import csv.CSVTableBuilder;
+import db.DBOutputter;
 import interfaces.FormParser;
 import interfaces.FormConverter;
 import org.w3c.dom.*;
@@ -68,7 +69,14 @@ public class Form4Parser extends FormParser {
     }
 
     @Override
-    public FormConverter configureOutput(String outputPath) throws OutputException {
+    public FormConverter configureOutputter(String outputPath, FormConverter.Outputter type) throws OutputException {
+        return switch (type) {
+            case DB -> new DBOutputter();
+            default -> configureCSV(outputPath);
+        };
+    }
+
+    public CSVTableBuilder configureCSV(String outputPath) throws OutputException {
         try {
             Map<String, List<Map<String, String>>> tables = new HashMap<>();
             tables.put("reportingOwners", reportingOwners);
@@ -85,6 +93,7 @@ public class Form4Parser extends FormParser {
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new OutputException(e.getMessage());
         }
+
     }
 
     private static String getXMLBody(String xml) {

@@ -5,4 +5,9 @@ import util.OutputException;
 
 public interface FormConverter {
     void outputForm() throws OutputException;
+
+    enum Outputter {
+        CSV,
+        DB
+    }
 }

@@ -61,7 +61,7 @@ public class Main {
         if (conc)
             executeConcurrently(path);
         else
-            executeSequentially(path);
+            executeSequentially(path, FormConverter.Outputter.CSV); //TODO: add program arg
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
         watch.stop();
 //        totalTimeTaken = watch.getTime();
@@ -73,7 +73,7 @@ public class Main {
         System.out.println("-------------------------------------------------");
     }
 
-    public static void executeSequentially(String path) {
+    public static void executeSequentially(String path, FormConverter.Outputter outputType) {
         stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (problem: recursion)
@@ -87,7 +87,7 @@ public class Main {
                     String responseData = edgarScraper.downloadData(dailyData);
                     Form4Parser form4Parser = new Form4Parser(dailyData.folderPath(), responseData);
                     form4Parser.parseForm();
-                    FormConverter outputter = form4Parser.configureOutput(outputPath);
+                    FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
                     outputter.outputForm();
                     nOForms++;
                 }
