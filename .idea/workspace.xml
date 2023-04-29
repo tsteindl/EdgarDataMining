@@ -5,11 +5,20 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="process working but results are not yet correct">
-      <change beforePath="$PROJECT_DIR$/src/main/java/EdgarScraper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/EdgarScraper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/DerivativeHolding.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/DerivativeTransaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/NonDerivativeHolding.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/NonDerivativeTransaction.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/ReportingOwner.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/TableType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/util/Constants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/util/Constants.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/util/DerivativeTransaction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/util/ReportingOwner.java" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -22,6 +31,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Record" />
         <option value="Class" />
       </list>
     </option>
@@ -38,11 +48,11 @@
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN"
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;
   }
-}]]></component>
+}</component>
   <component name="GithubPullRequestsUISettings">
     <option name="selectedUrlAndAccountId">
       <UrlAndAccount>
@@ -63,6 +73,9 @@
         <option name="useMavenConfig" value="true" />
       </MavenGeneralSettings>
     </option>
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
@@ -95,10 +108,18 @@
 }</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
+      <recent name="Form4Parser.Types" />
+      <recent name="Form4Parser" />
       <recent name="util" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/documentation" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="Form4Parser" />
+    </key>
+    <key name="MoveInnerDialog.RECENTS_KEY">
+      <recent name="Form4Parser" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Main">
@@ -167,6 +188,8 @@
       <workItem from="1681382507051" duration="19175000" />
       <workItem from="1681418592658" duration="5756000" />
       <workItem from="1681458251166" duration="4453000" />
+      <workItem from="1682682927281" duration="12536000" />
+      <workItem from="1682717759917" duration="9688000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -378,14 +401,29 @@
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
-          <line>414</line>
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
+          <line>420</line>
           <option name="timeStamp" value="74" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java</url>
           <line>47</line>
           <option name="timeStamp" value="93" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java</url>
+          <line>51</line>
+          <option name="timeStamp" value="96" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java</url>
+          <line>64</line>
+          <option name="timeStamp" value="101" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java</url>
+          <line>59</line>
+          <option name="timeStamp" value="103" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -397,6 +435,7 @@
     <watches-manager>
       <configuration name="Application">
         <watch expression="t.getLine()" language="JAVA" />
+        <watch expression="((Element) node).getAttribute(&quot;type&quot;)" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
