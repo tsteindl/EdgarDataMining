@@ -4,21 +4,20 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="process working but results are not yet correct">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/DerivativeHolding.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/DerivativeTransaction.java" afterDir="false" />
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="introduce classes for maps previously&#10;&#10;rearranged dir structure">
       <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/NonDerivativeHolding.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/NonDerivativeTransaction.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/ReportingOwner.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/TableType.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/util/DerivativeTransaction.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/util/ReportingOwner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/EdgarScraper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/EdgarScraper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Form4Parser.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/util/Constants.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/util/Constants.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -189,7 +188,7 @@
       <workItem from="1681418592658" duration="5756000" />
       <workItem from="1681458251166" duration="4453000" />
       <workItem from="1682682927281" duration="12536000" />
-      <workItem from="1682717759917" duration="9688000" />
+      <workItem from="1682717759917" duration="16051000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -352,7 +351,14 @@
       <option name="project" value="LOCAL" />
       <updated>1681465393964</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="introduce classes for maps previously&#10;&#10;rearranged dir structure">
+      <created>1682782038198</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1682782038198</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -395,7 +401,8 @@
     <MESSAGE value="update error message" />
     <MESSAGE value="remove comments, dead code" />
     <MESSAGE value="process working but results are not yet correct" />
-    <option name="LAST_COMMIT_MESSAGE" value="process working but results are not yet correct" />
+    <MESSAGE value="introduce classes for maps previously&#10;&#10;rearranged dir structure" />
+    <option name="LAST_COMMIT_MESSAGE" value="introduce classes for maps previously&#10;&#10;rearranged dir structure" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -411,19 +418,12 @@
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java</url>
-          <line>51</line>
-          <option name="timeStamp" value="96" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java</url>
-          <line>64</line>
-          <option name="timeStamp" value="101" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java</url>
-          <line>59</line>
-          <option name="timeStamp" value="103" />
+          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
+          <line>100</line>
+          <properties>
+            <option name="lambda-ordinal" value="-1" />
+          </properties>
+          <option name="timeStamp" value="111" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

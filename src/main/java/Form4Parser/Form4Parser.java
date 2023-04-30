@@ -1,6 +1,7 @@
 package Form4Parser;
 
-import Form4Parser.Types.TableType;
+import Form4Parser.Types.*;
+import Form4Parser.Types.NonDerivativeTransaction;
 import csv.CSVTableBuilder;
 import db.DBOutputter;
 import interfaces.FormParser;
@@ -35,14 +36,14 @@ public class Form4Parser extends FormParser {
     private String schemaVersion;//TODO correct types
     private String documentType;
     private LocalDate periodOfReport;
-    private boolean notSubjectToSection16;
+    private Boolean notSubjectToSection16;
     private String issuerCik;
     private String issuerName;
     private String issuerTradingSymbol;
     private String remarks;
 
     private final List<ReportingOwner> reportingOwners;
-    private final List<NonDerivativeTransaction> nonDerivativeTransactions;
+    private final List<Form4Parser.Types.NonDerivativeTransaction> nonDerivativeTransactions;
     private final List<NonDerivativeHolding> nonDerivativeHoldings;
     private final List<DerivativeTransaction> derivativeTransactions;
     private final List<DerivativeHolding> derivativeHoldings;
@@ -285,7 +286,7 @@ public class Form4Parser extends FormParser {
 
     private void nonDerivativeTransaction() {
 //        Map<String, String> result = new HashMap<>();
-        NonDerivativeTransaction result = new NonDerivativeTransaction();
+        Form4Parser.Types.NonDerivativeTransaction result = new Form4Parser.Types.NonDerivativeTransaction();
         scan(); //go inside <nonDerivativeTransaction>
         securityTitle(result, "securityTitle"); //TODO revise if this is smart
         transactionDate(result);

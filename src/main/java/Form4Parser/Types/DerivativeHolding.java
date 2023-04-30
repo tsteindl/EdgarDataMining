@@ -1,4 +1,4 @@
-package Form4Parser;
+package Form4Parser.Types;
 
 import Form4Parser.Types.TableType;
 
