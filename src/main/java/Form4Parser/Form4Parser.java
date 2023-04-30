@@ -150,12 +150,14 @@ public class Form4Parser extends FormParser {
         parseNode(this, "periodOfReport");
         if (nxtTag.equals("notSubjectToSection16")) parseNode(this, "notSubjectToSection16");
         issuer();
-        reportingOwner();
+        while (nxtTag.equals("reportingOwner"))
+            reportingOwner();
         if (nxtTag.equals("nonDerivativeTable")) nonDerivativeTable();
         if (nxtTag.equals("derivativeTable")) derivativeTable();
         if (nxtTag.equals("footnotes")) footnotes();
         if (nxtTag.equals("remarks")) remarks();
-        ownerSignature();
+        while (nxtTag.equals("ownerSignature"))
+            ownerSignature();
     }
 
 
@@ -189,7 +191,7 @@ public class Form4Parser extends FormParser {
             Object castValue = type.cast(nxtVal);
             fld.setAccessible(true);
             fld.set(c, castValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | ClassCastException e) {
             System.out.println(e.getMessage());
         }
         scan();
@@ -220,7 +222,6 @@ public class Form4Parser extends FormParser {
     }
     private void reportingOwner() {
         ReportingOwner result = new ReportingOwner();
-//        Map<String, String> result = new HashMap<>();
         scan(); //go inside <reportingOwner>
         reportingOwnerId(result);
         if (nxtTag.equals("reportingOwnerAddress")) reportingOwnerAddress(result);
@@ -269,7 +270,7 @@ public class Form4Parser extends FormParser {
 
     private void reportingId(ReportingOwner result) {
         parseNode(result, "rptOwnerCik");
-        if (nxtTag.equals("rptOwnerCik"))
+        if (nxtTag.equals("rptOwnerCcc"))
             parseNode(result, "rptOwnerCcc");
         if (nxtTag.equals("rptOwnerName"))
             parseNode(result, "rptOwnerName");
@@ -318,6 +319,7 @@ public class Form4Parser extends FormParser {
 
     private void ownershipType(Object result, String key) {
         parseValueNode(result, key);
+        while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
     private void postTransactionAmounts(Object result) {
@@ -418,8 +420,9 @@ public class Form4Parser extends FormParser {
     }
 
     private void deemedExecutionDate(Object result) {
-        if (nxtTag.equals("value")) parseValueNode(result, "transactionDate");
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        scan();
+        if (nxtTag.equals("value")) parseNode(result, "transactionDate");
+        while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
     private void footnodeId() {
@@ -439,6 +442,7 @@ public class Form4Parser extends FormParser {
     private void nonDerivativeHolding() {
 //        Map<String, String> result = new HashMap<>();
         NonDerivativeHolding result = new NonDerivativeHolding();
+        scan(); //go inside
         securityTitle(result, "securityTitle");
         postTransactionAmounts(result);
         ownershipNature(result);
@@ -454,7 +458,6 @@ public class Form4Parser extends FormParser {
     }
 
     private void derivativeTransaction() {
-//        Map<String, String> result = new HashMap<>();
         DerivativeTransaction result = new DerivativeTransaction();
         scan(); //go inside
         securityTitle(result, "securityTitle");
@@ -479,32 +482,38 @@ public class Form4Parser extends FormParser {
     }
 
     private void underlyingSecurityValue(Object result) {
+        scan();
         optNumberWithFootnote(result, "underlyingSecurityValue");
     }
 
     private void underlyingSecurityShares(Object result) {
+        scan();
         optNumberWithFootnote(result, "underlyingSecurityShares");
     }
 
     private void underlyingSecurityTitle(Object result) {
+        scan();
         securityTitle(result, "underlyingSecurityTitle");
     }
 
     private void expirationDate(Object result) {
+        scan();
         optDateWithFootNote(result, "expirationDate");
     }
 
     private void exerciseDate(Object result) {
+        scan();
         optDateWithFootNote(result, "exerciseDate");
     }
 
     private void optDateWithFootNote(Object result, String tag) {
-        if (nxtTag.equals("value")) parseValueNode(result, tag);
+        if (nxtTag.equals("value")) parseNode(result, tag);
         else footnodeId();
         while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
     private void conversionOrExercisePrice(Object result) {
+        scan();
         optNumberWithFootnote(result, "conversionOrExercisePrice");
     }
 
