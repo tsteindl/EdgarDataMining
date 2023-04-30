@@ -284,7 +284,6 @@ public class Form4Parser extends FormParser {
     }
 
     private void nonDerivativeTransaction() {
-//        Map<String, String> result = new HashMap<>();
         NonDerivativeTransaction result = new NonDerivativeTransaction();
         scan(); //go inside <nonDerivativeTransaction>
         securityTitle(result, "securityTitle"); //TODO revise if this is smart

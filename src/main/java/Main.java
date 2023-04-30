@@ -82,7 +82,7 @@ public class Main {
             }
 
             if (next1.equals("-path")) {
-                result.put("path", next);
+                result.put("path", next2);
             }
             else if (next1.equals("-conc")) {
                 Boolean bool = cmdBool(next2);
