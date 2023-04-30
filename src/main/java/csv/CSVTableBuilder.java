@@ -1,16 +1,12 @@
 package csv;
 
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
+import Form4Parser.Types.TableType;
 import org.xml.sax.SAXException;
-import util.OutputException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 //TODO: maybe refactor into composite builder with list of tablebuilders
 //TODO: add support for multiple tables => derivativeTable
@@ -21,10 +17,21 @@ public class CSVTableBuilder extends CSVBuilder {
         public final List<String> tags;
         public final Map<String, T> map;
 
-        Table(String id, Map<String, T> map) {
+        Table(String id, TableType table) {
             this.id = id;
-            this.map = map;
-            this.tags = new ArrayList<>(map.keySet());
+            List<String> keys = table.keys();
+            List<Object> values = table.values();
+            if (keys.size() != values.size()) {
+                throw new IllegalArgumentException("Keys and values lists must have the same size");
+            }
+            map = new HashMap<>();
+
+            for (int i = 0; i < keys.size(); i++) {
+                String key = keys.get(i);
+                T value = (T) values.get(i).toString();
+                map.put(key, value);
+            }
+            this.tags = table.keys();
         }
 
         public List<String> getLine() {
@@ -51,7 +58,8 @@ public class CSVTableBuilder extends CSVBuilder {
     public CSVTableBuilder(String outputPath,
                            String sep,
                            Map<String, String> nonNestedTags,
-                           Map<String, List<Map<String, String>>> tables
+//                           Map<String, List<Map<String, String>>> tables
+                           Map<String, List<? extends TableType>> tables
     ) throws ParserConfigurationException, IOException, SAXException {
         super(
                 outputPath,
@@ -66,27 +74,31 @@ public class CSVTableBuilder extends CSVBuilder {
         System.out.println(this.lines);
     }
 
-    private static List<String> getAllTags(Map<String, String> nonNestedTags, Map<String, List<Map<String, String>>> tables) {
+    private static List<String> getAllTags(Map<String, String> nonNestedTags, Map<String, List<? extends TableType>> tables) {
         List<String> result = new ArrayList<>();
         result.addAll(nonNestedTags.keySet());
         tables.keySet().forEach(k ->
                 tables.get(k).forEach(t ->
-                        result.addAll(t.keySet())));
+                        result.addAll(t.keys())));
         return result;
     }
 
-    private static List<List<String>> getLines(List<Table<String>> tables, Map<String, String> nonNestedTags) {
-        List<List<String>> tables1 = tables.stream().map(Table::getLine).collect(Collectors.toList());
-        List<List<String>> lines = computeCrossProduct(tables1);
-        lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
-        return lines;
-    }
+//    private static List<List<String>> getLines(List<Table<String>> tables, Map<String, String> nonNestedTags) {
+//        List<List<String>> tables1 = tables.stream().map(Table::getLine).collect(Collectors.toList());
+//        List<List<String>> lines = computeCrossProduct(tables1);
+//        lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
+//        return lines;
+//    }
 
-    private static List<List<String>> getLines(Map<String, List<Map<String, String>>> tables, Map<String, String> nonNestedTags) {
+//    private List<String> tableToString(List<? extends TableType> tables) {
+//        return (List<String>) tables.stream().map(t -> t.keys().stream().map(Object::toString)).collect(Collectors.toList());
+//    }
+
+    private static List<List<String>> getLines(Map<String, List<? extends TableType>> tables, Map<String, String> nonNestedTags) {
         //get only values of tables
         List<List<String>> tableVals = tables.values().stream()
                 .flatMap(List::stream)
-                .map(m -> new ArrayList<>(m.values()))
+                .map(t -> t.values().stream().map(Object::toString).collect(Collectors.toList()))
                 .collect(Collectors.toList());
         List<List<String>> lines = computeCrossProduct(tableVals);
         lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again

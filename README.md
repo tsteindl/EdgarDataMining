@@ -28,6 +28,6 @@ Technologies:
 -Multithreading/Concurrency to attain speedup of x of my first implementation
 -FileIO
 -JSON/XML Parsing
--Reflection (for Timer)
+-Reflection
 -Guava
 
