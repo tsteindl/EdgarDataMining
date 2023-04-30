@@ -40,8 +40,7 @@ public class CSVBuilder implements FormConverter {
     public String getBody(List<List<String>> lines) {
         if (lines.isEmpty()) return null;
         List<String> ls = lines.stream().map(l -> String.join(this.sep, l)).collect(Collectors.toList());
-        String result = String.join("\n", ls);
-        return result;
+        return String.join("\n", ls);
     }
 
     public void outputForm() throws OutputException {

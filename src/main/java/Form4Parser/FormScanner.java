@@ -48,16 +48,15 @@ class FormScanner {
         String name = node.getNodeName();
         String text = getText(node);
         if (name.equals("value")) {
-            Object result = switch (node.getParentNode().getNodeName()) {
+            return switch (node.getParentNode().getNodeName()) {
                 case "transactionDate", "deemedExecutionDate", "exerciseDate", "expirationDate", "signatureDate" ->
                         LocalDate.parse(text);
                 case "conversionOrExercisePrice", "sharesOwnedFollowingTransaction", "valueOwnedFollowingTransaction", "transactionShares", "transactionTotalValue", "transactionPricePerShare", "underlyingSecurityShares", "underlyingSecurityValue" ->
                         Double.parseDouble(text);
                 default -> text;
             };
-            return result;
         }
-        Object result = switch(name) {
+        return switch(name) {
             case "documentType", "schemaVersion", "issuerCik", "issuerName", "issuerTradingSymbol", "rptOwnerCik", "rptOwnerCcc", "rptOwnerName", "rptOwnerStreet1", "rptOwnerStreet2", "rptOwnerCity", "rptOwnerState", "rptOwnerZipCode", "rptOwnerStateDescription", "officerTitle", "otherText", "securityTitle", "transactionFormType", "transactionCode", "transactionTimeliness", "transactionAcquiredDisposedCode", "directOrIndirectOwnership", "ownershipNature", "underlyingSecurity", "remarks", "signatureName" -> text;
             case "periodOfReport" -> LocalDate.parse(text);
             case "notSubjectToSection16", "rptOwnerGoodAddress", "isDirector", "isOfficer", "isTenPercentOwner", "isOther", "equitySwapInvolved" ->  Boolean.valueOf(Boolean.parseBoolean(text) || "1".equals(text));
@@ -68,7 +67,6 @@ class FormScanner {
             }
             default -> null;
         };
-        return result;
     }
 
     private String getText(Node node) {
