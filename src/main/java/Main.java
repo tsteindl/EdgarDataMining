@@ -7,16 +7,13 @@ import util.DailyData;
 
 import java.io.*;
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
  * @version 1.0
  * PROGRAM ARGS:
- * 1. path in EDGAR file system, suffix with "/" if there are subdirectories
+ * 1. path in EDGAR file system, suffix with "/" if there are subdirectories: -path=...
  * 2. multithreading: -conc=true/false
  * 3. doStats: -stats=true/false time costly functions, print out statistics at end of parsing
  * example:
@@ -30,24 +27,11 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //xml data from 2004 onwards
         //BASE PATH = https://www.sec.gov/Archives/
-        Map<String, String> argsMap = parseProgramArgs(args);
+        Map<String, Object> argsMap = parseProgramArgs(args);
         //get program args
-        String path = Constants.DEFAULT_YEAR;
-        boolean conc = false;
-        boolean doStats = false;
-
-        if (args.length == 1) {
-            path = args[0];
-        }
-        if (args.length == 2) {
-            path = args[0];
-            conc = args[1].equals("-conc=true") || args[1].equals("-conc=1");
-        }
-        if (args.length == 3) {
-            path = args[0];
-            conc = args[1].equals("-conc=true") || args[1].equals("-conc=1");
-            doStats = args[2].equals("-stats=true") || args[2].equals("-stats=1");
-        }
+        String path = (String) argsMap.get("path");
+        boolean conc = (boolean) argsMap.get("conc");
+        boolean doStats = (boolean) argsMap.get("doStats");
 
         System.out.println("----------------------------");
         System.out.println("Starting application with program args: ");
@@ -77,16 +61,45 @@ public class Main {
         System.out.println("-------------------------------------------------");
     }
 
-    private static Map<String, String> parseProgramArgs(String[] args) {
-        Map<String, String> result = new HashMap<>();
-        List<String> as = Arrays.asList(args);
+    private static Map<String, Object> parseProgramArgs(String[] args) {
+        Map<String, Object> result = new HashMap<>();
+        //Default values
+        result.put("path", Constants.DEFAULT_YEAR);
+        result.put("conc", false);
+        result.put("doStats", false);
+        List<String> as = new LinkedList<String>(Arrays.asList(args)); //LinkedList supports faster remove than ArrayList
+        String curr = null;
         String next = null;
-        while(!as.isEmpty()) {
+        String next1 = null;
+        String next2 = null;
+        for (int i = 0; !as.isEmpty(); i++) {
+            curr = next;
             next = as.remove(0);
+            next1 = next;
+            if (next.split("=").length >= 2) {
+                next1 = next.split("=")[0];
+                next2 = next.split("=")[1];
+            }
 
+            if (next1.equals("-path")) {
+                result.put("path", next);
+            }
+            else if (next1.equals("-conc")) {
+                Boolean bool = cmdBool(next2);
+                result.put("conc", bool);
+            }
+            else if (next1.equals("-stats")) {
+                Boolean bool = cmdBool(next2);
+                result.put("doStats", bool);
+            }
         }
         return result;
     }
+
+    private static boolean cmdBool(String bool) {
+        return Boolean.parseBoolean(bool) || "1".equals(bool);
+    }
+
 
     public static void executeSequentially(String path, FormConverter.Outputter outputType) {
         stats = new Stats();

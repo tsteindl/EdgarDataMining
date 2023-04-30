@@ -18,7 +18,6 @@ class FormScanner {
     Queue<Object> vals;
     Queue<Node> nodes;
 
-
     public FormScanner(Node ownershipDocument) {
         nodes = new LinkedList<>();
         vals = new LinkedList<>();
