@@ -8,7 +8,7 @@ import java.util.stream.IntStream;
 
 public class Stats {
 
-    public static final int NS2S = 1000000;
+    public static final int NS2S = 1000000000;
     private final Map<String, List<Long>> timeMap = new HashMap<>();
 
     public void execute(Callable fn, String fnName) throws Exception {
