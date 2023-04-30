@@ -185,7 +185,7 @@ public class Form4Parser extends FormParser {
         try {
             String tag = ((Element) this.nxt).getTagName();
             if (!key.equals(tag) && !tag.equals("value"))
-                System.out.println("Tag should be: " + key + " but is: " + tag);
+                System.out.println("Tag should be: " + key + " but is: " + tag + " for form " + this.name);
             Field fld = c.getClass().getDeclaredField(key);
             Class<?> type = fld.getType();
             Object castValue = type.cast(nxtVal);
@@ -195,19 +195,7 @@ public class Form4Parser extends FormParser {
             System.out.println(e.getMessage());
         }
         scan();
-
-
-//        String tag = ((Element) this.nxt).getTagName();
-//        if (!key.equals(tag) && !tag.equals("value"))
-//            System.out.println("Tag should be: " + key + " but is: " + tag);
-//        map.put(key, getText(this.nxt));
-//        scan();
     }
-
-//    private void parseValueNode(Map<String, String> map, String key) {
-//        scan();
-//        parseNode(map, key);
-//    }
 
     private void parseValueNode(Object result, String key) {
         scan();
@@ -301,16 +289,13 @@ public class Form4Parser extends FormParser {
     private void ownershipNature(Object result) {
         scan(); //go inside ownershipNature
         directOrIndirectOwnership(result);
-        if (nxtTag.equals("natureOfOwnership")) natureOfOwnership(result);
+        if (nxtTag.equals("natureOfOwnership")) natureOfOwnership(result, "natureOfOwnership");
     }
 
-    private void natureOfOwnership(Object result) {
-        indirectNature(result, "natureOfOwnership");
-    }
-
-    private void indirectNature(Object result, String tag) {
+    private void natureOfOwnership(Object result, String tag) {
         parseValueNode(result, tag);
-        footnodeId();
+        while (nxtTag.equals("footnoteId"))
+            footnodeId();
     }
 
     private void directOrIndirectOwnership(Object result) {
@@ -366,7 +351,7 @@ public class Form4Parser extends FormParser {
 
     private void nonDerAcqDispCode(Object result, String tag) {
         parseValueNode(result, tag);
-        if (nxtTag.equals("footnoteId"))
+        while (nxtTag.equals("footnoteId"))
             footnodeId();
     }
 
@@ -392,7 +377,7 @@ public class Form4Parser extends FormParser {
 
     private void transactionTimeliness(Object result) {
         transTimelyPicklist(result, "transactionTimeliness");
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
     private void transTimelyPicklist(Object result, String tag) {
@@ -404,7 +389,7 @@ public class Form4Parser extends FormParser {
         transactionFormType(result);
         transactionCode(result);
         equitySwapInvolved(result);
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
     private void equitySwapInvolved(Object result) {
@@ -432,11 +417,13 @@ public class Form4Parser extends FormParser {
 
     private void transactionDate(Object result) {
         parseValueNode(result, "transactionDate");
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
     private void securityTitle(Object result, String tag) {
         parseValueNode(result, tag);
+        while (nxtTag.equals("footnoteId"))
+            footnodeId();
     }
 
     private void nonDerivativeHolding() {
