@@ -82,7 +82,8 @@ class FormScanner {
                 dt = LocalDateTime.parse(text);
             } catch (DateTimeParseException ex) {
                 DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm");
-                dt = LocalDateTime.parse(text, formatter);
+                dt = LocalDateTime.parse(text,
+                        formatter);
             }
             result = dt.toLocalDate();
         }
