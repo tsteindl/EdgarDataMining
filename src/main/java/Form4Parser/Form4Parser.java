@@ -70,16 +70,15 @@ public class Form4Parser extends FormParser {
             }
             parseWellFormedXML(xml);
         }
+        this.input = input;
+        xml = getXMLBody(xml);
         try {
-            this.input = input;
-            xml = getXMLBody(xml);
             Element xmlRoot = getXMLTreeFromString(xml);
-
             parseXMLNodes(xmlRoot);
-//            outputter.outputForm(); //TODO: maybe extract this into parent function
-        } catch (ParserConfigurationException | IOException | SAXException | ParseFormException e) {
-            e.printStackTrace();
+        } catch (ParserConfigurationException | IOException | SAXException e) {
+            throw new ParseFormException(this.name, e.getMessage());
         }
+
     }
 
     @Override
