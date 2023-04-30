@@ -139,7 +139,7 @@ public class Form4Parser extends FormParser {
         if (this.nxt != null)
             throw new ParseFormException(this.name, this.nxt);
         else
-            System.out.println("debug");
+            System.out.println("debug"); //TODO: remove this
     }
 
     private void ownershipDocument() {

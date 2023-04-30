@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
 import util.Constants;
 import util.DailyData;
+import util.ParseFormException;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -23,6 +24,7 @@ public class Main {
     public static BigInteger startTime;
     public static double totalTimeTaken; //total time taken in seconds
     public static long nOForms = 0;
+    public static List<String> failedForms = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
         //xml data from 2004 onwards
@@ -58,6 +60,8 @@ public class Main {
         System.out.println("Total time taken: " + totalTimeTaken + "s");
         System.out.println("Number of Forms parsed: " + nOForms);
         System.out.println("Avg seconds per form: " + ((double) totalTimeTaken/nOForms));
+        System.out.println("Number of erroneous forms: " + failedForms.size());
+        System.out.println("Erroneous forms: " + failedForms.toString());
         System.out.println("-------------------------------------------------");
     }
 
@@ -112,12 +116,17 @@ public class Main {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
                 String outputPath = "data/output" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
                 for (DailyData dailyData : dailyDataList) {
-                    String responseData = edgarScraper.downloadData(dailyData);
-                    Form4Parser form4Parser = new Form4Parser(dailyData.folderPath(), responseData);
-                    form4Parser.parseForm();
-                    FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
-                    outputter.outputForm();
-                    nOForms++;
+                    try {
+                        String responseData = edgarScraper.downloadData(dailyData);
+                        Form4Parser form4Parser = new Form4Parser(dailyData.folderPath(), responseData);
+                        form4Parser.parseForm();
+                        FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
+                        outputter.outputForm();
+                        nOForms++;
+                    } catch (ParseFormException e) {
+                        e.printStackTrace();
+                        failedForms.add(dailyData.folderPath());
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();
