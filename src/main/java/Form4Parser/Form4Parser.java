@@ -328,14 +328,14 @@ public class Form4Parser extends FormParser {
         while (nxtTag.equals("footnoteId")) footnodeId();
     }
 
-    private void derivTransactAmounts(Object result) {
+    private void derivTransactNoFoot(Object result) {
         scan(); //go inside <transactionAmounts>
         if (nxtTag.equals("transactionShares"))
             transactionShares(result);
         else
             transactionTotalValue(result);
         transactionPricePerShare(result);
-        derAcqDispCode(result, "transactionAcquiredDisposedCode");
+        acqDispNoFoot(result, "transactionAcquiredDisposedCode");
     }
 
     private void transactionTotalValue(Object result) {
@@ -355,7 +355,7 @@ public class Form4Parser extends FormParser {
             footnodeId();
     }
 
-    private void derAcqDispCode(Object result, String tag) {
+    private void acqDispNoFoot(Object result, String tag) {
         parseValueNode(result, tag);
     }
 
@@ -376,12 +376,9 @@ public class Form4Parser extends FormParser {
     }
 
     private void transactionTimeliness(Object result) {
-        transTimelyPicklist(result, "transactionTimeliness");
+        scan();
+        if (nxtTag.equals("value")) parseNode(result, "transactionTimeliness");
         while (nxtTag.equals("footnoteId")) footnodeId();
-    }
-
-    private void transTimelyPicklist(Object result, String tag) {
-        parseValueNode(result, tag);
     }
 
     private void transactionCoding(Object result) {
@@ -453,7 +450,7 @@ public class Form4Parser extends FormParser {
         if (nxtTag.equals("deemedExecutionDate")) deemedExecutionDate(result);
         if (nxtTag.equals("transactionCoding")) transactionCoding(result);
         if (nxtTag.equals("transactionTimeliness")) transactionTimeliness(result);
-        derivTransactAmounts(result);
+        derivTransactNoFoot(result); //tag: <transactionAmounts>
         exerciseDate(result);
         expirationDate(result);
         underlyingSecurity(result);
