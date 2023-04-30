@@ -7,7 +7,10 @@ import util.DailyData;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
@@ -27,7 +30,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         //xml data from 2004 onwards
         //BASE PATH = https://www.sec.gov/Archives/
-
+        Map<String, String> argsMap = parseProgramArgs(args);
         //get program args
         String path = Constants.DEFAULT_YEAR;
         boolean conc = false;
@@ -72,6 +75,17 @@ public class Main {
         System.out.println("Number of Forms parsed: " + nOForms);
         System.out.println("Avg seconds per form: " + ((double) totalTimeTaken/nOForms));
         System.out.println("-------------------------------------------------");
+    }
+
+    private static Map<String, String> parseProgramArgs(String[] args) {
+        Map<String, String> result = new HashMap<>();
+        List<String> as = Arrays.asList(args);
+        String next = null;
+        while(!as.isEmpty()) {
+            next = as.remove(0);
+
+        }
+        return result;
     }
 
     public static void executeSequentially(String path, FormConverter.Outputter outputType) {

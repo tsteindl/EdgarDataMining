@@ -4,20 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="introduce classes for maps previously&#10;&#10;rearranged dir structure">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java" afterDir="false" />
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="added framework for different outputters">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/EdgarScraper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/EdgarScraper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Form4Parser.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/util/Constants.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/util/Constants.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,7 +19,6 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Record" />
         <option value="Class" />
       </list>
     </option>
@@ -73,9 +61,6 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
   </component>
@@ -87,38 +72,36 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/tsteindl/Documents/Projects/EDGAR Data Mining/documentation&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "jdk.selected.JAVA_MODULE": "openjdk-18",
+    "last_opened_file_path": "/home/tsteindl/Documents/Projects/EDGAR Data Mining/documentation",
+    "node.js.detected.package.eslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Modules",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File": [
+      "PLAIN_TEXT"
+    ]
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
-      <recent name="Form4Parser.Types" />
-      <recent name="Form4Parser" />
       <recent name="util" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/documentation" />
-    </key>
-    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
-      <recent name="Form4Parser" />
-    </key>
-    <key name="MoveInnerDialog.RECENTS_KEY">
-      <recent name="Form4Parser" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Main">
@@ -187,8 +170,7 @@
       <workItem from="1681382507051" duration="19175000" />
       <workItem from="1681418592658" duration="5756000" />
       <workItem from="1681458251166" duration="4453000" />
-      <workItem from="1682682927281" duration="12536000" />
-      <workItem from="1682717759917" duration="16051000" />
+      <workItem from="1682846917054" duration="922000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -351,14 +333,28 @@
       <option name="project" value="LOCAL" />
       <updated>1681465393964</updated>
     </task>
-    <task id="LOCAL-00024" summary="introduce classes for maps previously&#10;&#10;rearranged dir structure">
-      <created>1682782038198</created>
+    <task id="LOCAL-00024" summary="delete dead code">
+      <created>1681465645640</created>
       <option name="number" value="00024" />
       <option name="presentableId" value="LOCAL-00024" />
       <option name="project" value="LOCAL" />
-      <updated>1682782038198</updated>
+      <updated>1681465645640</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="added new dir">
+      <created>1681465767245</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1681465767245</updated>
+    </task>
+    <task id="LOCAL-00026" summary="added framework for different outputters">
+      <created>1681466230320</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1681466230320</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -378,7 +374,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="working again" />
     <MESSAGE value="cherry pick stash" />
     <MESSAGE value="cherry pick done" />
     <MESSAGE value="added comments fixed parser (by removing faulty derivative tags from table builder" />
@@ -401,29 +396,23 @@
     <MESSAGE value="update error message" />
     <MESSAGE value="remove comments, dead code" />
     <MESSAGE value="process working but results are not yet correct" />
-    <MESSAGE value="introduce classes for maps previously&#10;&#10;rearranged dir structure" />
-    <option name="LAST_COMMIT_MESSAGE" value="introduce classes for maps previously&#10;&#10;rearranged dir structure" />
+    <MESSAGE value="delete dead code" />
+    <MESSAGE value="added new dir" />
+    <MESSAGE value="added framework for different outputters" />
+    <option name="LAST_COMMIT_MESSAGE" value="added framework for different outputters" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>420</line>
+          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser.java</url>
+          <line>423</line>
           <option name="timeStamp" value="74" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java</url>
           <line>47</line>
           <option name="timeStamp" value="93" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
-          <line>100</line>
-          <properties>
-            <option name="lambda-ordinal" value="-1" />
-          </properties>
-          <option name="timeStamp" value="111" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -435,7 +424,6 @@
     <watches-manager>
       <configuration name="Application">
         <watch expression="t.getLine()" language="JAVA" />
-        <watch expression="((Element) node).getAttribute(&quot;type&quot;)" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>
