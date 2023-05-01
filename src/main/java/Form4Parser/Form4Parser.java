@@ -173,13 +173,6 @@ public class Form4Parser extends FormParser {
             this.nxtTag = "";
         }
     }
-//    private void parseNode(Map<String, String> map, String key) {
-//        String tag = ((Element) this.nxt).getTagName();
-//        if (!key.equals(tag) && !tag.equals("value"))
-//            System.out.println("Tag should be: " + key + " but is: " + tag);
-//        map.put(key, getText(this.nxt));
-//        scan();
-//    }
     private void parseNode(Object c, String key) {
         try {
             String tag = ((Element) this.nxt).getTagName();
@@ -562,9 +555,5 @@ public class Form4Parser extends FormParser {
             xml = null;
         }
         return xml;
-    }
-
-    private boolean isTextNode(Node n) {
-        return n.getNodeName().equals("#text");
     }
 }
