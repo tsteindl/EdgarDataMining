@@ -1,9 +1,4 @@
-package Form4Parser.Types;
-
-import Form4Parser.Types.TableType;
-
-import java.util.List;
-import java.util.Optional;
+package Form4Parser.FormTypes;
 
 public class ReportingOwner extends TableType { //TODO: check if record works here
     private String rptOwnerCik=null;

@@ -1,9 +1,6 @@
-package Form4Parser.Types;
-
-import Form4Parser.Types.TableType;
+package Form4Parser.FormTypes;
 
 import java.time.LocalDate;
-import java.util.List;
 
 public class NonDerivativeTransaction extends TableType {
     private String securityTitle = null;

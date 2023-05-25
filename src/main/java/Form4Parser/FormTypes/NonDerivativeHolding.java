@@ -1,8 +1,4 @@
-package Form4Parser.Types;
-
-import Form4Parser.Types.TableType;
-
-import java.util.List;
+package Form4Parser.FormTypes;
 
 public class NonDerivativeHolding extends TableType {
     private String securityTitle=null;

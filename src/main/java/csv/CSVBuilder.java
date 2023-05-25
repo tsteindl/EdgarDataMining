@@ -4,6 +4,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -24,14 +27,27 @@ public class CSVBuilder implements FormConverter {
      * @param sep          CSV separator
      * @param cols         XML tags
      */
-    public CSVBuilder(String outputPath, String sep, List<String> cols, List<List<String>> lines) {
+    public CSVBuilder(String outputPath, String sep, List<String> cols, List<List<String>> lines) throws IOException {
         this.outputPath = outputPath;
         this.sep = sep;
         //use linked list as dynamic access will not be needed but lots of items will be added
         this.cols = cols;
         this.lines = lines;
+        createDirAndFile(outputPath);
     }
 
+    public void createDirAndFile(String outputPath) throws IOException {
+        // Create a Path object
+        Path filePath = Paths.get(outputPath);
+
+        // Get the parent directory
+        Path parentDir = filePath.getParent();
+
+        // Create the directories if they don't exist
+        if (parentDir != null && !Files.exists(parentDir)) {
+            Files.createDirectories(parentDir);
+        }
+    }
     public String getHeader() {
         return String.join(this.sep, this.cols);
     }

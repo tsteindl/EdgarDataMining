@@ -1,6 +1,6 @@
 package csv;
 
-import Form4Parser.Types.TableType;
+import Form4Parser.FormTypes.TableType;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;

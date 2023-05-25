@@ -5,19 +5,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="introduce classes for maps previously&#10;&#10;rearranged dir structure">
-      <change afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/DerivativeHolding.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/DerivativeHolding.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/DerivativeTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/DerivativeTransaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/NonDerivativeHolding.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/NonDerivativeHolding.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/NonDerivativeTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/NonDerivativeTransaction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/ReportingOwner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/ReportingOwner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/TableType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/TableType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/EdgarScraper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/EdgarScraper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/Form4Parser.class" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/interfaces/FormParser.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/util/Constants.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/util/Constants.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -188,7 +188,9 @@
       <workItem from="1681418592658" duration="5756000" />
       <workItem from="1681458251166" duration="4453000" />
       <workItem from="1682682927281" duration="12536000" />
-      <workItem from="1682717759917" duration="16051000" />
+      <workItem from="1682717759917" duration="16414000" />
+      <workItem from="1683288213367" duration="2909000" />
+      <workItem from="1685017413233" duration="355000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -358,7 +360,35 @@
       <option name="project" value="LOCAL" />
       <updated>1682782038198</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="added reflection for this&#10;added support for xml types and different types&#10;refactor dir structure">
+      <created>1682846352514</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1682846352514</updated>
+    </task>
+    <task id="LOCAL-00026" summary="added reflection for this&#10;added support for xml types and different types&#10;refactor dir structure">
+      <created>1682846357822</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1682846357822</updated>
+    </task>
+    <task id="LOCAL-00027" summary="refactoring">
+      <created>1682846414027</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1682846414027</updated>
+    </task>
+    <task id="LOCAL-00028" summary="delete comment">
+      <created>1683294719313</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1683294719313</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -378,8 +408,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="working again" />
-    <MESSAGE value="cherry pick stash" />
     <MESSAGE value="cherry pick done" />
     <MESSAGE value="added comments fixed parser (by removing faulty derivative tags from table builder" />
     <MESSAGE value="added time tracking with biginteger to store bigger values" />
@@ -402,28 +430,18 @@
     <MESSAGE value="remove comments, dead code" />
     <MESSAGE value="process working but results are not yet correct" />
     <MESSAGE value="introduce classes for maps previously&#10;&#10;rearranged dir structure" />
-    <option name="LAST_COMMIT_MESSAGE" value="introduce classes for maps previously&#10;&#10;rearranged dir structure" />
+    <MESSAGE value="added reflection for this&#10;added support for xml types and different types&#10;refactor dir structure" />
+    <MESSAGE value="refactoring" />
+    <MESSAGE value="delete comment" />
+    <option name="LAST_COMMIT_MESSAGE" value="delete comment" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>420</line>
+          <line>421</line>
           <option name="timeStamp" value="74" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java</url>
-          <line>47</line>
-          <option name="timeStamp" value="93" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java</url>
-          <line>100</line>
-          <properties>
-            <option name="lambda-ordinal" value="-1" />
-          </properties>
-          <option name="timeStamp" value="111" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

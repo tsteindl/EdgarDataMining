@@ -1,4 +1,4 @@
-package Form4Parser.Types;
+package Form4Parser.FormTypes;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
