@@ -4,20 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="introduce classes for maps previously&#10;&#10;rearranged dir structure">
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="started program args parser">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/DerivativeHolding.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/DerivativeHolding.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/DerivativeTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/DerivativeTransaction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/NonDerivativeHolding.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/NonDerivativeHolding.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/NonDerivativeTransaction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/NonDerivativeTransaction.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/ReportingOwner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/ReportingOwner.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Types/TableType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormTypes/TableType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/csv/CSVTableBuilder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/FormScanner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/util/NonDerivativeTransaction.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVBuilder.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -30,13 +25,19 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Record" />
         <option value="Class" />
       </list>
     </option>
   </component>
   <component name="Git.Merge.Settings">
     <option name="BRANCH" value="all_data" />
+  </component>
+  <component name="Git.Pull.Settings">
+    <option name="OPTIONS">
+      <set>
+        <option value="REBASE" />
+      </set>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_BRANCH_BY_REPOSITORY">
@@ -73,9 +74,6 @@
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="ProblemsViewState">
-    <option name="selectedTabId" value="CurrentFile" />
-  </component>
   <component name="ProjectCodeStyleSettingsMigration">
     <option name="version" value="2" />
   </component>
@@ -93,6 +91,7 @@
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;jdk.selected.JAVA_MODULE&quot;: &quot;openjdk-18&quot;,
     &quot;last_opened_file_path&quot;: &quot;/home/tsteindl/Documents/Projects/EDGAR Data Mining/documentation&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -103,29 +102,26 @@
     &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File&quot;: [
+      &quot;PLAIN_TEXT&quot;
+    ]
   }
 }</component>
   <component name="RecentsManager">
     <key name="CreateClassDialog.RecentsKey">
-      <recent name="Form4Parser.Types" />
-      <recent name="Form4Parser" />
       <recent name="util" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/documentation" />
-    </key>
-    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
-      <recent name="Form4Parser" />
-    </key>
-    <key name="MoveInnerDialog.RECENTS_KEY">
-      <recent name="Form4Parser" />
     </key>
   </component>
   <component name="RunManager" selected="Application.Main">
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="DataRetrieval" />
-      <option name="PROGRAM_PARAMETERS" value="2022/QTR1/form.20220318.idx -conc=false" />
+      <option name="PROGRAM_PARAMETERS" value="-path=2022/QTR1/form.20220318.idx -conc=false" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -187,10 +183,7 @@
       <workItem from="1681382507051" duration="19175000" />
       <workItem from="1681418592658" duration="5756000" />
       <workItem from="1681458251166" duration="4453000" />
-      <workItem from="1682682927281" duration="12536000" />
-      <workItem from="1682717759917" duration="16414000" />
-      <workItem from="1683288213367" duration="2909000" />
-      <workItem from="1685017413233" duration="355000" />
+      <workItem from="1682846917054" duration="3534000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -353,42 +346,35 @@
       <option name="project" value="LOCAL" />
       <updated>1681465393964</updated>
     </task>
-    <task id="LOCAL-00024" summary="introduce classes for maps previously&#10;&#10;rearranged dir structure">
-      <created>1682782038198</created>
+    <task id="LOCAL-00024" summary="delete dead code">
+      <created>1681465645640</created>
       <option name="number" value="00024" />
       <option name="presentableId" value="LOCAL-00024" />
       <option name="project" value="LOCAL" />
-      <updated>1682782038198</updated>
+      <updated>1681465645640</updated>
     </task>
-    <task id="LOCAL-00025" summary="added reflection for this&#10;added support for xml types and different types&#10;refactor dir structure">
-      <created>1682846352514</created>
+    <task id="LOCAL-00025" summary="added new dir">
+      <created>1681465767245</created>
       <option name="number" value="00025" />
       <option name="presentableId" value="LOCAL-00025" />
       <option name="project" value="LOCAL" />
-      <updated>1682846352514</updated>
+      <updated>1681465767245</updated>
     </task>
-    <task id="LOCAL-00026" summary="added reflection for this&#10;added support for xml types and different types&#10;refactor dir structure">
-      <created>1682846357822</created>
+    <task id="LOCAL-00026" summary="added framework for different outputters">
+      <created>1681466230320</created>
       <option name="number" value="00026" />
       <option name="presentableId" value="LOCAL-00026" />
       <option name="project" value="LOCAL" />
-      <updated>1682846357822</updated>
+      <updated>1681466230320</updated>
     </task>
-    <task id="LOCAL-00027" summary="refactoring">
-      <created>1682846414027</created>
+    <task id="LOCAL-00027" summary="started program args parser">
+      <created>1682847863831</created>
       <option name="number" value="00027" />
       <option name="presentableId" value="LOCAL-00027" />
       <option name="project" value="LOCAL" />
-      <updated>1682846414027</updated>
+      <updated>1682847863831</updated>
     </task>
-    <task id="LOCAL-00028" summary="delete comment">
-      <created>1683294719313</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1683294719313</updated>
-    </task>
-    <option name="localTasksCounter" value="29" />
+    <option name="localTasksCounter" value="28" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -429,19 +415,24 @@
     <MESSAGE value="update error message" />
     <MESSAGE value="remove comments, dead code" />
     <MESSAGE value="process working but results are not yet correct" />
-    <MESSAGE value="introduce classes for maps previously&#10;&#10;rearranged dir structure" />
-    <MESSAGE value="added reflection for this&#10;added support for xml types and different types&#10;refactor dir structure" />
-    <MESSAGE value="refactoring" />
-    <MESSAGE value="delete comment" />
-    <option name="LAST_COMMIT_MESSAGE" value="delete comment" />
+    <MESSAGE value="delete dead code" />
+    <MESSAGE value="added new dir" />
+    <MESSAGE value="added framework for different outputters" />
+    <MESSAGE value="started program args parser" />
+    <option name="LAST_COMMIT_MESSAGE" value="started program args parser" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>421</line>
-          <option name="timeStamp" value="74" />
+          <url>file://$PROJECT_DIR$/src/main/java/csv/CSVBuilder.java</url>
+          <line>46</line>
+          <option name="timeStamp" value="93" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/Main.java</url>
+          <line>74</line>
+          <option name="timeStamp" value="95" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -453,7 +444,6 @@
     <watches-manager>
       <configuration name="Application">
         <watch expression="t.getLine()" language="JAVA" />
-        <watch expression="((Element) node).getAttribute(&quot;type&quot;)" language="JAVA" />
       </configuration>
     </watches-manager>
   </component>

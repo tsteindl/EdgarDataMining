@@ -6,6 +6,10 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.Temporal;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -17,7 +21,6 @@ class FormScanner {
     //TODO: aggregate into MyNode that has these as fields
     Queue<Object> vals;
     Queue<Node> nodes;
-
 
     public FormScanner(Node ownershipDocument) {
         nodes = new LinkedList<>();
@@ -50,7 +53,7 @@ class FormScanner {
         if (name.equals("value")) {
             return switch (node.getParentNode().getNodeName()) {
                 case "transactionDate", "deemedExecutionDate", "exerciseDate", "expirationDate", "signatureDate" ->
-                        LocalDate.parse(text);
+                        parseDate(text);
                 case "conversionOrExercisePrice", "sharesOwnedFollowingTransaction", "valueOwnedFollowingTransaction", "transactionShares", "transactionTotalValue", "transactionPricePerShare", "underlyingSecurityShares", "underlyingSecurityValue" ->
                         Double.parseDouble(text);
                 default -> text;
@@ -58,7 +61,7 @@ class FormScanner {
         }
         return switch(name) {
             case "documentType", "schemaVersion", "issuerCik", "issuerName", "issuerTradingSymbol", "rptOwnerCik", "rptOwnerCcc", "rptOwnerName", "rptOwnerStreet1", "rptOwnerStreet2", "rptOwnerCity", "rptOwnerState", "rptOwnerZipCode", "rptOwnerStateDescription", "officerTitle", "otherText", "securityTitle", "transactionFormType", "transactionCode", "transactionTimeliness", "transactionAcquiredDisposedCode", "directOrIndirectOwnership", "ownershipNature", "underlyingSecurity", "remarks", "signatureName" -> text;
-            case "periodOfReport" -> LocalDate.parse(text);
+            case "periodOfReport" -> parseDate(text);
             case "notSubjectToSection16", "rptOwnerGoodAddress", "isDirector", "isOfficer", "isTenPercentOwner", "isOther", "equitySwapInvolved" ->  Boolean.valueOf(Boolean.parseBoolean(text) || "1".equals(text));
             case "remove" -> Double.parseDouble(text);
             case "footnoteId", "footnote" -> {
@@ -67,6 +70,24 @@ class FormScanner {
             }
             default -> null;
         };
+    }
+
+    private LocalDate parseDate(String text) {
+        LocalDate result = null;
+        try {
+            result = LocalDate.parse(text);
+        } catch(DateTimeParseException e) {
+            LocalDateTime dt = null;
+            try {
+                dt = LocalDateTime.parse(text);
+            } catch (DateTimeParseException ex) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm");
+                dt = LocalDateTime.parse(text,
+                        formatter);
+            }
+            result = dt.toLocalDate();
+        }
+        return result;
     }
 
     private String getText(Node node) {

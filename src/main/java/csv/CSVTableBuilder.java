@@ -83,17 +83,6 @@ public class CSVTableBuilder extends CSVBuilder {
         return result;
     }
 
-//    private static List<List<String>> getLines(List<Table<String>> tables, Map<String, String> nonNestedTags) {
-//        List<List<String>> tables1 = tables.stream().map(Table::getLine).collect(Collectors.toList());
-//        List<List<String>> lines = computeCrossProduct(tables1);
-//        lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
-//        return lines;
-//    }
-
-//    private List<String> tableToString(List<? extends TableType> tables) {
-//        return (List<String>) tables.stream().map(t -> t.keys().stream().map(Object::toString)).collect(Collectors.toList());
-//    }
-
     private static List<List<String>> getLines(Map<String, List<? extends TableType>> tables, Map<String, String> nonNestedTags) {
         //get only values of tables
         List<List<String>> tableVals = tables.values().stream()
