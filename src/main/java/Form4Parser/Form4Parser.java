@@ -406,11 +406,10 @@ public class Form4Parser extends FormParser {
     }
 
     private void transactionTimeliness(Object result) {
+        scan(); //go inside t
         if (nxtTag.equals("value") || nxtTag.equals("footnoteId")) {
             if (nxtTag.equals("value")) transTimelyPicklist(result, "transactionTimeliness");
             while (nxtTag.equals("footnoteId")) footnoteId();
-        } else {
-            scan(); //skip if transactionTimeliness is empty tag
         }
     }
 
