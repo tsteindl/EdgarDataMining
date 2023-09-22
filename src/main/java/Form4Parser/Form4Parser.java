@@ -32,7 +32,6 @@ public abstract class Form4Parser extends FormParser {
     private String nxtTag;
 
     //Parser fields
-    protected final Map<String, String> fields;
     protected String schemaVersion;//TODO correct types
     protected String documentType;
     protected LocalDate periodOfReport;
@@ -50,7 +49,6 @@ public abstract class Form4Parser extends FormParser {
     public Form4Parser(String name, String input) {
         super(name, "4");
         this.input = input;
-        this.fields = new HashMap<>();
         //used LinkedLists here because mainly add operations are used and not random access
         this.reportingOwners = new LinkedList<>();
         this.nonDerivativeTransactions = new LinkedList<>();
