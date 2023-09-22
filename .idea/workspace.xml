@@ -4,12 +4,12 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="added timeout if internet connection timed out">
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="fix reportingowner">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/FTPCommunicator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/FTPCommunicator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/FTPCommunicator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/FTPCommunicator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/csv/CSVTableBuilder.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -174,7 +174,7 @@
       <workItem from="1681418592658" duration="5756000" />
       <workItem from="1681458251166" duration="4453000" />
       <workItem from="1682846917054" duration="3534000" />
-      <workItem from="1695370019873" duration="1240000" />
+      <workItem from="1695370019873" duration="2132000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -365,7 +365,15 @@
       <option name="project" value="LOCAL" />
       <updated>1682847863831</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="fix reportingowner">
+      <option name="closed" value="true" />
+      <created>1695373249384</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1695373249384</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -385,7 +393,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="cherry pick done" />
     <MESSAGE value="added comments fixed parser (by removing faulty derivative tags from table builder" />
     <MESSAGE value="added time tracking with biginteger to store bigger values" />
     <MESSAGE value="support for multiple tables (started)" />
@@ -410,20 +417,16 @@
     <MESSAGE value="added new dir" />
     <MESSAGE value="added framework for different outputters" />
     <MESSAGE value="started program args parser" />
-    <option name="LAST_COMMIT_MESSAGE" value="started program args parser" />
+    <MESSAGE value="fix reportingowner" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix reportingowner" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>139</line>
-          <option name="timeStamp" value="98" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>154</line>
-          <option name="timeStamp" value="99" />
+          <line>281</line>
+          <option name="timeStamp" value="100" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
@@ -435,6 +438,7 @@
     <watches-manager>
       <configuration name="Application">
         <watch expression="t.getLine()" language="JAVA" />
+        <watch expression="((Form4Parser.Form4Parser)this).scanner" custom="Form4Parser.Form4Parser" />
       </configuration>
     </watches-manager>
   </component>
@@ -443,6 +447,6 @@
     <select />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/EDGAR_Data_Mining$Main.ic" NAME="Main Coverage Results" MODIFIED="1681143570141" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
+    <SUITE FILE_PATH="coverage/EDGAR_Data_Mining$Main.ic" NAME="Main Coverage Results" MODIFIED="1695373256482" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />
   </component>
 </project>

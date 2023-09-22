@@ -157,7 +157,8 @@ public class Form4Parser extends FormParser {
         if (nxtTag.equals("derivativeTable")) derivativeTable();
         if (nxtTag.equals("footnotes")) footnotes();
         if (nxtTag.equals("remarks")) remarks();
-        ownerSignature();
+        while (nxtTag.equals("ownerSignature"))
+            ownerSignature();
     }
 
 
@@ -230,7 +231,7 @@ public class Form4Parser extends FormParser {
         this.reportingOwners.add(result);
     }
 
-    private void reportingOwnerRelationship(ReportingOwner result) {
+    private void reportingOwnerRelationship(ReportingOwner result) { //TODO: refactor?
         reportingRelationship(result, "reportingOwnerRelationship");
     }
 
@@ -271,7 +272,7 @@ public class Form4Parser extends FormParser {
 
     private void reportingId(ReportingOwner result) {
         parseNode(result, "rptOwnerCik");
-        if (nxtTag.equals("rptOwnerCik"))
+        if (nxtTag.equals("rptOwnerCcc"))
             parseNode(result, "rptOwnerCcc");
         if (nxtTag.equals("rptOwnerName"))
             parseNode(result, "rptOwnerName");
@@ -437,6 +438,8 @@ public class Form4Parser extends FormParser {
 
     private void securityTitle(Object result, String tag) {
         parseValueNode(result, tag);
+        while (nxtTag.equals("footnoteId"))
+            footnodeId();
     }
 
     private void nonDerivativeHolding() {
