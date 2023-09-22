@@ -51,6 +51,7 @@ public class FTPCommunicator {
             }
             if (status == 200) {
                 return con.getInputStream();
+
             }
         } catch (UnknownHostException e) {
             System.out.println("Connection timed out, waiting for 30s...");

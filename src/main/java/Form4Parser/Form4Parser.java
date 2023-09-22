@@ -151,7 +151,8 @@ public class Form4Parser extends FormParser {
         parseNode(this, "periodOfReport");
         if (nxtTag.equals("notSubjectToSection16")) parseNode(this, "notSubjectToSection16");
         issuer();
-        reportingOwner();
+        while (nxtTag.equals("reportingOwner"))
+            reportingOwner();
         if (nxtTag.equals("nonDerivativeTable")) nonDerivativeTable();
         if (nxtTag.equals("derivativeTable")) derivativeTable();
         if (nxtTag.equals("footnotes")) footnotes();

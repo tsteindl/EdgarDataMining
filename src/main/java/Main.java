@@ -113,6 +113,8 @@ public class Main {
         for (String idxFile : edgarScraper.getIndexFiles()) {
             try {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
+                if (dailyDataList.get(0) == null)
+                    continue;
                 String outputPath = "data/output" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
                 for (DailyData dailyData : dailyDataList) {
                     try {
