@@ -329,10 +329,12 @@ public class Form4Parser extends FormParser {
 
     private void postTransactionAmounts(Object result) {
         scan(); //go inside <postTransactionAmounts>
-        if (nxtTag.equals("sharesOwnedFollowingTransaction"))
-            sharesOwnedFollowingTransaction(result);
-        else
-            valueOwnedFollowingTransaction(result);
+        if (nxtTag.equals("sharesOwnedFollowingTransaction") || nxtTag.equals("valueOwnedFollowingTransaction")) {
+            if (nxtTag.equals("sharesOwnedFollowingTransaction"))
+                sharesOwnedFollowingTransaction(result);
+            else
+                valueOwnedFollowingTransaction(result);
+        }
     }
 
     private void valueOwnedFollowingTransaction(Object result) {
@@ -483,8 +485,10 @@ public class Form4Parser extends FormParser {
 
     private void underlyingSecurity(Object result) {
         underlyingSecurityTitle(result);
-        if (nxtTag.equals("underlyingSecurityShares")) underlyingSecurityShares(result);
-        if (nxtTag.equals("underlyingSecurityValue")) underlyingSecurityValue(result);
+        if (nxtTag.equals("underlyingSecurityShares") || nxtTag.equals("underlyingSecurityValue")) {
+            if (nxtTag.equals("underlyingSecurityShares")) underlyingSecurityShares(result);
+            if (nxtTag.equals("underlyingSecurityValue")) underlyingSecurityValue(result);
+        }
     }
 
     private void underlyingSecurityValue(Object result) {
