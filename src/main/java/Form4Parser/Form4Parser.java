@@ -33,14 +33,14 @@ public abstract class Form4Parser extends FormParser {
 
     //Parser fields
     protected final Map<String, String> fields;
-    private String schemaVersion;//TODO correct types
-    private String documentType;
-    private LocalDate periodOfReport;
-    private Boolean notSubjectToSection16;
-    private String issuerCik;
-    private String issuerName;
-    private String issuerTradingSymbol;
-    private String remarks;
+    protected String schemaVersion;//TODO correct types
+    protected String documentType;
+    protected LocalDate periodOfReport;
+    protected Boolean notSubjectToSection16;
+    protected String issuerCik;
+    protected String issuerName;
+    protected String issuerTradingSymbol;
+    protected String remarks;
 
     protected final List<ReportingOwner> reportingOwners;
     protected final List<NonDerivativeTransaction> nonDerivativeTransactions;
@@ -160,12 +160,15 @@ public abstract class Form4Parser extends FormParser {
             String tag = ((Element) this.nxt).getTagName();
             if (!key.equals(tag) && !tag.equals("value"))
                 System.out.println("Tag should be: " + key + " but is: " + tag);
-            Field fld = c.getClass().getDeclaredField(key);
+            Field fld = getDeclaredFieldFromSuperClass(c.getClass(), key);
+            if (fld == null) {
+                throw new NoSuchFieldException(key);
+            }
             Class<?> type = fld.getType();
             Object castValue = type.cast(nxtVal);
             fld.setAccessible(true);
             fld.set(c, castValue);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
+        } catch (NoSuchFieldException | IllegalAccessException | NullPointerException e) {
             System.out.println(e.getMessage());
         }
         scan();
@@ -178,6 +181,19 @@ public abstract class Form4Parser extends FormParser {
 //        scan();
     }
 
+    private Field getDeclaredFieldFromSuperClass(Class<?> type, String key) {
+        for (Class<?> c = type; c != null; c = c.getSuperclass()) {
+            Field result;
+            try {
+                result = c.getDeclaredField(key);
+            } catch (NoSuchFieldException e) {
+                continue;
+            }
+            if (result != null)
+                return result;
+        }
+        return null;
+    }
 //    private void parseValueNode(Map<String, String> map, String key) {
 //        scan();
 //        parseNode(map, key);

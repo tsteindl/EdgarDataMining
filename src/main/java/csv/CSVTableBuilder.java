@@ -44,7 +44,7 @@ public class CSVTableBuilder extends CSVBuilder {
     }
 
 
-    private final Map<String, String> nonNestedTags;
+    private final Map<String, Object> nonNestedTags;
     private final List<Table<String>> tables;
 
 
@@ -57,7 +57,7 @@ public class CSVTableBuilder extends CSVBuilder {
      */
     public CSVTableBuilder(String outputPath,
                            String sep,
-                           Map<String, String> nonNestedTags,
+                           Map<String, Object> nonNestedTags,
 //                           Map<String, List<Map<String, String>>> tables
                            Map<String, List<? extends TableType>> tables
     ) throws ParserConfigurationException, IOException, SAXException {
@@ -74,7 +74,7 @@ public class CSVTableBuilder extends CSVBuilder {
         System.out.println(this.lines);
     }
 
-    private static List<String> getAllTags(Map<String, String> nonNestedTags, Map<String, List<? extends TableType>> tables) {
+    private static List<String> getAllTags(Map<String, Object> nonNestedTags, Map<String, List<? extends TableType>> tables) {
         List<String> result = new ArrayList<>();
         result.addAll(nonNestedTags.keySet());
         tables.keySet().forEach(k ->
@@ -83,14 +83,14 @@ public class CSVTableBuilder extends CSVBuilder {
         return result;
     }
 
-    private static List<List<String>> getLines(Map<String, List<? extends TableType>> tables, Map<String, String> nonNestedTags) {
+    private static List<List<String>> getLines(Map<String, List<? extends TableType>> tables, Map<String, Object> nonNestedTags) {
         //get only values of tables
         List<List<String>> tableVals = tables.values().stream()
                 .flatMap(List::stream)
                 .map(t -> t.values().stream().map(Object::toString).collect(Collectors.toList()))
                 .collect(Collectors.toList());
         List<List<String>> lines = computeCrossProduct(tableVals);
-        lines.forEach(l -> l.addAll(nonNestedTags.values())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
+        lines.forEach(l -> l.addAll(nonNestedTags.values().stream().map(Object::toString).toList())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
         return lines;
     }
 
