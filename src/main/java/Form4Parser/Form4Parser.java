@@ -338,6 +338,7 @@ public class Form4Parser extends FormParser {
     }
 
     private void valueOwnedFollowingTransaction(Object result) {
+        scan(); //go inside valueOwnedFollowingTransaction
         numberWithFootnote(result, "valueOwnedFollowingTransaction");
     }
 
@@ -347,11 +348,13 @@ public class Form4Parser extends FormParser {
     }
 
     private void numberWithFootnote(Object result, String tag) {
-        if (nxtTag.equals("value") || nxtTag.equals("footnoteId")) {
-            if (nxtTag.equals("value")) parseNode(result, tag);
-            else footnoteId();
-            while (nxtTag.equals("footnoteId")) footnoteId();
-        }
+//        if (nxtTag.equals("value") || nxtTag.equals("footnoteId")) {
+//            if (nxtTag.equals("value")) parseNode(result, tag);
+//            else footnoteId();
+//            while (nxtTag.equals("footnoteId")) footnoteId();
+//        }
+        parseNode(result, tag);
+        while (nxtTag.equals("footnoteId")) footnoteId();
     }
 
     private void derivTransactAmounts(Object result) {
