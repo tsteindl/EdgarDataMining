@@ -313,7 +313,8 @@ public class Form4Parser extends FormParser {
 
     private void indirectNature(Object result, String tag) {
         parseValueNode(result, tag);
-        footnodeId();
+        while (nxtTag.equals("footnoteId"))
+            footnoteId();
     }
 
     private void directOrIndirectOwnership(Object result) {
@@ -322,6 +323,8 @@ public class Form4Parser extends FormParser {
 
     private void ownershipType(Object result, String key) {
         parseValueNode(result, key);
+        while (nxtTag.equals("footnoteId"))
+            footnoteId();
     }
 
     private void postTransactionAmounts(Object result) {
@@ -342,7 +345,7 @@ public class Form4Parser extends FormParser {
 
     private void numberWithFootnote(Object result, String tag) {
         parseValueNode(result, tag);
-        while (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnoteId();
     }
 
     private void derivTransactAmounts(Object result) {
@@ -369,7 +372,7 @@ public class Form4Parser extends FormParser {
     private void nonDerAcqDispCode(Object result, String tag) {
         parseValueNode(result, tag);
         if (nxtTag.equals("footnoteId"))
-            footnodeId();
+            footnoteId();
     }
 
     private void derAcqDispCode(Object result, String tag) {
@@ -383,9 +386,9 @@ public class Form4Parser extends FormParser {
 
     private void optNumberWithFootnote(Object result, String tag) {
         if (nxtTag.equals("value")) parseNode(result, tag);
-        else footnodeId();
+        else footnoteId();
         while (nxtTag.equals("footnoteId"))
-            footnodeId();
+            footnoteId();
     }
 
     private void transactionShares(Object result) {
@@ -394,7 +397,7 @@ public class Form4Parser extends FormParser {
 
     private void transactionTimeliness(Object result) {
         transTimelyPicklist(result, "transactionTimeliness");
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnoteId();
     }
 
     private void transTimelyPicklist(Object result, String tag) {
@@ -406,7 +409,7 @@ public class Form4Parser extends FormParser {
         transactionFormType(result);
         transactionCode(result);
         equitySwapInvolved(result);
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnoteId();
     }
 
     private void equitySwapInvolved(Object result) {
@@ -423,23 +426,23 @@ public class Form4Parser extends FormParser {
 
     private void deemedExecutionDate(Object result) {
         if (nxtTag.equals("value")) parseValueNode(result, "transactionDate");
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnoteId();
     }
 
-    private void footnodeId() {
+    private void footnoteId() {
         scan(); //skip
     }
 
 
     private void transactionDate(Object result) {
         parseValueNode(result, "transactionDate");
-        if (nxtTag.equals("footnoteId")) footnodeId();
+        while (nxtTag.equals("footnoteId")) footnoteId();
     }
 
     private void securityTitle(Object result, String tag) {
         parseValueNode(result, tag);
         while (nxtTag.equals("footnoteId"))
-            footnodeId();
+            footnoteId();
     }
 
     private void nonDerivativeHolding() {
@@ -506,8 +509,8 @@ public class Form4Parser extends FormParser {
 
     private void optDateWithFootNote(Object result, String tag) {
         if (nxtTag.equals("value")) parseValueNode(result, tag);
-        else footnodeId();
-        while (nxtTag.equals("footnoteId")) footnodeId();
+        else footnoteId();
+        while (nxtTag.equals("footnoteId")) footnoteId();
     }
 
     private void conversionOrExercisePrice(Object result) {
