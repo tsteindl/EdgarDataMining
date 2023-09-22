@@ -1,4 +1,5 @@
 import Form4Parser.Form4Parser;
+import Form4Parser.CSVForm4Parser;
 import interfaces.FormConverter;
 import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
@@ -151,7 +152,7 @@ public class Main {
                 for (DailyData dailyData : dailyDataList) {
                     try {
                         String responseData = edgarScraper.downloadData(dailyData);
-                        Form4Parser form4Parser = new Form4Parser(dailyData.folderPath(), responseData);
+                        Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
                         form4Parser.parseForm();
                         FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
                         outputter.outputForm();
@@ -171,10 +172,10 @@ public class Main {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         for (String file : files) {
             DailyData dailyData = new DailyData("4", "", "", "", file);
-            String outputPath = "data/output_" + file + ".csv"; //TODO: fix temporary solution
+            String outputPath = "data/output_" + file.replace("/", "_") + ".csv"; //TODO: fix temporary solution
             try {
                 String responseData = edgarScraper.downloadData(dailyData);
-                Form4Parser form4Parser = new Form4Parser(dailyData.folderPath(), responseData);
+                Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
                 form4Parser.parseForm();
                 FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
                 outputter.outputForm();

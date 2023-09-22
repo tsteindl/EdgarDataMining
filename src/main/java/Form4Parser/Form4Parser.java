@@ -18,7 +18,7 @@ import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.util.*;
 
-public class Form4Parser extends FormParser {
+public abstract class Form4Parser extends FormParser {
     //TODO: types (!!!!!)
     private static String XML_TAG = "XML";
     private static String WELL_FORMED_XML_TAG = "SEC-DOCUMENT";
@@ -32,7 +32,7 @@ public class Form4Parser extends FormParser {
     private String nxtTag;
 
     //Parser fields
-    private final Map<String, String> fields;
+    protected final Map<String, String> fields;
     private String schemaVersion;//TODO correct types
     private String documentType;
     private LocalDate periodOfReport;
@@ -42,11 +42,11 @@ public class Form4Parser extends FormParser {
     private String issuerTradingSymbol;
     private String remarks;
 
-    private final List<ReportingOwner> reportingOwners;
-    private final List<NonDerivativeTransaction> nonDerivativeTransactions;
-    private final List<NonDerivativeHolding> nonDerivativeHoldings;
-    private final List<DerivativeTransaction> derivativeTransactions;
-    private final List<DerivativeHolding> derivativeHoldings;
+    protected final List<ReportingOwner> reportingOwners;
+    protected final List<NonDerivativeTransaction> nonDerivativeTransactions;
+    protected final List<NonDerivativeHolding> nonDerivativeHoldings;
+    protected final List<DerivativeTransaction> derivativeTransactions;
+    protected final List<DerivativeHolding> derivativeHoldings;
     public Form4Parser(String name, String input) {
         super(name, "4");
         this.input = input;
@@ -80,33 +80,6 @@ public class Form4Parser extends FormParser {
 //            outputter.outputForm(); //TODO: maybe extract this into parent function
         } catch (ParserConfigurationException | IOException | SAXException | ParseFormException e) {
             e.printStackTrace();
-        }
-    }
-
-    @Override
-    public FormConverter configureOutputter(String outputPath, FormConverter.Outputter type) throws OutputException {
-        return switch (type) {
-            case DB -> new DBOutputter();
-            default -> configureCSV(outputPath);
-        };
-    }
-
-    public CSVTableBuilder configureCSV(String outputPath) throws OutputException {
-        try {
-            Map<String, List<? extends TableType>> tables = new HashMap<>();
-            tables.put("reportingOwners", reportingOwners);
-            tables.put("nonDerivativeTransactions", nonDerivativeTransactions);
-            tables.put("nonDerivativeHoldings", nonDerivativeHoldings);
-            tables.put("derivativeTransactions", derivativeTransactions);
-            tables.put("derivativeHoldings", derivativeHoldings);
-            return new CSVTableBuilder(
-                    outputPath,
-                    ";",
-                    fields,
-                    tables
-            );
-        } catch (ParserConfigurationException | IOException | SAXException e) {
-            throw new OutputException(e.getMessage());
         }
     }
 
