@@ -8,4 +8,12 @@ data/
 document tags.txt
 
 prbs-ue02-12024183/
-/.idea/
+
+target
+
+.idea
+
+.ipynb_checkpoints
+.RData
+.Rhistory
+EdgarDataMining.iml
