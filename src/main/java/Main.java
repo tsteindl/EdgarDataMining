@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
 import util.Constants;
 import util.DailyData;
+import util.OutputException;
 import util.ParseFormException;
 
 import java.io.*;
@@ -34,6 +35,37 @@ public class Main {
         String path = (String) argsMap.get("path");
         boolean conc = (boolean) argsMap.get("conc");
         boolean doStats = (boolean) argsMap.get("doStats");
+        if (argsMap.get("files") != null) {
+            String[] files = ((String) argsMap.get("files")).split(",");
+            System.out.println("----------------------------");
+            System.out.println("Starting application with program args: ");
+            System.out.println("Files: " + Arrays.toString(files));
+            System.out.println("conc: " + conc);
+            System.out.println("doStats: " + doStats);
+            System.out.println("----------------------------");
+
+            startTime = new BigInteger(Long.toString(System.nanoTime()));
+            StopWatch watch = new StopWatch();
+            watch.start();
+            if (conc)
+                return;
+            else
+                executeFilesSequentially(files, FormConverter.Outputter.CSV); //TODO: add program arg
+            totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
+            watch.stop();
+//        totalTimeTaken = watch.getTime();
+            System.out.println("-------------------------------------------------");
+            System.out.println("Application ended");
+            System.out.println("Total time taken: " + totalTimeTaken + "s");
+            System.out.println("Number of Forms parsed: " + nOForms);
+            System.out.println("Avg seconds per form: " + ((double) totalTimeTaken / nOForms));
+            System.out.println("Number of erroneous forms: " + failedForms.size());
+            System.out.println("Erroneous forms: " + failedForms.toString());
+            System.out.println("-------------------------------------------------");
+
+            return;
+        }
+
 
         System.out.println("----------------------------");
         System.out.println("Starting application with program args: ");
@@ -59,7 +91,7 @@ public class Main {
         System.out.println("Application ended");
         System.out.println("Total time taken: " + totalTimeTaken + "s");
         System.out.println("Number of Forms parsed: " + nOForms);
-        System.out.println("Avg seconds per form: " + ((double) totalTimeTaken/nOForms));
+        System.out.println("Avg seconds per form: " + ((double) totalTimeTaken / nOForms));
         System.out.println("Number of erroneous forms: " + failedForms.size());
         System.out.println("Erroneous forms: " + failedForms.toString());
         System.out.println("-------------------------------------------------");
@@ -87,14 +119,14 @@ public class Main {
 
             if (next1.equals("-path")) {
                 result.put("path", next2);
-            }
-            else if (next1.equals("-conc")) {
+            } else if (next1.equals("-conc")) {
                 Boolean bool = cmdBool(next2);
                 result.put("conc", bool);
-            }
-            else if (next1.equals("-stats")) {
+            } else if (next1.equals("-stats")) {
                 Boolean bool = cmdBool(next2);
                 result.put("doStats", bool);
+            } else if (next1.equals("-files")) {
+                result.put("files", next2);
             }
         }
         return result;
@@ -115,7 +147,7 @@ public class Main {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
                 if (dailyDataList.get(0) == null)
                     continue;
-                String outputPath = "data/output" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
+                String outputPath = "data/output_" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
                 for (DailyData dailyData : dailyDataList) {
                     try {
                         String responseData = edgarScraper.downloadData(dailyData);
@@ -134,6 +166,26 @@ public class Main {
             }
         }
     }
+
+    public static void executeFilesSequentially(String[] files, FormConverter.Outputter outputType) {
+        EdgarScraper edgarScraper = new EdgarScraper("4");
+        for (String file : files) {
+            DailyData dailyData = new DailyData("4", "", "", "", file);
+            String outputPath = "data/output_" + file + ".csv"; //TODO: fix temporary solution
+            try {
+                String responseData = edgarScraper.downloadData(dailyData);
+                Form4Parser form4Parser = new Form4Parser(dailyData.folderPath(), responseData);
+                form4Parser.parseForm();
+                FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
+                outputter.outputForm();
+                nOForms++;
+            } catch (ParseFormException | IOException | InterruptedException | OutputException e) {
+                e.printStackTrace();
+                failedForms.add(dailyData.folderPath());
+            }
+        }
+    }
+
 
     public static void executeConcurrently(String path) {
     }
