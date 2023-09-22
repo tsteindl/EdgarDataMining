@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="fix transactionTimeliness">
+    <list default="true" id="a9249b32-0d6d-4539-b7f5-fde6395b69d2" name="Changes" comment="fix valueOwnedFollowingTransaction">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java" afterDir="false" />
     </list>
@@ -100,11 +100,11 @@
       <recent name="$PROJECT_DIR$/documentation" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.File">
+  <component name="RunManager" selected="Application.Main">
     <configuration name="File" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="DataRetrieval" />
-      <option name="PROGRAM_PARAMETERS" value="-files=edgar/data/715579/0000715579-22-000019.txt -conc=false" />
+      <option name="PROGRAM_PARAMETERS" value="-files=edgar/data/1708176/0001209191-22-020174.txt -conc=false" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -112,7 +112,7 @@
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="MAIN_CLASS_NAME" value="Main" />
       <module name="DataRetrieval" />
-      <option name="PROGRAM_PARAMETERS" value="-path=2022/QTR1/form.20220318.idx -conc=false" />
+      <option name="PROGRAM_PARAMETERS" value="-path=2022/QTR1/ -conc=false" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
@@ -180,7 +180,7 @@
       <workItem from="1681418592658" duration="5756000" />
       <workItem from="1681458251166" duration="4453000" />
       <workItem from="1682846917054" duration="3534000" />
-      <workItem from="1695370019873" duration="11112000" />
+      <workItem from="1695370019873" duration="13332000" />
     </task>
     <task id="LOCAL-00001" summary="working again">
       <created>1676989735700</created>
@@ -419,7 +419,23 @@
       <option name="project" value="LOCAL" />
       <updated>1695382459208</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="fix transactionTimeliness">
+      <option name="closed" value="true" />
+      <created>1695382853323</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1695382853323</updated>
+    </task>
+    <task id="LOCAL-00035" summary="fix valueOwnedFollowingTransaction">
+      <option name="closed" value="true" />
+      <created>1695384004473</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1695384004473</updated>
+    </task>
+    <option name="localTasksCounter" value="36" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -439,7 +455,6 @@
   <component name="VcsManagerConfiguration">
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_NEW_TODO" value="false" />
-    <MESSAGE value="adjust constants" />
     <MESSAGE value="adjusted fields of CSVTableBuilder and CSVBuilder" />
     <MESSAGE value="implemented scanner, and parser TODO: types" />
     <MESSAGE value="nonderivative table parsed" />
@@ -464,25 +479,16 @@
     <MESSAGE value="fix parsing details" />
     <MESSAGE value="implement single/multiple file parsing" />
     <MESSAGE value="fix transactionTimeliness" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix transactionTimeliness" />
+    <MESSAGE value="fix valueOwnedFollowingTransaction" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix valueOwnedFollowingTransaction" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>377</line>
-          <option name="timeStamp" value="129" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>376</line>
-          <option name="timeStamp" value="130" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/Form4Parser/Form4Parser.java</url>
-          <line>375</line>
-          <option name="timeStamp" value="131" />
+          <line>141</line>
+          <option name="timeStamp" value="151" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -513,6 +513,7 @@ public class Form4Parser extends FormParser {
     }
 
     private void underlyingSecurityValue(Object result) {
+        scan(); //go inside underlyingSecurityValue
         optNumberWithFootnote(result, "underlyingSecurityValue");
     }
 
