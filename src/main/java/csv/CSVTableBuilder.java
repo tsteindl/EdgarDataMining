@@ -79,7 +79,7 @@ public class CSVTableBuilder extends CSVBuilder {
     }
 
     /**
-     * Gets all tags so they can be used in the header of the CSV, in tables it will prepend id of table
+     * Gets all tags so they can be used as columns of the CSV, in tables it will prepend id of table
      * @param nonNestedTags
      * @param tables
      * @return
