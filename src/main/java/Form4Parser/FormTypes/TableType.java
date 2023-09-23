@@ -33,4 +33,8 @@ public abstract class TableType {
         }
         return fieldValues;
     }
+
+    public String getId() {
+        return this.getClass().getSimpleName().toLowerCase();
+    }
 }

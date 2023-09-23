@@ -34,6 +34,10 @@ public class CSVTableBuilder extends CSVBuilder {
             this.tags = table.keys();
         }
 
+        public String getId() {
+            return this.id;
+        }
+
         public List<String> getLine() {
 //            return map.values().stream().map(v -> this.id + "_" + v).collect(Collectors.toList());
             return map.values().stream().map(v -> (String) v).collect(Collectors.toList()); //TODO: check if this is good code
@@ -74,12 +78,17 @@ public class CSVTableBuilder extends CSVBuilder {
         System.out.println(this.lines);
     }
 
+    /**
+     * Gets all tags so they can be used in the header of the CSV, in tables it will prepend id of table
+     * @param nonNestedTags
+     * @param tables
+     * @return
+     */
     private static List<String> getAllTags(Map<String, Object> nonNestedTags, Map<String, List<? extends TableType>> tables) {
         List<String> result = new ArrayList<>();
         result.addAll(nonNestedTags.keySet());
         tables.keySet().forEach(k ->
-                tables.get(k).forEach(t ->
-                        result.addAll(t.keys())));
+                result.addAll(tables.get(k).get(0).keys().stream().map(key -> tables.get(k).get(0).getId()+ "_" + key).toList()));
         return result;
     }
 
