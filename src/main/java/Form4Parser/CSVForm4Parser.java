@@ -37,6 +37,7 @@ public class CSVForm4Parser extends Form4Parser {
             nonNestedTags.put("issuerName", issuerName);
             nonNestedTags.put("issuerTradingSymbol", issuerTradingSymbol);
             nonNestedTags.put("remarks", remarks);
+
             return new CSVTableBuilder(
                     outputPath,
                     ";",
