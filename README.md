@@ -1,8 +1,6 @@
 # FORM4DataRetrieval
 
 ## How it works
-Details on how to access EDGAR data: https://www.sec.gov/os/accessing-edgar-data
-
 Parse JSON from FTP server: 
 Visit: https://www.sec.gov/Archives/edgar/daily-index/index.json which gives tree structure to navigate the daily index files.
 
@@ -16,9 +14,12 @@ Stride the ArrayList for all DailyData objects and visit the url from folderPath
 
 Parse XML using XML-tags from the metatable and use this data to create CSV file.
 
-#Example input
-/edgar/daily-index/2022/QTR1/ -conc=false
+## Example input
+- /edgar/daily-index/2022/QTR1/ -conc=false
+- -files=edgar/data/1708176/0001209191-22-020174.txt -conc=false
 
+## Details on how to access EDGAR data
+https://www.sec.gov/os/accessing-edgar-data
 
 ## Technologies used
 - Generic class hierarchies including interfaces and abstract classes enabling building on this implementation (dependency injection)

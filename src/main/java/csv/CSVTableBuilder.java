@@ -87,11 +87,22 @@ public class CSVTableBuilder extends CSVBuilder {
     private static List<String> getAllTags(Map<String, Object> nonNestedTags, Map<String, List<? extends TableType>> tables) {
         List<String> result = new ArrayList<>();
         result.addAll(nonNestedTags.keySet());
-        tables.keySet().forEach(k ->
-                result.addAll(tables.get(k).get(0).keys().stream().map(key -> tables.get(k).get(0).getId()+ "_" + key).toList()));
+        tables.keySet().forEach(k -> {
+            if (!tables.get(k).isEmpty()) {
+                TableType table = tables.get(k).get(0);
+                result.addAll(table.keys().stream().map(key -> table.getId() + "_" + key).toList());
+            }
+        });
         return result;
     }
 
+    /**
+     * Get all lines of the CSV document, computes the cross product among all tables for a lossless (but redundant) representation.
+     * Only required because CSV cannot have hierarchical structure or relations to other tables
+     * @param tables
+     * @param nonNestedTags
+     * @return
+     */
     private static List<List<String>> getLines(Map<String, List<? extends TableType>> tables, Map<String, Object> nonNestedTags) {
         //get only values of tables
         List<List<String>> tableVals = tables.values().stream()
@@ -99,12 +110,13 @@ public class CSVTableBuilder extends CSVBuilder {
                 .map(t -> t.values().stream().map(Object::toString).collect(Collectors.toList()))
                 .collect(Collectors.toList());
         List<List<String>> lines = computeCrossProduct(tableVals);
-        lines.forEach(l -> l.addAll(nonNestedTags.values().stream().map(Object::toString).toList())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
+        //DO NOT CHANGE THE FOLLOWING LINE
+        lines.forEach(l -> l.addAll(nonNestedTags.values().stream().map(v -> (v == null) ? "" : v.toString()).toList())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
         return lines;
     }
 
     /**
-     * Method computes cross product, in this case used for cross product of tables, which is used to display tree-like datastructure (XML) as flat list (CSV)
+     * Method recursively computes cross product, in this case used for cross product of tables, which is used to display tree-like datastructure (XML) as flat list (CSV)
      * This leads to an exponential space complexity which is not advisable (consider using a different way of converting Forms (eg database, hierarchical)
      * @param elems
      * @return
