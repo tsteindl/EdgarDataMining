@@ -116,8 +116,7 @@ public class CSVTableBuilder extends CSVBuilder {
 //        LinkedHashMap<String, List<? extends TableType>> tablees = tables.values().stream().map(table -> table.stream().map(elem -> elem.toString()).toList()).toList();
 
         //TODO: do this with lambda
-        LinkedHashMap<String, List<List<String>>> tablesMapped = new LinkedHashMap<>();
-        List<List<List<String>>> tablesMappedToList = new ArrayList<>();
+        List<List<List<String>>> tablesMapped = new ArrayList<>();
         for (String key : tables.keySet()) {
             List<List<String>> tableList = new ArrayList<>();
             for (TableType table : tables.get(key)) {
@@ -127,10 +126,9 @@ public class CSVTableBuilder extends CSVBuilder {
                 }
                 tableList.add(tableMap);
             }
-            tablesMapped.put(key, tableList);
-            tablesMappedToList.add(tableList);
+            tablesMapped.add(tableList);
         }
-        List<List<String>> lines = computeCartesianProduct(tablesMappedToList);
+        List<List<String>> lines = computeCartesianProduct(tablesMapped);
         //DO NOT CHANGE THE FOLLOWING LINE
         lines.forEach(l -> l.addAll(0, nonNestedTags.values().stream().map(v -> (v == null) ? "" : v.toString()).toList())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again, a lot of array operations are used here
         return lines;
