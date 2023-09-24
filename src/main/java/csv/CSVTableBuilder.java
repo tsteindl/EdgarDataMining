@@ -64,7 +64,6 @@ public class CSVTableBuilder extends CSVBuilder {
     public CSVTableBuilder(String outputPath,
                            String sep,
                            LinkedHashMap<String, Object> nonNestedTags,
-//                           Map<String, List<Map<String, String>>> tables
                            LinkedHashMap<String, List<? extends TableType>> tables
     ) throws ParserConfigurationException, IOException, SAXException {
         super(
