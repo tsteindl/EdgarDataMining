@@ -29,7 +29,7 @@ public class EdgarScraper {
     }
 
 
-    public void scrapeIndexFiles(String path) {
+    public void scrapeIndexFiles(String path, List<IndexFile> indexFiles, int delay) {
         //TODO: refactor
         String fileExt = getFileExtension(path);
         switch (fileExt) {
@@ -40,14 +40,14 @@ public class EdgarScraper {
 
                 if (indexType.equals("form")) {
                     try {
-                        String requestData = FTPCommunicator.loadIndexFile(path);
+                        String requestData = FTPCommunicator.loadIndexFile(path, delay);
                         if (requestData == null) {
                             failedIndexFiles++;
 //                            throw new Exception(".idx file not available");
                         }
                         this.loadedIndexFiles++;
                         System.out.println(" parsed .idx file number " + loadedIndexFiles);
-                        this.indexFiles.add(new IndexFile(path, requestData));
+                        indexFiles.add(new IndexFile(path, requestData));
                     } catch (Exception e) {
                         System.out.println(String.format("Url. %s not loadable", path));
                     }
@@ -56,7 +56,7 @@ public class EdgarScraper {
             case "":
                 //traverse tree further
                 try {
-                    String indexData = FTPCommunicator.loadNavFile(path);
+                    String indexData = FTPCommunicator.loadNavFile(path, delay);
                     if (indexData == null) {
                         failedIndexFiles++;
                     }
@@ -66,11 +66,64 @@ public class EdgarScraper {
                     for (JsonElement item : itemArray) {
                         JsonObject itemObj = item.getAsJsonObject();
                         String href = itemObj.get("href").getAsString();
-                        scrapeIndexFiles(path + href);
+                        scrapeIndexFiles(path + href, indexFiles, delay);
                     }
                 } catch (Exception e) {
                     System.out.println(String.format("Url. %s not loadable", path));
                 }
+                break;
+            default:
+        }
+    }
+
+    public void scrapeIndexFilesConc(String path, List<Runnable> downloadQueue, List<IndexFile> indexFiles) {
+        int delay = 0;
+        //TODO: refactor
+        String fileExt = getFileExtension(path);
+        switch (fileExt) {
+            case (".idx"):
+                String[] urlSplit = path.split("/");
+                urlSplit = Arrays.copyOfRange(urlSplit, urlSplit.length - 3, urlSplit.length);
+                String indexType = urlSplit[urlSplit.length - 1].split("\\.")[0];
+
+                if (indexType.equals("form")) {
+                    downloadQueue.add(() -> { //TODO: check if this works without try/catch
+                        try {
+                            String requestData = null;
+                            requestData = FTPCommunicator.loadIndexFile(path, delay);
+                            if (requestData == null) {
+                                failedIndexFiles++;
+                //                            throw new Exception(".idx file not available");
+                            }
+                            this.loadedIndexFiles++;
+                            System.out.println(" parsed .idx file number " + loadedIndexFiles);
+                            indexFiles.add(new IndexFile(path, requestData));
+                        } catch (Exception e) {
+                            System.out.println(String.format("Url. %s not loadable", path));
+                        }
+                    });
+                }
+                break;
+            case "":
+                //traverse tree further
+                downloadQueue.add(() -> {
+                    try {
+                        String indexData = FTPCommunicator.loadNavFile(path, delay);
+                        if (indexData == null) {
+                            failedIndexFiles++;
+                        }
+                        JsonObject indexJson = getJsonObjectFromString(indexData);
+                        JsonArray itemArray = indexJson.get("directory").getAsJsonObject().get("item").getAsJsonArray();
+
+                        for (JsonElement item : itemArray) {
+                            JsonObject itemObj = item.getAsJsonObject();
+                            String href = itemObj.get("href").getAsString();
+                            scrapeIndexFilesConc(path + href, downloadQueue, indexFiles);
+                        }
+                    } catch (Exception e) {
+                        System.out.println(String.format("Url. %s not loadable", path));
+                    }
+                });
                 break;
             default:
         }
@@ -103,15 +156,15 @@ public class EdgarScraper {
 
     public void saveForm(String path, DailyData dailyData) throws IOException, InterruptedException {
         if (path == null || dailyData == null) return;
-        String output = downloadData(dailyData);
+        String output = downloadData(dailyData, 100);
         if (output == null) return;
         try (Writer writer = new BufferedWriter(new FileWriter(path))) {
             writer.append(output);
         }
     }
 
-    public String downloadData(DailyData dailyData) throws IOException, InterruptedException {
-        return FTPCommunicator.loadForm(dailyData.folderPath());
+    public String downloadData(DailyData dailyData, int delay) throws IOException, InterruptedException {
+        return FTPCommunicator.loadForm(dailyData.folderPath(), delay);
     }
 
     public List<IndexFile> getIndexFiles() {

@@ -12,25 +12,25 @@ public class FTPCommunicator {
     public FTPCommunicator() {
     }
 
-    public static String loadNavFile(String path) throws IOException, InterruptedException {
-        InputStream result = loadUrl("edgar/daily-index/" + path + "index.json");
+    public static String loadNavFile(String path, int delay) throws IOException, InterruptedException {
+        InputStream result = loadUrl("edgar/daily-index/" + path + "index.json", delay);
         return (result == null) ? null : getResponseDataFromStream(result);
     }
 
-    public static String loadIndexFile(String path) throws IOException, InterruptedException {
-        InputStream response = loadUrl("edgar/daily-index/" + path);
+    public static String loadIndexFile(String path, int delay) throws IOException, InterruptedException {
+        InputStream response = loadUrl("edgar/daily-index/" + path, delay);
         return (response == null) ? null : getResponseDataFromStream(response);
     }
 
-    public static String loadForm(String path) throws IOException, InterruptedException {
-        InputStream response = loadUrl(path);
+    public static String loadForm(String path, int delay) throws IOException, InterruptedException {
+        InputStream response = loadUrl(path, delay);
         return (response == null) ? null : getResponseDataFromStream(response);
     }
 
-    private static InputStream loadUrl(String path) throws InterruptedException, IOException {
+    private static InputStream loadUrl(String path, int delay) throws InterruptedException, IOException {
         //wait to not exceed 10 requests per second
         //TODO: change this
-        Thread.sleep(100);
+        Thread.sleep(delay);
         try {
             String url = BASE_URL + path;
             System.out.println("load url: " + url);

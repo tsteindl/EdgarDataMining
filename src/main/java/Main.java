@@ -8,6 +8,7 @@ import util.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
@@ -78,8 +79,13 @@ public class Main {
         startTime = new BigInteger(Long.toString(System.nanoTime()));
         StopWatch watch = new StopWatch();
         watch.start();
-        if (conc)
-            executeConcurrently(path);
+        if (conc) {
+            try {
+                executeConcurrently(path, FormConverter.Outputter.CSV);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
         else
             executeSequentially(path, FormConverter.Outputter.CSV); //TODO: add program arg
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
@@ -136,31 +142,35 @@ public class Main {
 
 
     public static void executeSequentially(String path, FormConverter.Outputter outputType) {
-        stats = new Stats();
+//        stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
-        //wait until all idx files are downloaded (problem: recursion)
-        edgarScraper.scrapeIndexFiles(path);
+        //wait until all idx files are downloaded (TODO problem: recursion)
+        edgarScraper.scrapeIndexFiles(path, edgarScraper.getIndexFiles(), 100);
         for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
-            try {
-                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
-                String outputFolder = "data/" + idxFile.path().replace(".idx", "");
-                for (DailyData dailyData : dailyDataList) {
-                    String outputPath = outputFolder + "_" + dailyData.folderPath().replace("/", "_").replace(".txt", "") + ".csv"; //TODO: fix temporary solution
-                    try {
-                        String responseData = edgarScraper.downloadData(dailyData);
-                        Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
-                        form4Parser.parseForm();
-                        FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
-                        outputter.outputForm();
-                        nOForms++;
-                    } catch (ParseFormException e) {
-                        e.printStackTrace();
-                        failedForms.add(dailyData.folderPath());
-                    }
+            handleIndexFile(outputType, idxFile, edgarScraper);
+        }
+    }
+
+    private static void handleIndexFile(FormConverter.Outputter outputType, IndexFile idxFile, EdgarScraper edgarScraper) {
+        try {
+            List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
+            String outputFolder = "data/" + idxFile.path().replace(".idx", "");
+            for (DailyData dailyData : dailyDataList) {
+                String outputPath = outputFolder + "_" + dailyData.folderPath().replace("/", "_").replace(".txt", "") + ".csv"; //TODO: fix temporary solution
+                try {
+                    String responseData = edgarScraper.downloadData(dailyData, 100);
+                    Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
+                    form4Parser.parseForm();
+                    FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
+                    outputter.outputForm();
+                    nOForms++;
+                } catch (ParseFormException e) {
+                    e.printStackTrace();
+                    failedForms.add(dailyData.folderPath());
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -170,7 +180,7 @@ public class Main {
             DailyData dailyData = new DailyData("4", "", "", "", file);
             String outputPath = "data/output_" + file.replace("/", "_") + ".csv"; //TODO: fix temporary solution
             try {
-                String responseData = edgarScraper.downloadData(dailyData);
+                String responseData = edgarScraper.downloadData(dailyData, 100);
                 Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
                 form4Parser.parseForm();
                 FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
@@ -184,6 +194,22 @@ public class Main {
     }
 
 
-    public static void executeConcurrently(String path) {
+    public static void executeConcurrently(String path, FormConverter.Outputter outputType) throws InterruptedException {
+        EdgarScraper edgarScraper = new EdgarScraper("4");
+        List<Runnable> downloadQueueIndexFile = new CopyOnWriteArrayList<>();
+        ObservableCopyOnWriteArrayList<IndexFile> indexFiles = new ObservableCopyOnWriteArrayList<>();
+
+        indexFiles.addListener(idxFile -> {
+            System.out.println("Added idxFile");
+            handleIndexFile(outputType, idxFile, edgarScraper);
+        });
+
+        edgarScraper.scrapeIndexFilesConc(path, downloadQueueIndexFile, indexFiles);
+
+        System.out.println(downloadQueueIndexFile);
+
+        downloadQueueIndexFile.forEach(runnable -> {
+            runnable.run();
+        });
     }
 }
