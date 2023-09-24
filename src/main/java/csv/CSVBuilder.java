@@ -63,6 +63,13 @@ public class CSVBuilder implements FormConverter {
         String output = getHeader();
         output += "\n";
         output += getBody(this.lines);
+        if (this.lines.stream().anyMatch(line ->line.size() != this.cols.size())) {
+            Optional<List<String>> opt = this.lines.stream().filter(line ->line.size() != this.cols.size()).findFirst();
+            if (opt.isPresent())
+                throw new OutputException("Number of columns does not match in line: " + this.lines.indexOf(opt.get()));
+            else
+                throw new OutputException("Number of columns does not match.");
+        }
         if (output == null) return;
         try (Writer writer = new BufferedWriter(new FileWriter(outputPath, false))) {
             writer.append(output);

@@ -107,13 +107,7 @@ public class CSVTableBuilder extends CSVBuilder {
      * @return
      */
     private static List<List<String>> getLines(LinkedHashMap<String, List<? extends TableType>> tables, Map<String, Object> nonNestedTags) {
-        //get only values of tables
-        List<List<String>> tableVals = tables.values().stream()
-                .flatMap(List::stream)
-                .map(t -> t.values().stream().map(Object::toString).collect(Collectors.toList()))
-                .collect(Collectors.toList());
-//        LinkedHashMap<String, List<? extends TableType>> tablees = tables.values().stream().map(table -> table.stream().map(elem -> elem.toString()).toList()).toList();
-
+        //get tables mapped to string values
         //TODO: do this with lambda
         List<List<List<String>>> tablesMapped = new ArrayList<>();
         for (String key : tables.keySet()) {
@@ -149,8 +143,8 @@ public class CSVTableBuilder extends CSVBuilder {
      */
     //TODO: use generics, use streams
     public static void computeCartesianProductRecursively(List<List<List<String>>> tables, int index, List<List<String>> current, List<List<String>> result) {
-        if (index == tables.size() || tables.get(index) == null || tables.get(index).isEmpty()) {
-            List<String> appendRow = new ArrayList<>(); //TODO: make this more efficient
+        if (index == tables.size()) {
+            List<String> appendRow = new ArrayList<>(); //TODO: make this more efficient -> use lambdas
             for (List<String> row : current) {
                 for (String col : row) {
                     appendRow.add(col);
@@ -160,10 +154,15 @@ public class CSVTableBuilder extends CSVBuilder {
             return;
         }
         List<List<String>> currentTable = tables.get(index);
-        for (List<String> row : currentTable) {
-            current.add(row);
+        if (currentTable.isEmpty()) {
             computeCartesianProductRecursively(tables, index + 1, current, result);
-            current.remove(current.size() - 1);
+        }
+        else {
+            for (List<String> row : currentTable) {
+                current.add(row);
+                computeCartesianProductRecursively(tables, index + 1, current, result);
+                current.remove(current.size() - 1);
+            }
         }
     }
 }

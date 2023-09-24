@@ -111,8 +111,6 @@ public abstract class Form4Parser extends FormParser {
         ownershipDocument();
         if (this.nxt != null)
             throw new ParseFormException(this.name, this.nxt);
-        else
-            System.out.println("debug");
     }
 
     private void ownershipDocument() {
