@@ -21,14 +21,14 @@ public class CSVForm4Parser extends Form4Parser {
     @Override
     public FormConverter configureOutputter(String outputPath, FormConverter.Outputter type) throws OutputException {
         try {
-            Map<String, List<? extends TableType>> tables = new LinkedHashMap<>();
+            LinkedHashMap<String, List<? extends TableType>> tables = new LinkedHashMap<>();
             tables.put("reportingOwners", this.reportingOwners);
             tables.put("nonDerivativeTransactions", this.nonDerivativeTransactions);
             tables.put("nonDerivativeHoldings", this.nonDerivativeHoldings);
             tables.put("derivativeTransactions", this.derivativeTransactions);
             tables.put("derivativeHoldings", this.derivativeHoldings);
 
-            Map<String, Object> nonNestedTags = new LinkedHashMap<>();
+            LinkedHashMap<String, Object> nonNestedTags = new LinkedHashMap<>();
             nonNestedTags.put("schemaVersion", schemaVersion);
             nonNestedTags.put("documentType", documentType);
             nonNestedTags.put("periodOfReport", periodOfReport);

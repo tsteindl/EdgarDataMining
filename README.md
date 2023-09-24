@@ -34,4 +34,5 @@ https://www.sec.gov/os/accessing-edgar-data
 - Generics (Table)
 - Guava
 - Building a Parser from XML schema
+- implemented Iterable
 

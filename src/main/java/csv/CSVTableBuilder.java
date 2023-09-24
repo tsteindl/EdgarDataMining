@@ -42,6 +42,7 @@ public class CSVTableBuilder extends CSVBuilder {
 //            return map.values().stream().map(v -> this.id + "_" + v).collect(Collectors.toList());
             return map.values().stream().map(v -> (String) v).collect(Collectors.toList()); //TODO: check if this is good code
         }
+
         public int getNoCols() {
             return this.tags.size();
         }
@@ -54,16 +55,17 @@ public class CSVTableBuilder extends CSVBuilder {
 
     /**
      * Init CSV Builder with table. Repeating tags are the ones that are the same for each table entry: eg the reporter of a form
+     *
      * @param outputPath the output path of the generated output //TODO: change this for non CSV
-     * @param sep separator
-     * @param tables list of nodes for tables
-     * Use Lists instead of arrays so concatenation is easier (Java doesn't offer native array concatenation
+     * @param sep        separator
+     * @param tables     list of nodes for tables
+     *                   Use Lists instead of arrays so concatenation is easier (Java doesn't offer native array concatenation
      */
     public CSVTableBuilder(String outputPath,
                            String sep,
-                           Map<String, Object> nonNestedTags,
+                           LinkedHashMap<String, Object> nonNestedTags,
 //                           Map<String, List<Map<String, String>>> tables
-                           Map<String, List<? extends TableType>> tables
+                           LinkedHashMap<String, List<? extends TableType>> tables
     ) throws ParserConfigurationException, IOException, SAXException {
         super(
                 outputPath,
@@ -80,6 +82,7 @@ public class CSVTableBuilder extends CSVBuilder {
 
     /**
      * Gets all tags so they can be used as columns of the CSV, in tables it will prepend id of table
+     *
      * @param nonNestedTags
      * @param tables
      * @return
@@ -99,45 +102,71 @@ public class CSVTableBuilder extends CSVBuilder {
     /**
      * Get all lines of the CSV document, computes the cross product among all tables for a lossless (but redundant) representation.
      * Only required because CSV cannot have hierarchical structure or relations to other tables
+     *
      * @param tables
      * @param nonNestedTags
      * @return
      */
-    private static List<List<String>> getLines(Map<String, List<? extends TableType>> tables, Map<String, Object> nonNestedTags) {
+    private static List<List<String>> getLines(LinkedHashMap<String, List<? extends TableType>> tables, Map<String, Object> nonNestedTags) {
         //get only values of tables
         List<List<String>> tableVals = tables.values().stream()
                 .flatMap(List::stream)
                 .map(t -> t.values().stream().map(Object::toString).collect(Collectors.toList()))
                 .collect(Collectors.toList());
-        List<List<String>> lines = computeCrossProduct(tableVals);
+//        LinkedHashMap<String, List<? extends TableType>> tablees = tables.values().stream().map(table -> table.stream().map(elem -> elem.toString()).toList()).toList();
+
+        //TODO: do this with lambda
+        LinkedHashMap<String, List<List<String>>> tablesMapped = new LinkedHashMap<>();
+        List<List<List<String>>> tablesMappedToList = new ArrayList<>();
+        for (String key : tables.keySet()) {
+            List<List<String>> tableList = new ArrayList<>();
+            for (TableType table : tables.get(key)) {
+                List<String> tableMap = new ArrayList<>();
+                for (Object o : table.values()) {
+                    tableMap.add(o.toString());
+                }
+                tableList.add(tableMap);
+            }
+            tablesMapped.put(key, tableList);
+            tablesMappedToList.add(tableList);
+        }
+        List<List<String>> lines = computeCartesianProduct(tablesMappedToList);
         //DO NOT CHANGE THE FOLLOWING LINE
-        lines.forEach(l -> l.addAll(nonNestedTags.values().stream().map(v -> (v == null) ? "" : v.toString()).toList())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again
+        lines.forEach(l -> l.addAll(0, nonNestedTags.values().stream().map(v -> (v == null) ? "" : v.toString()).toList())); //add non nested tags values //TODO: maybe do this in recursive call so you dont need to iterate over everything again, a lot of array operations are used here
         return lines;
+    }
+
+    public static List<List<String>> computeCartesianProduct(List<List<List<String>>> tables) {
+        List<List<String>> result = new ArrayList<>();
+        computeCartesianProductRecursively(tables, 0, new ArrayList<>(), result);
+        return result;
     }
 
     /**
      * Method recursively computes cross product, in this case used for cross product of tables, which is used to display tree-like datastructure (XML) as flat list (CSV)
      * This leads to an exponential space complexity which is not advisable (consider using a different way of converting Forms (eg database, hierarchical)
-     * @param elems
-     * @return
+     * @param tables
+     * @param index
+     * @param current
+     * @param result
      */
-    public static <T> List<List<T>> computeCrossProduct(List<List<T>> elems) {
-        // if we have reached the end of the tables, add the current row to the cross product and return
-        if (elems.size() == 1)
-            return elems;
-
-        List<List<T>> result = new ArrayList<>();
-
-        List<T> firstElem = elems.remove(0);
-        //elems only contain rest of elements without first element
-        List<List<T>> restOfProduct = computeCrossProduct(elems);
-
-        for (List<T> restElem : restOfProduct) {
-            List<T> newLine = new ArrayList<T>();
-            newLine.addAll(firstElem);
-            newLine.addAll(restElem);
-            result.add(newLine);
+    //TODO: use generics, use streams
+    public static void computeCartesianProductRecursively(List<List<List<String>>> tables, int index, List<List<String>> current, List<List<String>> result) {
+        List<List<String>> currentTable = tables.get(index);
+        if (index == tables.size() || currentTable == null || currentTable.isEmpty()) {
+            List<String> appendRow = new ArrayList<>(); //TODO: make this more efficient
+            for (List<String> row : current) {
+                for (String col : row) {
+                    appendRow.add(col);
+                }
+            }
+            result.add(appendRow);
+            return;
         }
-        return result;
+        for (List<String> row : currentTable) {
+            current.add(row);
+            computeCartesianProductRecursively(tables, index + 1, current, result);
+            current.remove(current.size() - 1);
+        }
     }
 }
