@@ -3,6 +3,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import util.DailyData;
+import util.IndexFile;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -18,7 +19,7 @@ public class EdgarScraper {
     private int loadedIndexFiles = 0;
     private int failedIndexFiles = 0;
     public String FORM_TYPE;
-    private final List<String> indexFiles;
+    private final List<IndexFile> indexFiles;
     private final List<DailyData> dailyDataList;
 
     public EdgarScraper(String formType) {
@@ -46,7 +47,7 @@ public class EdgarScraper {
                         }
                         this.loadedIndexFiles++;
                         System.out.println(" parsed .idx file number " + loadedIndexFiles);
-                        this.indexFiles.add(requestData);
+                        this.indexFiles.add(new IndexFile(path, requestData));
                     } catch (Exception e) {
                         System.out.println(String.format("Url. %s not loadable", path));
                     }
@@ -84,9 +85,9 @@ public class EdgarScraper {
     }
 
 
-    public List<DailyData> parseIndexFile(String requestString) {
-        if (requestString == null) return null;
-        String splitString = requestString.substring(requestString.lastIndexOf("---") + 4);
+    public List<DailyData> parseIndexFile(IndexFile indexFile) {
+        if (indexFile == null) return null;
+        String splitString = indexFile.data().substring(indexFile.data().lastIndexOf("---") + 4);
         return splitString
                 .lines()
                 .map(line -> (line == null) ? null : line.trim().split("\\s{2,}"))
@@ -113,7 +114,7 @@ public class EdgarScraper {
         return FTPCommunicator.loadForm(dailyData.folderPath());
     }
 
-    public List<String> getIndexFiles() {
+    public List<IndexFile> getIndexFiles() {
         return this.indexFiles;
     }
 

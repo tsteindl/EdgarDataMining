@@ -3,10 +3,7 @@ import Form4Parser.CSVForm4Parser;
 import interfaces.FormConverter;
 import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
-import util.Constants;
-import util.DailyData;
-import util.OutputException;
-import util.ParseFormException;
+import util.*;
 
 import java.io.*;
 import java.math.BigInteger;
@@ -143,13 +140,12 @@ public class Main {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (problem: recursion)
         edgarScraper.scrapeIndexFiles(path);
-        for (String idxFile : edgarScraper.getIndexFiles()) {
+        for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
             try {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
-                if (dailyDataList.get(0) == null)
-                    continue;
-                String outputPath = "data/output_" + dailyDataList.get(0).dateFiled() + ".csv"; //TODO: fix temporary solution
+                String outputFolder = "data/" + idxFile.path().replace("/", "_").replace(".idx", "");
                 for (DailyData dailyData : dailyDataList) {
+                    String outputPath = outputFolder + "_" + dailyData.folderPath().replace("/", "_").replace(".txt", "") + ".csv"; //TODO: fix temporary solution
                     try {
                         String responseData = edgarScraper.downloadData(dailyData);
                         Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
