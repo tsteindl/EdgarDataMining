@@ -143,7 +143,7 @@ public class Main {
         for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
             try {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
-                String outputFolder = "data/" + idxFile.path().replace("/", "_").replace(".idx", "");
+                String outputFolder = "data/" + idxFile.path().replace(".idx", "");
                 for (DailyData dailyData : dailyDataList) {
                     String outputPath = outputFolder + "_" + dailyData.folderPath().replace("/", "_").replace(".txt", "") + ".csv"; //TODO: fix temporary solution
                     try {
