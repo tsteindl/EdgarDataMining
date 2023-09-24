@@ -64,7 +64,7 @@ public class CSVBuilder implements FormConverter {
         output += "\n";
         output += getBody(this.lines);
         if (output == null) return;
-        try (Writer writer = new BufferedWriter(new FileWriter(outputPath, true))) {
+        try (Writer writer = new BufferedWriter(new FileWriter(outputPath, false))) {
             writer.append(output);
         } catch (IOException e) {
             throw new OutputException(e.getMessage());

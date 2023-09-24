@@ -149,8 +149,7 @@ public class CSVTableBuilder extends CSVBuilder {
      */
     //TODO: use generics, use streams
     public static void computeCartesianProductRecursively(List<List<List<String>>> tables, int index, List<List<String>> current, List<List<String>> result) {
-        List<List<String>> currentTable = tables.get(index);
-        if (index == tables.size() || currentTable == null || currentTable.isEmpty()) {
+        if (index == tables.size() || tables.get(index) == null || tables.get(index).isEmpty()) {
             List<String> appendRow = new ArrayList<>(); //TODO: make this more efficient
             for (List<String> row : current) {
                 for (String col : row) {
@@ -160,6 +159,7 @@ public class CSVTableBuilder extends CSVBuilder {
             result.add(appendRow);
             return;
         }
+        List<List<String>> currentTable = tables.get(index);
         for (List<String> row : currentTable) {
             current.add(row);
             computeCartesianProductRecursively(tables, index + 1, current, result);
