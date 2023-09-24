@@ -156,7 +156,7 @@ public class Main {
             List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
             String outputFolder = "data/" + idxFile.path().replace(".idx", "");
             for (DailyData dailyData : dailyDataList) {
-                String outputPath = outputFolder + "_" + dailyData.folderPath().replace("/", "_").replace(".txt", "") + ".csv"; //TODO: fix temporary solution
+                String outputPath = outputFolder + "/" + dailyData.folderPath().replace("/", "_").replace(".txt", "") + ".csv"; //TODO: fix temporary solution
                 try {
                     String responseData = edgarScraper.downloadData(dailyData, 100);
                     Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
