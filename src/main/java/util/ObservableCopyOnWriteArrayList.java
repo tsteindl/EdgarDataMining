@@ -19,14 +19,21 @@ public class ObservableCopyOnWriteArrayList<T> extends CopyOnWriteArrayList<T> {
     public boolean add(T element) {
         boolean added = super.add(element);
         if (added) {
-            notifyListeners(element);
+            notifyListeners(element, size() - 1);
         }
         return added;
     }
 
-    private void notifyListeners(T element) {
+    @Override
+    public void add(int index, T element) {
+        super.add(index, element);
+        notifyListeners(element, index);
+    }
+
+    private void notifyListeners(T element, int index) {
         for (AddListener<T> listener : listeners) {
-            listener.onAdd(element);
+            listener.onAdd(element, this, index);
         }
     }
+
 }
