@@ -5,5 +5,6 @@ public record DailyData(
                         String companyName,
                         String CIK,
                         String dateFiled,
-                        String folderPath
+                        String folderPath,
+                        String outputPath
 ) {}

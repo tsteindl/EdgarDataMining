@@ -141,12 +141,13 @@ public class EdgarScraper {
     public List<DailyData> parseIndexFile(IndexFile indexFile) {
         if (indexFile == null) return null;
         String splitString = indexFile.data().substring(indexFile.data().lastIndexOf("---") + 4);
+        String outputFolder = "data/" + indexFile.path().replace(".idx", "");
         return splitString
                 .lines()
                 .map(line -> (line == null) ? null : line.trim().split("\\s{2,}"))
                 .filter(Objects::nonNull)
                 .filter(arr -> arr[0].equals(FORM_TYPE))
-                .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4]))
+                .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv"))
                 .collect(Collectors.toList());
     }
 

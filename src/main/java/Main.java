@@ -8,7 +8,7 @@ import util.*;
 import java.io.*;
 import java.math.BigInteger;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.*;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
@@ -20,6 +20,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * example:
  */
 public class Main {
+    public static final int PAUSE_MS = 100;
     public static Stats stats;
     public static BigInteger startTime;
     public static double totalTimeTaken; //total time taken in seconds
@@ -81,8 +82,8 @@ public class Main {
         watch.start();
         if (conc) {
             try {
-                executeConcurrently(path, FormConverter.Outputter.CSV);
-            } catch (InterruptedException e) {
+                executeConcurrently(path, FormConverter.Outputter.CSV).get(); //read "await" because function returns Future
+            } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -154,14 +155,12 @@ public class Main {
     private static void handleIndexFile(FormConverter.Outputter outputType, IndexFile idxFile, EdgarScraper edgarScraper) {
         try {
             List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
-            String outputFolder = "data/" + idxFile.path().replace(".idx", "");
             for (DailyData dailyData : dailyDataList) {
-                String outputPath = outputFolder + "/" + dailyData.folderPath().replace("/", "_").replace(".txt", "") + ".csv"; //TODO: fix temporary solution
                 try {
                     String responseData = edgarScraper.downloadData(dailyData, 100);
                     Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
                     form4Parser.parseForm();
-                    FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
+                    FormConverter outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
                     outputter.outputForm();
                     nOForms++;
                 } catch (ParseFormException e) {
@@ -174,16 +173,77 @@ public class Main {
         }
     }
 
+
+    public static Future<?> executeConcurrently(String path, FormConverter.Outputter outputType) throws InterruptedException {
+        EdgarScraper edgarScraper = new EdgarScraper("4");
+        List<Runnable> downloadQueue = new CopyOnWriteArrayList<>(); //TODO: maybe normal ArrayList suffices
+        ObservableCopyOnWriteArrayList<IndexFile> indexFiles = new ObservableCopyOnWriteArrayList<>();
+        ObservableCopyOnWriteArrayList<ParsableForm> parsableForms = new ObservableCopyOnWriteArrayList<>();
+        int nThreads = Runtime.getRuntime().availableProcessors();
+
+        ExecutorService threadPool = Executors.newFixedThreadPool(nThreads - 1); //reserve 1 thread for downloading
+        System.out.println("Starting concurrent program with " + nThreads + " threads");
+
+        parsableForms.addListener((parsableForm, list, index) -> {
+            threadPool.submit(() -> {
+                try {
+                    Form4Parser form4Parser = new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
+                    form4Parser.parseForm();
+                    FormConverter outputter = form4Parser.configureOutputter(parsableForm.outputPath(), outputType);
+                    outputter.outputForm();
+                    nOForms++;
+                } catch (ParseFormException | OutputException e) {
+                    e.printStackTrace();
+                    failedForms.add(parsableForm.folderPath());
+                }
+            });
+            list.remove(index); //remove element after use
+        });
+
+        indexFiles.addListener((idxFile, list, index) -> {
+            List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile); //TODO: maybe do this in threadpool
+            for (DailyData dailyData : dailyDataList) {
+                //add dailydata downloads to beginning so they can start being processed
+                downloadQueue.add(0, () -> {
+                    try {
+                        String responseData = edgarScraper.downloadData(dailyData, 0);
+                        System.out.println("Loaded form: " + dailyData.folderPath());
+                        parsableForms.add(new ParsableForm(responseData, dailyData.folderPath(), dailyData.outputPath()));
+                    } catch (IOException | InterruptedException e) {
+                        e.printStackTrace();
+                        failedForms.add(dailyData.folderPath());
+                    }
+                });
+            }
+            list.remove(index); //remove element after use
+        });
+
+        edgarScraper.scrapeIndexFilesConc(path, downloadQueue, indexFiles);
+
+        ExecutorService downloadExecutorService = Executors.newSingleThreadExecutor();
+
+        return downloadExecutorService.submit(() -> {
+            while (!downloadQueue.isEmpty()) {
+                downloadQueue.remove(0).run();
+                try {
+                    Thread.sleep(PAUSE_MS);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+    }
+
     public static void executeFilesSequentially(String[] files, FormConverter.Outputter outputType) {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         for (String file : files) {
-            DailyData dailyData = new DailyData("4", "", "", "", file);
             String outputPath = "data/output_" + file.replace("/", "_") + ".csv"; //TODO: fix temporary solution
+            DailyData dailyData = new DailyData("4", "", "", "", file, outputPath);
             try {
                 String responseData = edgarScraper.downloadData(dailyData, 100);
                 Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
                 form4Parser.parseForm();
-                FormConverter outputter = form4Parser.configureOutputter(outputPath, outputType);
+                FormConverter outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
                 outputter.outputForm();
                 nOForms++;
             } catch (ParseFormException | IOException | InterruptedException | OutputException e) {
@@ -191,25 +251,5 @@ public class Main {
                 failedForms.add(dailyData.folderPath());
             }
         }
-    }
-
-
-    public static void executeConcurrently(String path, FormConverter.Outputter outputType) throws InterruptedException {
-        EdgarScraper edgarScraper = new EdgarScraper("4");
-        List<Runnable> downloadQueueIndexFile = new CopyOnWriteArrayList<>();
-        ObservableCopyOnWriteArrayList<IndexFile> indexFiles = new ObservableCopyOnWriteArrayList<>();
-
-        indexFiles.addListener(idxFile -> {
-            System.out.println("Added idxFile");
-            handleIndexFile(outputType, idxFile, edgarScraper);
-        });
-
-        edgarScraper.scrapeIndexFilesConc(path, downloadQueueIndexFile, indexFiles);
-
-        System.out.println(downloadQueueIndexFile);
-
-        downloadQueueIndexFile.forEach(runnable -> {
-            runnable.run();
-        });
     }
 }
