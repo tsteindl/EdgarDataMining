@@ -1,5 +1,6 @@
 import Form4Parser.Form4Parser;
 import Form4Parser.CSVForm4Parser;
+import db.AppConfig;
 import interfaces.FormConverter;
 import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
@@ -7,6 +8,9 @@ import util.*;
 
 import java.io.*;
 import java.math.BigInteger;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -35,6 +39,15 @@ public class Main {
         String path = (String) argsMap.get("path");
         boolean conc = (boolean) argsMap.get("conc");
         boolean doStats = (boolean) argsMap.get("doStats");
+        String output = (String) argsMap.get("output");
+
+        switch (output) { //TODO rework this -> insert respective classes
+            case "db":
+                runWithDb(path, conc, doStats);
+                return;
+        }
+
+
         if (argsMap.get("files") != null) {
             String[] files = ((String) argsMap.get("files")).split(",");
             System.out.println("----------------------------");
@@ -65,7 +78,6 @@ public class Main {
 
             return;
         }
-
 
         System.out.println("----------------------------");
         System.out.println("Starting application with program args: ");
@@ -102,6 +114,20 @@ public class Main {
         System.out.println("-------------------------------------------------");
     }
 
+    private static void runWithDb(String path, boolean conc, boolean doStats) {
+        String dbUrl = AppConfig.getDbUrl();
+        String dbUsername = AppConfig.getDbUsername();
+        String dbPassword = AppConfig.getDbPassword();
+
+        try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            System.out.println("Connected to PostgreSQL!");
+        } catch (SQLException e) {
+            System.err.println("Connection failed!");
+            e.printStackTrace();
+        }
+
+    }
+
     private static Map<String, Object> parseProgramArgs(String[] args) {
         Map<String, Object> result = new HashMap<>();
         //Default values
@@ -132,6 +158,8 @@ public class Main {
                 result.put("doStats", bool);
             } else if (next1.equals("-files")) {
                 result.put("files", next2);
+            } else if (next1.equals("-output")) {
+                result.put("output", next2);
             }
         }
         return result;

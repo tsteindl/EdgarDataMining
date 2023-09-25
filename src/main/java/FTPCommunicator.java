@@ -40,6 +40,7 @@ public class FTPCommunicator {
 //                User Agent for Bot request headers:
 //                Sample Company Name AdminContact@<sample company domain>.com);
             con.setRequestProperty("User-Agent", "WUTIS tobias.steindl@gmx.net");
+            con.setUseCaches(false);
 
             int status = con.getResponseCode();
 
