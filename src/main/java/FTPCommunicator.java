@@ -108,42 +108,6 @@ public class FTPCommunicator {
             System.out.println("Connection timed out, waiting for 30s...");
             Thread.sleep(30000);
         }
-
-        return null;
-
-    }
-
-    private static InputStream loadUrlWithConnectionPooling(String path, int delay) throws InterruptedException, IOException {
-        // Wait to not exceed 10 requests per second
-        // TODO: Change this
-        Thread.sleep(delay);
-
-        String url = BASE_URL + path;
-        System.out.println("load url: " + url);
-
-        try {
-            HttpGet httpGet = new HttpGet(url);
-            httpGet.addHeader("User-Agent", "WUTIS tobias.steindl@gmx.net");
-
-            HttpResponse response = httpClient.execute(httpGet);
-            int status = response.getStatusLine().getStatusCode();
-
-            if (status == 429) {
-                System.out.println("Traffic limit exceeded");
-                System.out.println("Waiting for 11 minutes...");
-                TimeUnit.MINUTES.sleep(11);
-                response = httpClient.execute(httpGet); // Retry the request
-                status = response.getStatusLine().getStatusCode();
-            }
-
-            if (status == 200) {
-                return response.getEntity().getContent();
-            }
-        } catch (UnknownHostException e) {
-            System.out.println("Connection timed out, waiting for 30s...");
-            Thread.sleep(30000);
-        }
-
         return null;
     }
 
