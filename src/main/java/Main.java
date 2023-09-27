@@ -66,7 +66,7 @@ public class Main {
             if (conc)
                 return;
             else
-                executeFilesSequentially(files, FormConverter.Outputter.CSV); //TODO: add program arg
+                executeFilesSequentially(files); //TODO: add program arg
             totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
             watch.stop();
 //        totalTimeTaken = watch.getTime();
@@ -102,8 +102,9 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
-        else
+        else {
             executeSequentially(path, FormConverter.Outputter.CSV, 100, maxNoForms); //TODO: add program arg
+        }
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
         watch.stop();
 //        totalTimeTaken = watch.getTime();
@@ -186,10 +187,11 @@ public class Main {
                             break;
                         }
                         String responseData = edgarScraper.downloadData(dailyData, delay);
-                        Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
+                        CSVForm4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
                         form4Parser.parseForm();
-                        FormConverter outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
-                        outputter.outputForm();
+                        form4Parser.outputForm(dailyData.outputPath());
+//                        CSVForm4Parser outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
+//                        outputter.outputForm();
                         nOForms++;
                     } catch (ParseFormException e) {
                         e.printStackTrace();
@@ -218,10 +220,10 @@ public class Main {
             threadPool.submit(() -> {
                 try {
                     if (stopParsingLatch.getCount() > 0) {
-                        Form4Parser form4Parser = new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
+                        CSVForm4Parser form4Parser = new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
                         form4Parser.parseForm();
-                        FormConverter outputter = form4Parser.configureOutputter(parsableForm.outputPath(), outputType);
-                        outputter.outputForm();
+//                        FormConverter outputter = form4Parser.configureOutputter(parsableForm.outputPath());
+                        form4Parser.outputForm(parsableForm.outputPath());
                         nOForms++;
                         if (nOForms >= maxNoForms) {
                             // Signal the latch to stop parsing
@@ -277,17 +279,16 @@ public class Main {
         threadPool.shutdown();
     }
 
-    public static void executeFilesSequentially(String[] files, FormConverter.Outputter outputType) {
+    public static void executeFilesSequentially(String[] files) {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         for (String file : files) {
             String outputPath = "data/output_" + file.replace("/", "_") + ".csv"; //TODO: fix temporary solution
             DailyData dailyData = new DailyData("4", "", "", "", file, outputPath);
             try {
                 String responseData = edgarScraper.downloadData(dailyData, 100);
-                Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
+                CSVForm4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
                 form4Parser.parseForm();
-                FormConverter outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
-                outputter.outputForm();
+                form4Parser.outputForm(outputPath);
                 nOForms++;
             } catch (ParseFormException | IOException | InterruptedException | OutputException e) {
                 e.printStackTrace();

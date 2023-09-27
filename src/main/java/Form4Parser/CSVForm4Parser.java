@@ -13,13 +13,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CSVForm4Parser extends Form4Parser {
+public class CSVForm4Parser extends Form4Parser implements FormConverter {
     public CSVForm4Parser(String name, String input) {
         super(name, input);
     }
 
-    @Override
-    public FormConverter configureOutputter(String outputPath, FormConverter.Outputter type) throws OutputException {
+    public FormConverter configureOutputter(String outputPath) throws OutputException {
         try {
             LinkedHashMap<String, List<? extends TableType>> tables = new LinkedHashMap<>();
             tables.put("reportingOwners", this.reportingOwners);
@@ -47,5 +46,12 @@ public class CSVForm4Parser extends Form4Parser {
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new OutputException(e.getMessage());
         }
+    }
+
+
+    @Override
+    public void outputForm(String outputPath) throws OutputException {
+        FormConverter outputter = configureOutputter(outputPath);
+        outputter.outputForm(outputPath);
     }
 }

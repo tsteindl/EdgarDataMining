@@ -3,7 +3,6 @@ package Form4Parser;
 import Form4Parser.FormTypes.*;
 import Form4Parser.FormTypes.NonDerivativeTransaction;
 import csv.CSVTableBuilder;
-import db.DBOutputter;
 import interfaces.FormParser;
 import interfaces.FormConverter;
 import org.w3c.dom.*;

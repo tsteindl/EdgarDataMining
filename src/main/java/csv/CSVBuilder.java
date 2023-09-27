@@ -59,7 +59,8 @@ public class CSVBuilder implements FormConverter {
         return String.join("\n", ls);
     }
 
-    public void outputForm() throws OutputException {
+    @Override
+    public void outputForm(String outputPath) throws OutputException {
         String output = getHeader();
         output += "\n";
         output += getBody(this.lines);
