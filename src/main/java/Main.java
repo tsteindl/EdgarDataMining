@@ -15,7 +15,6 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.function.Supplier;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
@@ -27,7 +26,7 @@ import java.util.function.Supplier;
  * example:
  */
 public class Main {
-    public static final int PAUSE_MS = 100;
+    public static final int DELAY = 100;
     public static Stats stats;
     public static BigInteger startTime;
     public static double totalTimeTaken; //total time taken in seconds
@@ -37,47 +36,12 @@ public class Main {
     private static CountDownLatch stopParsingLatch = new CountDownLatch(1);
 
     public static <T extends FormParser & FormOutputter> void main(String[] args) throws IOException, ExecutionException, InterruptedException {
-        //xml data from 2004 onwards
-        //BASE PATH = https://www.sec.gov/Archives/
         Map<String, Object> argsMap = parseProgramArgs(args);
-        //get program args
         String path = (String) argsMap.get("path");
         boolean conc = (boolean) argsMap.get("conc");
         boolean doStats = (boolean) argsMap.get("doStats");
         String output = (String) argsMap.get("output");
-
         int maxNoForms = (int) argsMap.get("n");
-
-        if (argsMap.get("files") != null) {
-            String[] files = ((String) argsMap.get("files")).split(",");
-            System.out.println("----------------------------");
-            System.out.println("Starting application with program args: ");
-            System.out.println("Files: " + Arrays.toString(files));
-            System.out.println("conc: " + conc);
-            System.out.println("doStats: " + doStats);
-            System.out.println("----------------------------");
-
-            startTime = new BigInteger(Long.toString(System.nanoTime()));
-            StopWatch watch = new StopWatch();
-            watch.start();
-            if (conc)
-                return;
-            else
-                executeFilesSequentially(files); //TODO: add program arg
-            totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
-            watch.stop();
-//        totalTimeTaken = watch.getTime();
-            System.out.println("-------------------------------------------------");
-            System.out.println("Application ended");
-            System.out.println("Total time taken: " + totalTimeTaken + "s");
-            System.out.println("Number of Forms parsed: " + nOForms);
-            System.out.println("Avg seconds per form: " + ((double) totalTimeTaken / nOForms));
-            System.out.println("Number of erroneous forms: " + failedForms.size());
-            System.out.println("Erroneous forms: " + failedForms.toString());
-            System.out.println("-------------------------------------------------");
-
-            return;
-        }
 
         System.out.println("----------------------------");
         System.out.println("Starting application with program args: ");
@@ -90,29 +54,37 @@ public class Main {
         System.out.format("Mining data for path: %s %s.", path, (conc) ? "concurrently" : "sequentially.\n");
         System.out.println("-------------------------------------------------");
         startTime = new BigInteger(Long.toString(System.nanoTime()));
-        StopWatch watch = new StopWatch();
-        watch.start();
+
+        if (output == null)
+            output = "csv";
 
         switch (output) {
-            case "csv":
-                if (conc)
-                    executeConcurrently(path, CSVForm4Parser::new, maxNoForms);
-                else
-                    executeSequentially(path, CSVForm4Parser::new, 100, maxNoForms);
-                break;
             case "db":
-                if (conc)
-                    executeConcurrently(path, PSQLForm4Parser::new, maxNoForms);
-                else
-                    executeSequentially(path, PSQLForm4Parser::new, 100, maxNoForms);
-                break;
+                if (argsMap.get("files") != null) {
+                    executeFiles(((String) argsMap.get("files")).split(","), PSQLForm4Parser::new, DELAY);
+                }
+                else {
+                    if (conc)
+                        executeConcurrently(path, PSQLForm4Parser::new, maxNoForms);
+                    else
+                        executeSequentially(path, PSQLForm4Parser::new, DELAY, maxNoForms);
+                    break;
+                }
 //                    runWithDb(path, conc, doStats);
-            default:
-                return;
-            }
+            default: //case csv
+                if (argsMap.get("files") != null) {
+                    executeFiles(((String) argsMap.get("files")).split(","), CSVForm4Parser::new, DELAY);
+                }
+                else {
+                    if (conc)
+                        executeConcurrently(path, CSVForm4Parser::new, maxNoForms);
+                    else
+                        executeSequentially(path, CSVForm4Parser::new, DELAY, maxNoForms);
+                    break;
+                }
+
+        }
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
-        watch.stop();
-//        totalTimeTaken = watch.getTime();
         System.out.println("-------------------------------------------------");
         System.out.println("Application ended");
         System.out.println("Total time taken: " + totalTimeTaken + "s");
@@ -121,6 +93,25 @@ public class Main {
         System.out.println("Number of erroneous forms: " + failedForms.size());
         System.out.println("Erroneous forms: " + failedForms.toString());
         System.out.println("-------------------------------------------------");
+    }
+
+    private static <T extends FormParser & FormOutputter> void executeFiles(String[] files, ConstructorWith2Args<T, String, String> parserConstructorSupplier, int delay) throws IOException, InterruptedException {
+        EdgarScraper edgarScraper = new EdgarScraper("4");
+        for (String file : files) {
+            String outputPath = "data/output_" + file.replace("/", "_") + ".csv";
+            DailyData dailyData = new DailyData("4", "", "", "", file, outputPath);
+
+            try {
+                if (nOForms >= 0) {
+                    continue;
+                }
+                handleDailyData(parserConstructorSupplier, delay, dailyData, edgarScraper);
+                nOForms++;
+            } catch (ParseFormException | OutputException e) {
+                e.printStackTrace();
+                failedForms.add(((DailyData) null).folderPath());
+            }
+        }
     }
 
     private static void runWithDb(String path, boolean conc, boolean doStats) {
@@ -191,10 +182,7 @@ public class Main {
                         if (nOForms >= maxNoForms) {
                             break;
                         }
-                        String responseData = edgarScraper.downloadData(dailyData, delay);
-                        T formParser = parserConstructorSupplier.create(dailyData.folderPath(), responseData);
-                        formParser.parseForm();
-                        formParser.outputForm(dailyData.outputPath());
+                        handleDailyData(parserConstructorSupplier, delay, dailyData, edgarScraper);
                         nOForms++;
                     } catch (ParseFormException e) {
                         e.printStackTrace();
@@ -205,6 +193,13 @@ public class Main {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static <T extends FormParser & FormOutputter> void handleDailyData(ConstructorWith2Args<T, String, String> parserConstructorSupplier, int delay, DailyData dailyData, EdgarScraper edgarScraper) throws IOException, InterruptedException, ParseFormException, OutputException {
+        String responseData = edgarScraper.downloadData(dailyData, delay);
+        T formParser = parserConstructorSupplier.create(dailyData.folderPath(), responseData);
+        formParser.parseForm();
+        formParser.outputForm(dailyData.outputPath());
     }
 
 
@@ -271,7 +266,7 @@ public class Main {
             while (!downloadQueue.isEmpty() && stopParsingLatch.getCount() > 0) {
                 downloadQueue.remove(0).run();
                 try {
-                    Thread.sleep(PAUSE_MS);
+                    Thread.sleep(DELAY);
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
@@ -281,21 +276,4 @@ public class Main {
         threadPool.shutdown();
     }
 
-    public static void executeFilesSequentially(String[] files) {
-        EdgarScraper edgarScraper = new EdgarScraper("4");
-        for (String file : files) {
-            String outputPath = "data/output_" + file.replace("/", "_") + ".csv"; //TODO: fix temporary solution
-            DailyData dailyData = new DailyData("4", "", "", "", file, outputPath);
-            try {
-                String responseData = edgarScraper.downloadData(dailyData, 100);
-                CSVForm4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
-                form4Parser.parseForm();
-                form4Parser.outputForm(outputPath);
-                nOForms++;
-            } catch (ParseFormException | IOException | InterruptedException | OutputException e) {
-                e.printStackTrace();
-                failedForms.add(dailyData.folderPath());
-            }
-        }
-    }
 }
