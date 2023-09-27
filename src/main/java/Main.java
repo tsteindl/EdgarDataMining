@@ -1,7 +1,8 @@
 import Form4Parser.CSVForm4Parser;
 import Form4Parser.ConstructorWith2Args;
 import db.AppConfig;
-import interfaces.FormConverter;
+import db.PSQLForm4Parser;
+import interfaces.FormOutputter;
 import interfaces.FormParser;
 import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
@@ -14,6 +15,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 /**
  * @author Tobias Steindl tobias.steindl@gmx.net
@@ -34,7 +36,7 @@ public class Main {
 
     private static CountDownLatch stopParsingLatch = new CountDownLatch(1);
 
-    public static void main(String[] args) throws IOException {
+    public static <T extends FormParser & FormOutputter> void main(String[] args) throws IOException, ExecutionException, InterruptedException {
         //xml data from 2004 onwards
         //BASE PATH = https://www.sec.gov/Archives/
         Map<String, Object> argsMap = parseProgramArgs(args);
@@ -44,12 +46,6 @@ public class Main {
         boolean doStats = (boolean) argsMap.get("doStats");
         String output = (String) argsMap.get("output");
 
-        if (output != null)
-            switch (output) { //TODO rework this -> insert respective classes
-                case "db":
-                    runWithDb(path, conc, doStats);
-                    return;
-            }
         int maxNoForms = (int) argsMap.get("n");
 
         if (argsMap.get("files") != null) {
@@ -96,16 +92,24 @@ public class Main {
         startTime = new BigInteger(Long.toString(System.nanoTime()));
         StopWatch watch = new StopWatch();
         watch.start();
-        if (conc) {
-            try {
-                executeConcurrently(path, maxNoForms);
-            } catch (InterruptedException | ExecutionException e) {
-                throw new RuntimeException(e);
+
+        switch (output) {
+            case "csv":
+                if (conc)
+                    executeConcurrently(path, CSVForm4Parser::new, maxNoForms);
+                else
+                    executeSequentially(path, CSVForm4Parser::new, 100, maxNoForms);
+                break;
+            case "db":
+                if (conc)
+                    executeConcurrently(path, PSQLForm4Parser::new, maxNoForms);
+                else
+                    executeSequentially(path, PSQLForm4Parser::new, 100, maxNoForms);
+                break;
+//                    runWithDb(path, conc, doStats);
+            default:
+                return;
             }
-        }
-        else {
-            executeSequentially(path, CSVForm4Parser::new, 100, maxNoForms); //TODO: add program arg
-        }
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
         watch.stop();
 //        totalTimeTaken = watch.getTime();
@@ -174,7 +178,7 @@ public class Main {
     }
 
 
-    public static <T extends FormParser & FormConverter> void executeSequentially(String path, ConstructorWith2Args<T, String, String> parserConstructorSupplier, int delay, int maxNoForms) {
+    public static <T extends FormParser & FormOutputter> void executeSequentially(String path, ConstructorWith2Args<T, String, String> parserConstructorSupplier, int delay, int maxNoForms) {
 //        stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (TODO problem: recursion)
@@ -204,7 +208,7 @@ public class Main {
     }
 
 
-    public static void executeConcurrently(String path, int maxNoForms) throws InterruptedException, ExecutionException {
+    public static <T extends FormParser & FormOutputter> void executeConcurrently(String path, ConstructorWith2Args<T, String, String> parserConstructorSupplier, int maxNoForms) throws InterruptedException, ExecutionException {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         List<Runnable> downloadQueue = new CopyOnWriteArrayList<>(); //TODO: maybe normal ArrayList suffices
         ObservableCopyOnWriteArrayList<IndexFile> indexFiles = new ObservableCopyOnWriteArrayList<>();
@@ -219,10 +223,9 @@ public class Main {
             threadPool.submit(() -> {
                 try {
                     if (stopParsingLatch.getCount() > 0) {
-                        CSVForm4Parser form4Parser = new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
-                        form4Parser.parseForm();
-//                        FormConverter outputter = form4Parser.configureOutputter(parsableForm.outputPath());
-                        form4Parser.outputForm(parsableForm.outputPath());
+                        T formParser = parserConstructorSupplier.create(parsableForm.folderPath(), parsableForm.responseData());
+                        formParser.parseForm();
+                        formParser.outputForm(parsableForm.outputPath());
                         nOForms++;
                         if (nOForms >= maxNoForms) {
                             // Signal the latch to stop parsing

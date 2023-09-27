@@ -1,8 +1,7 @@
 package interfaces;
 
-import util.InitException;
 import util.OutputException;
 
-public interface FormConverter {
+public interface FormOutputter {
     void outputForm(String outputPath) throws OutputException;
 }

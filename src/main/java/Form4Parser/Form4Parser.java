@@ -2,9 +2,7 @@ package Form4Parser;
 
 import Form4Parser.FormTypes.*;
 import Form4Parser.FormTypes.NonDerivativeTransaction;
-import csv.CSVTableBuilder;
 import interfaces.FormParser;
-import interfaces.FormConverter;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -18,7 +16,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 public abstract class Form4Parser extends FormParser {
-    //TODO: types (!!!!!)
     private static String XML_TAG = "XML";
     private static String WELL_FORMED_XML_TAG = "SEC-DOCUMENT";
     private static String XML_DOC_STARTING_TAG = "<?xml version";

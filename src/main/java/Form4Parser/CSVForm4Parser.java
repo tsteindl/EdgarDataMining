@@ -3,18 +3,16 @@ package Form4Parser;
 import Form4Parser.FormTypes.TableType;
 import csv.CSVBuilder;
 import csv.CSVTableBuilder;
-import interfaces.FormConverter;
+import interfaces.FormOutputter;
 import org.xml.sax.SAXException;
 import util.OutputException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
-public class CSVForm4Parser extends Form4Parser implements FormConverter {
+public class CSVForm4Parser extends Form4Parser implements FormOutputter {
     public CSVForm4Parser(String name, String input) {
         super(name, input);
     }

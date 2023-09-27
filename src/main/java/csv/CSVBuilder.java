@@ -10,10 +10,10 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import interfaces.FormConverter;
+import interfaces.FormOutputter;
 import util.OutputException;
 
-public class CSVBuilder implements FormConverter {
+public class CSVBuilder implements FormOutputter {
     private final String outputPath;
     protected final List<String> cols;
     protected final List<List<String>> lines;
