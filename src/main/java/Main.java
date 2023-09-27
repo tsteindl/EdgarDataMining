@@ -264,9 +264,13 @@ public class Main {
         //TODO: think of scheduling algorithm for this
         downloadExecutorService.submit(() -> {
             while (!downloadQueue.isEmpty() && stopParsingLatch.getCount() > 0) {
+                long beforeRequest = System.nanoTime();
                 downloadQueue.remove(0).run();
+                long afterRequest = System.nanoTime();
+                long alreadyWaited = (afterRequest - beforeRequest) / 1000000;
+                System.out.println("Waiting for " + (alreadyWaited < DELAY ? DELAY - alreadyWaited : 0) + " ms");
                 try {
-                    Thread.sleep(DELAY);
+                    Thread.sleep(alreadyWaited < DELAY ? DELAY - alreadyWaited : 0); //TODO: reconsider if this is safe
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }

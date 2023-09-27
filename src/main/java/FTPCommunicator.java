@@ -40,7 +40,7 @@ public class FTPCommunicator {
     }
 
     private static InputStream loadUrl(String path, int delay) throws InterruptedException, IOException {
-
+/*
         //wait to not exceed 10 requests per second
         //TODO: change this
         Thread.sleep(delay);
@@ -73,12 +73,11 @@ public class FTPCommunicator {
         }
         return null;
 
-
- /*
+*/
 
         // Wait to not exceed 10 requests per second
         // TODO: Change this
-        Thread.sleep(delay);
+//        Thread.sleep(delay);
 
         String url = BASE_URL + path;
         System.out.println("load url: " + url);
@@ -86,9 +85,9 @@ public class FTPCommunicator {
         try {
             HttpGet httpGet = new HttpGet(url);
             httpGet.addHeader("User-Agent", "WUTIS tobias.steindl@gmx.net");
-            httpGet.addHeader("Cache-Control", "no-cache");  // Set Cache-Control header to disable caching
-            httpGet.addHeader("Pragma", "no-cache");  // Set Pragma header to disable caching
-            httpGet.addHeader("Expires", "0");  // Set Expires header to disable caching
+//            httpGet.addHeader("Cache-Control", "no-cache");  // Set Cache-Control header to disable caching
+//            httpGet.addHeader("Pragma", "no-cache");  // Set Pragma header to disable caching
+//            httpGet.addHeader("Expires", "0");  // Set Expires header to disable caching
 
 
             HttpResponse response = httpClient.execute(httpGet);
@@ -112,7 +111,6 @@ public class FTPCommunicator {
 
         return null;
 
-  */
     }
 
     private static InputStream loadUrlWithConnectionPooling(String path, int delay) throws InterruptedException, IOException {
