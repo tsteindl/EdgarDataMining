@@ -1,5 +1,8 @@
 import Form4Parser.CSVForm4Parser;
+import Form4Parser.ConstructorWith2Args;
 import db.AppConfig;
+import interfaces.FormConverter;
+import interfaces.FormParser;
 import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
 import util.*;
@@ -101,7 +104,7 @@ public class Main {
             }
         }
         else {
-            executeSequentially(path, 100, maxNoForms); //TODO: add program arg
+            executeSequentially(path, CSVForm4Parser::new, 100, maxNoForms); //TODO: add program arg
         }
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
         watch.stop();
@@ -171,7 +174,7 @@ public class Main {
     }
 
 
-    public static void executeSequentially(String path, int delay, int maxNoForms) {
+    public static <T extends FormParser & FormConverter> void executeSequentially(String path, ConstructorWith2Args<T, String, String> parserConstructorSupplier, int delay, int maxNoForms) {
 //        stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (TODO problem: recursion)
@@ -185,11 +188,9 @@ public class Main {
                             break;
                         }
                         String responseData = edgarScraper.downloadData(dailyData, delay);
-                        CSVForm4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
-                        form4Parser.parseForm();
-                        form4Parser.outputForm(dailyData.outputPath());
-//                        CSVForm4Parser outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
-//                        outputter.outputForm();
+                        T formParser = parserConstructorSupplier.create(dailyData.folderPath(), responseData);
+                        formParser.parseForm();
+                        formParser.outputForm(dailyData.outputPath());
                         nOForms++;
                     } catch (ParseFormException e) {
                         e.printStackTrace();
