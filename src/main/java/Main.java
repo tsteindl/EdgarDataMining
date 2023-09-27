@@ -31,6 +31,8 @@ public class Main {
     public static long nOForms = 0;
     public static List<String> failedForms = new ArrayList<>();
 
+    private static CountDownLatch stopParsingLatch = new CountDownLatch(1);
+
     public static void main(String[] args) throws IOException {
         //xml data from 2004 onwards
         //BASE PATH = https://www.sec.gov/Archives/
@@ -41,12 +43,13 @@ public class Main {
         boolean doStats = (boolean) argsMap.get("doStats");
         String output = (String) argsMap.get("output");
 
-        switch (output) { //TODO rework this -> insert respective classes
-            case "db":
-                runWithDb(path, conc, doStats);
-                return;
-        }
-
+        if (output != null)
+            switch (output) { //TODO rework this -> insert respective classes
+                case "db":
+                    runWithDb(path, conc, doStats);
+                    return;
+            }
+        int maxNoForms = (int) argsMap.get("n");
 
         if (argsMap.get("files") != null) {
             String[] files = ((String) argsMap.get("files")).split(",");
@@ -94,13 +97,13 @@ public class Main {
         watch.start();
         if (conc) {
             try {
-                executeConcurrently(path, FormConverter.Outputter.CSV).get(); //read "await" because function returns Future
+                executeConcurrently(path, FormConverter.Outputter.CSV, maxNoForms);
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
         else
-            executeSequentially(path, FormConverter.Outputter.CSV); //TODO: add program arg
+            executeSequentially(path, FormConverter.Outputter.CSV, 100, maxNoForms); //TODO: add program arg
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
         watch.stop();
 //        totalTimeTaken = watch.getTime();
@@ -135,19 +138,16 @@ public class Main {
         result.put("conc", false);
         result.put("doStats", false);
         List<String> as = new LinkedList<String>(Arrays.asList(args)); //LinkedList supports faster remove than ArrayList
-        String curr = null;
         String next = null;
         String next1 = null;
         String next2 = null;
         for (int i = 0; !as.isEmpty(); i++) {
-            curr = next;
             next = as.remove(0);
             next1 = next;
             if (next.split("=").length >= 2) {
                 next1 = next.split("=")[0];
                 next2 = next.split("=")[1];
             }
-
             if (next1.equals("-path")) {
                 result.put("path", next2);
             } else if (next1.equals("-conc")) {
@@ -160,6 +160,8 @@ public class Main {
                 result.put("files", next2);
             } else if (next1.equals("-output")) {
                 result.put("output", next2);
+            } else if (next1.equals("-n")) {
+                result.put("n", Integer.parseInt(next2));
             }
         }
         return result;
@@ -170,39 +172,38 @@ public class Main {
     }
 
 
-    public static void executeSequentially(String path, FormConverter.Outputter outputType) {
+    public static void executeSequentially(String path, FormConverter.Outputter outputType, int delay, int maxNoForms) {
 //        stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (TODO problem: recursion)
-        edgarScraper.scrapeIndexFiles(path, edgarScraper.getIndexFiles(), 100);
+        edgarScraper.scrapeIndexFiles(path, edgarScraper.getIndexFiles(), delay);
         for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
-            handleIndexFile(outputType, idxFile, edgarScraper);
-        }
-    }
-
-    private static void handleIndexFile(FormConverter.Outputter outputType, IndexFile idxFile, EdgarScraper edgarScraper) {
-        try {
-            List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
-            for (DailyData dailyData : dailyDataList) {
-                try {
-                    String responseData = edgarScraper.downloadData(dailyData, 100);
-                    Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
-                    form4Parser.parseForm();
-                    FormConverter outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
-                    outputter.outputForm();
-                    nOForms++;
-                } catch (ParseFormException e) {
-                    e.printStackTrace();
-                    failedForms.add(dailyData.folderPath());
+            try {
+                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
+                for (DailyData dailyData : dailyDataList) {
+                    try {
+                        if (nOForms >= maxNoForms) {
+                            break;
+                        }
+                        String responseData = edgarScraper.downloadData(dailyData, delay);
+                        Form4Parser form4Parser = new CSVForm4Parser(dailyData.folderPath(), responseData);
+                        form4Parser.parseForm();
+                        FormConverter outputter = form4Parser.configureOutputter(dailyData.outputPath(), outputType);
+                        outputter.outputForm();
+                        nOForms++;
+                    } catch (ParseFormException e) {
+                        e.printStackTrace();
+                        failedForms.add(dailyData.folderPath());
+                    }
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
 
-    public static Future<?> executeConcurrently(String path, FormConverter.Outputter outputType) throws InterruptedException {
+    public static void executeConcurrently(String path, FormConverter.Outputter outputType, int maxNoForms) throws InterruptedException, ExecutionException {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         List<Runnable> downloadQueue = new CopyOnWriteArrayList<>(); //TODO: maybe normal ArrayList suffices
         ObservableCopyOnWriteArrayList<IndexFile> indexFiles = new ObservableCopyOnWriteArrayList<>();
@@ -210,16 +211,23 @@ public class Main {
         int nThreads = Runtime.getRuntime().availableProcessors();
 
         ExecutorService threadPool = Executors.newFixedThreadPool(nThreads - 1); //reserve 1 thread for downloading
+        ExecutorService downloadExecutorService = Executors.newSingleThreadExecutor();
         System.out.println("Starting concurrent program with " + nThreads + " threads");
 
         parsableForms.addListener((parsableForm, list, index) -> {
             threadPool.submit(() -> {
                 try {
-                    Form4Parser form4Parser = new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
-                    form4Parser.parseForm();
-                    FormConverter outputter = form4Parser.configureOutputter(parsableForm.outputPath(), outputType);
-                    outputter.outputForm();
-                    nOForms++;
+                    if (stopParsingLatch.getCount() > 0) {
+                        Form4Parser form4Parser = new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
+                        form4Parser.parseForm();
+                        FormConverter outputter = form4Parser.configureOutputter(parsableForm.outputPath(), outputType);
+                        outputter.outputForm();
+                        nOForms++;
+                        if (nOForms >= maxNoForms) {
+                            // Signal the latch to stop parsing
+                            stopParsingLatch.countDown();
+                        }
+                    }
                 } catch (ParseFormException | OutputException e) {
                     e.printStackTrace();
                     failedForms.add(parsableForm.folderPath());
@@ -229,29 +237,34 @@ public class Main {
         });
 
         indexFiles.addListener((idxFile, list, index) -> {
-            List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile); //TODO: maybe do this in threadpool
-            for (DailyData dailyData : dailyDataList) {
-                //add dailydata downloads to beginning so they can start being processed
-                downloadQueue.add(0, () -> {
-                    try {
-                        String responseData = edgarScraper.downloadData(dailyData, 0);
-                        System.out.println("Loaded form: " + dailyData.folderPath());
-                        parsableForms.add(new ParsableForm(responseData, dailyData.folderPath(), dailyData.outputPath()));
-                    } catch (IOException | InterruptedException e) {
-                        e.printStackTrace();
-                        failedForms.add(dailyData.folderPath());
-                    }
-                });
+            if (stopParsingLatch.getCount() > 0) {
+
+                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile); //TODO: maybe do this in threadpool
+                for (DailyData dailyData : dailyDataList) {
+                    //add dailydata downloads to beginning, so they can start being processed
+                    downloadQueue.add(0, () -> {
+                        try {
+                            if (stopParsingLatch.getCount() > 0) {
+
+                                String responseData = edgarScraper.downloadData(dailyData, 0);
+                                System.out.println("Loaded form: " + dailyData.folderPath());
+                                parsableForms.add(new ParsableForm(responseData, dailyData.folderPath(), dailyData.outputPath()));
+                            }
+                        } catch (IOException | InterruptedException e) {
+                            e.printStackTrace();
+                            failedForms.add(dailyData.folderPath());
+                        }
+                    });
+                }
+                list.remove(index); //remove element after use
             }
-            list.remove(index); //remove element after use
         });
 
         edgarScraper.scrapeIndexFilesConc(path, downloadQueue, indexFiles);
 
-        ExecutorService downloadExecutorService = Executors.newSingleThreadExecutor();
-
-        return downloadExecutorService.submit(() -> {
-            while (!downloadQueue.isEmpty()) {
+        //TODO: think of scheduling algorithm for this
+        downloadExecutorService.submit(() -> {
+            while (!downloadQueue.isEmpty() && stopParsingLatch.getCount() > 0) {
                 downloadQueue.remove(0).run();
                 try {
                     Thread.sleep(PAUSE_MS);
@@ -259,7 +272,9 @@ public class Main {
                     throw new RuntimeException(e);
                 }
             }
-        });
+        }).get();
+        downloadExecutorService.shutdown();
+        threadPool.shutdown();
     }
 
     public static void executeFilesSequentially(String[] files, FormConverter.Outputter outputType) {

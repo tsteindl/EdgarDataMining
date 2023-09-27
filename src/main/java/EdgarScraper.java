@@ -2,17 +2,13 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.openjdk.jmh.annotations.*;
 import util.DailyData;
 import util.IndexFile;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class EdgarScraper {
@@ -93,7 +89,7 @@ public class EdgarScraper {
                             requestData = FTPCommunicator.loadIndexFile(path, delay);
                             if (requestData == null) {
                                 failedIndexFiles++;
-                //                            throw new Exception(".idx file not available");
+//                                throw new Exception(".idx file not available"); //TODO: return here
                             }
                             this.loadedIndexFiles++;
                             System.out.println(" parsed .idx file number " + loadedIndexFiles);
@@ -138,10 +134,22 @@ public class EdgarScraper {
     }
 
 
-    public List<DailyData> parseIndexFile(IndexFile indexFile) {
+//    @Benchmark
+//    @BenchmarkMode(Mode.AverageTime)
+//    @OutputTimeUnit(TimeUnit.MILLISECONDS)
+//    @Fork(1)
+//    @Warmup(iterations = 3)
+//    @Measurement(iterations = 5)
+    public List<DailyData> parseIndexFile(IndexFile indexFile) { //TODO: optimize this it is taking extremely long
         if (indexFile == null) return null;
         String splitString = indexFile.data().substring(indexFile.data().lastIndexOf("---") + 4);
         String outputFolder = "data/" + indexFile.path().replace(".idx", "");
+
+        return extractDailyDataListFromResponseWithScanner(splitString, outputFolder);
+//        return extractDailyDataListFromResponseWithStreams(splitString, outputFolder);
+    }
+
+    private List<DailyData> extractDailyDataListFromResponseWithStreams(String splitString, String outputFolder) {
         return splitString
                 .lines()
                 .map(line -> (line == null) ? null : line.trim().split("\\s{2,}"))
@@ -149,6 +157,22 @@ public class EdgarScraper {
                 .filter(arr -> arr[0].equals(FORM_TYPE))
                 .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv"))
                 .collect(Collectors.toList());
+    }
+
+    private List<DailyData> extractDailyDataListFromResponseWithScanner(String splitString, String outputFolder) {
+        List<DailyData> dailyDataList = new ArrayList<>();
+        try (Scanner scanner = new Scanner(new StringReader(splitString))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                String[] arr = line.split("\\s{2,}");
+
+                if (arr.length >= 5 && arr[0].equals(FORM_TYPE)) {
+                    String csvFilePath = outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv";
+                    dailyDataList.add(new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], csvFilePath));
+                }
+            }
+        }
+        return dailyDataList;
     }
 
     public static JsonObject getJsonObjectFromString(String string) {
