@@ -1,7 +1,5 @@
-import Form4Parser.Form4Parser;
 import Form4Parser.CSVForm4Parser;
 import db.AppConfig;
-import interfaces.FormConverter;
 import org.apache.commons.lang3.time.StopWatch;
 import statistics.Stats;
 import util.*;
@@ -97,13 +95,13 @@ public class Main {
         watch.start();
         if (conc) {
             try {
-                executeConcurrently(path, FormConverter.Outputter.CSV, maxNoForms);
+                executeConcurrently(path, maxNoForms);
             } catch (InterruptedException | ExecutionException e) {
                 throw new RuntimeException(e);
             }
         }
         else {
-            executeSequentially(path, FormConverter.Outputter.CSV, 100, maxNoForms); //TODO: add program arg
+            executeSequentially(path, 100, maxNoForms); //TODO: add program arg
         }
         totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
         watch.stop();
@@ -173,7 +171,7 @@ public class Main {
     }
 
 
-    public static void executeSequentially(String path, FormConverter.Outputter outputType, int delay, int maxNoForms) {
+    public static void executeSequentially(String path, int delay, int maxNoForms) {
 //        stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (TODO problem: recursion)
@@ -205,7 +203,7 @@ public class Main {
     }
 
 
-    public static void executeConcurrently(String path, FormConverter.Outputter outputType, int maxNoForms) throws InterruptedException, ExecutionException {
+    public static void executeConcurrently(String path, int maxNoForms) throws InterruptedException, ExecutionException {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         List<Runnable> downloadQueue = new CopyOnWriteArrayList<>(); //TODO: maybe normal ArrayList suffices
         ObservableCopyOnWriteArrayList<IndexFile> indexFiles = new ObservableCopyOnWriteArrayList<>();
