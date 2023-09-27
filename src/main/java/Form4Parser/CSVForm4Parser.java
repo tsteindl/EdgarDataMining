@@ -1,6 +1,7 @@
 package Form4Parser;
 
 import Form4Parser.FormTypes.TableType;
+import csv.CSVBuilder;
 import csv.CSVTableBuilder;
 import interfaces.FormConverter;
 import org.xml.sax.SAXException;
@@ -18,7 +19,7 @@ public class CSVForm4Parser extends Form4Parser implements FormConverter {
         super(name, input);
     }
 
-    public FormConverter configureOutputter(String outputPath) throws OutputException {
+    public CSVBuilder configureOutputter(String outputPath) throws OutputException {
         try {
             LinkedHashMap<String, List<? extends TableType>> tables = new LinkedHashMap<>();
             tables.put("reportingOwners", this.reportingOwners);
@@ -51,7 +52,7 @@ public class CSVForm4Parser extends Form4Parser implements FormConverter {
 
     @Override
     public void outputForm(String outputPath) throws OutputException {
-        FormConverter outputter = configureOutputter(outputPath);
-        outputter.outputForm(outputPath);
+        CSVBuilder csvBuilder = configureOutputter(outputPath);
+        csvBuilder.outputForm(outputPath);
     }
 }
