@@ -60,7 +60,8 @@ class FormScanner {
             };
         }
         return switch(name) {
-            case "documentType", "schemaVersion", "issuerCik", "issuerName", "issuerTradingSymbol", "rptOwnerCik", "rptOwnerCcc", "rptOwnerName", "rptOwnerStreet1", "rptOwnerStreet2", "rptOwnerCity", "rptOwnerState", "rptOwnerZipCode", "rptOwnerStateDescription", "officerTitle", "otherText", "securityTitle", "transactionFormType", "transactionCode", "transactionTimeliness", "transactionAcquiredDisposedCode", "directOrIndirectOwnership", "ownershipNature", "underlyingSecurity", "remarks", "signatureName" -> text;
+            case "documentType", "issuerCik", "rptOwnerCik", "transactionFormType" -> Integer.parseInt(text);
+            case "schemaVersion", "issuerName", "issuerTradingSymbol", "rptOwnerCcc", "rptOwnerName", "rptOwnerStreet1", "rptOwnerStreet2", "rptOwnerCity", "rptOwnerState", "rptOwnerZipCode", "rptOwnerStateDescription", "officerTitle", "otherText", "securityTitle", "transactionCode", "transactionTimeliness", "transactionAcquiredDisposedCode", "directOrIndirectOwnership", "ownershipNature", "underlyingSecurity", "remarks", "signatureName" -> text;
             case "periodOfReport" -> parseDate(text);
             case "notSubjectToSection16", "rptOwnerGoodAddress", "isDirector", "isOfficer", "isTenPercentOwner", "isOther", "equitySwapInvolved" ->  Boolean.valueOf(Boolean.parseBoolean(text) || "1".equals(text));
             case "remove" -> Double.parseDouble(text);

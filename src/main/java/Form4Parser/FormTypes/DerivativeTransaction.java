@@ -7,7 +7,7 @@ public class DerivativeTransaction extends TableType {
     private Double conversionOrExercisePrice=null;
     private LocalDate transactionDate = null;
     private LocalDate deemedExecutionDate = null;
-    private String transactionFormType = null;
+    private Integer transactionFormType = null;
     private String transactionCode = null;
     private Boolean equitySwapInvolved = null;
     private String transactionTimeliness = null;
@@ -57,11 +57,11 @@ public class DerivativeTransaction extends TableType {
         this.deemedExecutionDate = deemedExecutionDate;
     }
 
-    public String getTransactionFormType() {
+    public Integer getTransactionFormType() {
         return transactionFormType;
     }
 
-    public void setTransactionFormType(String transactionFormType) {
+    public void setTransactionFormType(Integer transactionFormType) {
         this.transactionFormType = transactionFormType;
     }
 

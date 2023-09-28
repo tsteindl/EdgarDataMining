@@ -4,6 +4,7 @@ import Form4Parser.Form4Parser;
 import interfaces.FormOutputter;
 import util.OutputException;
 import java.sql.Connection;
+import java.sql.Statement;
 
 public class PSQLForm4Parser extends Form4Parser implements FormOutputter {
     Connection conn;
@@ -14,6 +15,5 @@ public class PSQLForm4Parser extends Form4Parser implements FormOutputter {
 
     @Override
     public void outputForm(String outputPath) throws OutputException {
-
     }
 }

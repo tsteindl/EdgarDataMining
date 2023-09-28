@@ -1,7 +1,7 @@
 package Form4Parser.FormTypes;
 
 public class ReportingOwner extends TableType { //TODO: check if record works here
-    private String rptOwnerCik=null;
+    private Integer rptOwnerCik=null;
     private String rptOwnerCcc=null;
     private String rptOwnerName=null;
     private String rptOwnerStreet1=null;
@@ -135,11 +135,11 @@ public class ReportingOwner extends TableType { //TODO: check if record works he
         this.otherText = otherText;
     }
 
-    public String getRptOwnerCik() {
+    public Integer getRptOwnerCik() {
         return rptOwnerCik;
     }
 
-    public void setRptOwnerCik(String rptOwnerCik) {
+    public void setRptOwnerCik(Integer rptOwnerCik) {
         this.rptOwnerCik = rptOwnerCik;
     }
 }

@@ -29,10 +29,10 @@ public abstract class Form4Parser extends FormParser {
 
     //Parser fields
     protected String schemaVersion;//TODO correct types
-    protected String documentType;
+    protected Integer documentType;
     protected LocalDate periodOfReport;
     protected Boolean notSubjectToSection16;
-    protected String issuerCik;
+    protected Integer issuerCik;
     protected String issuerName;
     protected String issuerTradingSymbol;
     protected String remarks;
@@ -69,9 +69,7 @@ public abstract class Form4Parser extends FormParser {
             this.input = input;
             xml = getXMLBody(xml);
             Element xmlRoot = getXMLTreeFromString(xml);
-
             parseXMLNodes(xmlRoot);
-//            outputter.outputForm(); //TODO: maybe extract this into parent function
         } catch (ParserConfigurationException | IOException | SAXException | ParseFormException e) {
             e.printStackTrace();
         }

@@ -11,6 +11,7 @@ import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -45,8 +46,34 @@ public class Main {
         String dbUsername = AppConfig.getDbUsername();
         String dbPassword = AppConfig.getDbPassword();
 
-        try (Connection connection = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+        if (output == null) {
+            output = "csv";
+        }
+
+        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
             System.out.println("Connected to PostgreSQL!");
+
+            if (output.equals("db")) {
+                /*Create tables*/
+                String cReportingOwner = "CREATE TABLE IF NOT EXISTS ReportingOwner (\n" +
+                        "    rptOwnerCik INTEGER PRIMARY KEY,\n" +
+                        "    rptOwnerCcc VARCHAR(255),\n" +
+                        "    rptOwnerName VARCHAR(255),\n" +
+                        "    rptOwnerStreet1 VARCHAR(255),\n" +
+                        "    rptOwnerStreet2 VARCHAR(255),\n" +
+                        "    rptOwnerCity VARCHAR(255),\n" +
+                        "    rptOwnerState VARCHAR(255),\n" +
+                        "    rptOwnerZipCode INTEGER,\n" +
+                        "    isDirector BOOLEAN,\n" +
+                        "    isOfficer BOOLEAN,\n" +
+                        "    isTenPercentOwner BOOLEAN,\n" +
+                        "    isOther BOOLEAN,\n" +
+                        "    officerTitle VARCHAR(255),\n" +
+                        "    otherText VARCHAR(255)\n" +
+                        ");";
+                Statement stmt = conn.createStatement();
+                stmt.executeUpdate(cReportingOwner);
+            }
 
 
             System.out.println("----------------------------");
@@ -62,12 +89,12 @@ public class Main {
             startTime = new BigInteger(Long.toString(System.nanoTime()));
 
             if (argsMap.get("files") != null) {
-                executeFiles(((String) argsMap.get("files")).split(","), DELAY, output, connection);
+                executeFiles(((String) argsMap.get("files")).split(","), DELAY, output, conn);
             }
             if (conc)
-                executeConcurrently(path, output, maxNoForms, connection);
+                executeConcurrently(path, output, maxNoForms, conn);
             else
-                executeSequentially(path, output, DELAY, maxNoForms, connection);
+                executeSequentially(path, output, DELAY, maxNoForms, conn);
 
             totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
             System.out.println("-------------------------------------------------");
