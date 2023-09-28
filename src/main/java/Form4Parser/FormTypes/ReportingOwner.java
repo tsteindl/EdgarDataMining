@@ -87,7 +87,7 @@ public class ReportingOwner extends TableType { //TODO: check if record works he
         this.rptOwnerZipCode = rptOwnerZipCode;
     }
 
-    public Boolean getDirector() {
+    public Boolean getIsDirector() {
         return isDirector;
     }
 
@@ -95,15 +95,15 @@ public class ReportingOwner extends TableType { //TODO: check if record works he
         isDirector = director;
     }
 
-    public Boolean getOfficer() {
+    public Boolean getIsOfficer() {
         return isOfficer;
     }
 
-    public void setOfficer(Boolean officer) {
+    public void setIsOfficer(Boolean officer) {
         isOfficer = officer;
     }
 
-    public Boolean getTenPercentOwner() {
+    public Boolean getIsTenPercentOwner() {
         return isTenPercentOwner;
     }
 
@@ -111,7 +111,7 @@ public class ReportingOwner extends TableType { //TODO: check if record works he
         isTenPercentOwner = tenPercentOwner;
     }
 
-    public Boolean getOther() {
+    public Boolean getIsOther() {
         return isOther;
     }
 
