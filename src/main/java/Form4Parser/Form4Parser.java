@@ -29,7 +29,7 @@ public abstract class Form4Parser extends FormParser {
 
     //Parser fields
     protected String schemaVersion;//TODO correct types
-    protected Integer documentType;
+    protected String documentType;
     protected LocalDate periodOfReport;
     protected Boolean notSubjectToSection16;
     protected Integer issuerCik;

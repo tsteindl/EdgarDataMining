@@ -51,30 +51,58 @@ public class Main {
         }
 
         try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+            conn.setAutoCommit(true); //automatically commit transactions
             System.out.println("Connected to PostgreSQL!");
 
             if (output.equals("db")) {
-                /*Create tables*/
-                String cReportingOwner = "CREATE TABLE IF NOT EXISTS ReportingOwner (\n" +
-                        "    rptOwnerCik INTEGER PRIMARY KEY,\n" +
-                        "    rptOwnerCcc VARCHAR(255),\n" +
-                        "    rptOwnerName VARCHAR(255),\n" +
-                        "    rptOwnerStreet1 VARCHAR(255),\n" +
-                        "    rptOwnerStreet2 VARCHAR(255),\n" +
-                        "    rptOwnerCity VARCHAR(255),\n" +
-                        "    rptOwnerState VARCHAR(255),\n" +
-                        "    rptOwnerZipCode INTEGER,\n" +
-                        "    isDirector BOOLEAN,\n" +
-                        "    isOfficer BOOLEAN,\n" +
-                        "    isTenPercentOwner BOOLEAN,\n" +
-                        "    isOther BOOLEAN,\n" +
-                        "    officerTitle VARCHAR(255),\n" +
-                        "    otherText VARCHAR(255)\n" +
-                        ");";
-                Statement stmt = conn.createStatement();
-                stmt.executeUpdate(cReportingOwner);
-            }
+                //Create tables
+                String createIssuerTable = "CREATE TABLE IF NOT EXISTS issuer (\n" +
+                                                "cik INTEGER PRIMARY KEY," +
+                                                "issuerName VARCHAR(255)," +
+                                                "issuerTradingSymbol VARCHAR(255)" +
+                                            ");";
 
+                String createReportingOwnerTable = "CREATE TABLE IF NOT EXISTS reporting_owner (\n" +
+                                                        "cik INTEGER PRIMARY KEY,\n" +
+                                                        "ccc VARCHAR(255),\n" +
+                                                        "name VARCHAR(255),\n" +
+                                                        "street1 VARCHAR(255),\n" +
+                                                        "street2 VARCHAR(255),\n" +
+                                                        "city VARCHAR(255),\n" +
+                                                        "state VARCHAR(255),\n" +
+                                                        "zipCode VARCHAR(255),\n" +
+                                                        "isDirector BOOLEAN,\n" +
+                                                        "isOfficer BOOLEAN,\n" +
+                                                        "isTenPercentOwner BOOLEAN,\n" +
+                                                        "isOther BOOLEAN,\n" +
+                                                        "officerTitle VARCHAR(255),\n" +
+                                                        "otherText VARCHAR(255)\n" +
+                                                    ");";
+                //schema with nested tables instead of relations, as transactions/holdings will mostly be accessed with form
+                String createForm4Table = "CREATE TABLE IF NOT EXISTS form_4 (\n" +
+                                                "id SERIAL PRIMARY KEY,\n" +
+                                                "documentType VARCHAR(255),\n" +
+                                                "periodOfReport DATE,\n" +
+                                                "notSubjectToSection16 BOOLEAN,\n" +
+                                                "issuer_cik INTEGER,\n" +
+                                                "nonDerivativeTransactions JSONB[],\n" +
+                                                "nonDerivativeHoldings JSONB[],\n" +
+                                                "derivativeTransactions JSONB[],\n" +
+                                                "derivativeHoldings JSONB[]\n" +
+                                            ");";
+
+                String createReportingOwner_Form4Table = "CREATE TABLE IF NOT EXISTS reporting_owner_form_4 (\n" +
+                                                            "owner_cik INTEGER REFERENCES reporting_owner (cik) ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                                            "form_4_id INTEGER REFERENCES form_4 (id) ON UPDATE CASCADE ON DELETE CASCADE, " +
+                                                            "CONSTRAINT reporting_owner_form_4_pkey PRIMARY KEY (owner_cik, form_4_id)" +
+                                                          ");";
+                Statement stmt = conn.createStatement();
+                stmt.addBatch(createIssuerTable);
+                stmt.addBatch(createReportingOwnerTable);
+                stmt.addBatch(createForm4Table);
+                stmt.addBatch(createReportingOwner_Form4Table);
+                stmt.executeBatch();
+            }
 
             System.out.println("----------------------------");
             System.out.println("Starting application with program args: ");
