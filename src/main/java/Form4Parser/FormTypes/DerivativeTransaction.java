@@ -9,7 +9,7 @@ public class DerivativeTransaction extends TableType {
     private LocalDate deemedExecutionDate = null;
     private Integer transactionFormType = null;
     private String transactionCode = null;
-    private Boolean equitySwapInvolved = null;
+    private Boolean equitySwapInvolved = false;
     private String transactionTimeliness = null;
     private Double transactionShares = null;
     private Double transactionTotalValue = null;

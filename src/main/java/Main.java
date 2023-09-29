@@ -39,7 +39,9 @@ public class Main {
         boolean conc = (boolean) argsMap.get("conc");
         boolean doStats = (boolean) argsMap.get("doStats");
         String output = (String) argsMap.get("output");
-        int maxNoForms = (int) argsMap.get("n");
+        int maxNoForms = -1;
+        if (argsMap.get("n") != null)
+            maxNoForms = (int) argsMap.get("n");
 
         String dbUrl = AppConfig.getDbUrl();
         String dbUsername = AppConfig.getDbUsername();
@@ -80,14 +82,15 @@ public class Main {
                 //schema with nested tables instead of relations, as transactions/holdings will mostly be accessed with form
                 String createForm4Table = "CREATE TABLE IF NOT EXISTS form_4 (\n" +
                                                 "id SERIAL PRIMARY KEY,\n" +
+                                                "name VARCHAR(255) UNIQUE,\n" +
                                                 "documentType VARCHAR(255),\n" +
                                                 "periodOfReport DATE,\n" +
                                                 "notSubjectToSection16 BOOLEAN,\n" +
-                                                "issuer_cik INTEGER,\n" +
-                                                "nonDerivativeTransactions JSONB[],\n" +
-                                                "nonDerivativeHoldings JSONB[],\n" +
-                                                "derivativeTransactions JSONB[],\n" +
-                                                "derivativeHoldings JSONB[]\n" +
+                                                "issuer_cik INTEGER REFERENCES issuer ON UPDATE CASCADE ON DELETE CASCADE,\n" +
+                                                "nonDerivativeTransactions JSON,\n" +
+                                                "nonDerivativeHoldings JSON,\n" +
+                                                "derivativeTransactions JSON,\n" +
+                                                "derivativeHoldings JSON\n" +
                                             ");";
 
                 String createReportingOwner_Form4Table = "CREATE TABLE IF NOT EXISTS reporting_owner_form_4 (\n" +
@@ -101,6 +104,7 @@ public class Main {
                 stmt.addBatch(createForm4Table);
                 stmt.addBatch(createReportingOwner_Form4Table);
                 stmt.executeBatch();
+//                conn.commit();
             }
 
             System.out.println("----------------------------");
@@ -115,7 +119,7 @@ public class Main {
             System.out.println("-------------------------------------------------");
             startTime = new BigInteger(Long.toString(System.nanoTime()));
 
-            if (argsMap.get("files") != null) {
+            if (argsMap.get("files") != null) { //TODO: calculate delay
                 executeFiles(((String) argsMap.get("files")).split(","), DELAY, output, conn);
             }
             if (conc)
@@ -207,7 +211,7 @@ public class Main {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
                 for (DailyData dailyData : dailyDataList) {
                     try {
-                        if (nOForms >= maxNoForms) {
+                        if (maxNoForms != -1 && nOForms >= maxNoForms) {
                             break;
                         }
                         handleDailyData(delay, dailyData, edgarScraper, output, connection);
@@ -264,7 +268,7 @@ public class Main {
                         formParser.parseForm();
                         formParser.outputForm(parsableForm.outputPath());
                         nOForms++;
-                        if (nOForms >= maxNoForms) {
+                        if (maxNoForms != -1 && nOForms >= maxNoForms) {
                             // Signal the latch to stop parsing
                             stopParsingLatch.countDown();
                         }

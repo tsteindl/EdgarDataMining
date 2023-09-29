@@ -9,10 +9,10 @@ public class ReportingOwner extends TableType { //TODO: check if record works he
     private String rptOwnerCity=null;
     private String rptOwnerState=null;
     private String rptOwnerZipCode=null;
-    private Boolean isDirector=null;
-    private Boolean isOfficer=null;
-    private Boolean isTenPercentOwner=null;
-    private Boolean isOther=null;
+    private Boolean isDirector=false;
+    private Boolean isOfficer=false;
+    private Boolean isTenPercentOwner=false;
+    private Boolean isOther=false;
     private String officerTitle=null;
     private String otherText=null;
 

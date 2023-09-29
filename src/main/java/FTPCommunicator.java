@@ -77,7 +77,7 @@ public class FTPCommunicator {
 
         // Wait to not exceed 10 requests per second
         // TODO: Change this
-//        Thread.sleep(delay);
+        Thread.sleep(delay);
 
         String url = BASE_URL + path;
         System.out.println("load url: " + url);
