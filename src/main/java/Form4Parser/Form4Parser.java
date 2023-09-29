@@ -50,7 +50,7 @@ public abstract class Form4Parser extends FormParser {
         //used LinkedLists here because mainly add operations are used and not random access
         this.nonNullableTags = new HashSet<>();
         this.errorFields = new HashSet<>();
-        errorFields.add("issuerCik");
+        nonNullableTags.add("issuerCik"); //TODO: add more fields
         this.reportingOwners = new LinkedList<>();
         this.nonDerivativeTransactions = new LinkedList<>();
         this.nonDerivativeHoldings = new LinkedList<>();
