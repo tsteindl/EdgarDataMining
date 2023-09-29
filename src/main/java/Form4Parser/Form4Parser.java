@@ -42,10 +42,15 @@ public abstract class Form4Parser extends FormParser {
     protected final List<NonDerivativeHolding> nonDerivativeHoldings;
     protected final List<DerivativeTransaction> derivativeTransactions;
     protected final List<DerivativeHolding> derivativeHoldings;
+    protected final Set<String> nonNullableTags;
+    protected final Set<String> errorFields;
     public Form4Parser(String name, String input) {
         super(name, "4");
         this.input = input;
         //used LinkedLists here because mainly add operations are used and not random access
+        this.nonNullableTags = new HashSet<>();
+        this.errorFields = new HashSet<>();
+        errorFields.add("issuerCik");
         this.reportingOwners = new LinkedList<>();
         this.nonDerivativeTransactions = new LinkedList<>();
         this.nonDerivativeHoldings = new LinkedList<>();
@@ -105,9 +110,12 @@ public abstract class Form4Parser extends FormParser {
         ownershipDocument();
         if (this.nxt != null)
             throw new ParseFormException(this.name, this.nxt);
+        if (!this.errorFields.isEmpty()) {
+            throw new ParseFormException(this.name, "Non nullable fields are null: " + errorFields);
+        }
     }
 
-    private void ownershipDocument() {
+    private void ownershipDocument() throws ParseFormException {
         scan();
         if (nxtTag.equals("schemaVersion")) parseNode(this, "schemaVersion");
         parseNode(this, "documentType");
@@ -153,6 +161,10 @@ public abstract class Form4Parser extends FormParser {
             Field fld = getDeclaredFieldFromSuperClass(c.getClass(), key);
             if (fld == null) {
                 throw new NoSuchFieldException(key);
+            }
+            if (nxtVal == null && nonNullableTags.contains(key)) {
+//                throw new ParseFormException(this.name, "Non nullable tag " + key + " is null");
+                this.errorFields.add("key");
             }
             Class<?> type = fld.getType();
             Object castValue = type.cast(nxtVal);
