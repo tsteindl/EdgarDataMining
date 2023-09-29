@@ -229,6 +229,9 @@ public class Main {
 
     private static <T extends FormParser & FormOutputter> void handleDailyData(int delay, DailyData dailyData, EdgarScraper edgarScraper, String output, Connection connection) throws IOException, InterruptedException, ParseFormException, OutputException {
         String responseData = edgarScraper.downloadData(dailyData, delay);
+        if (responseData == null) {
+            return;
+        }
         T formParser;
         switch (output) {
             case "db":

@@ -145,15 +145,15 @@ public class EdgarScraper {
         String splitString = indexFile.data().substring(indexFile.data().lastIndexOf("---") + 4);
         String outputFolder = "data/" + indexFile.path().replace(".idx", "");
 
-        return extractDailyDataListFromResponseWithScanner(splitString, outputFolder);
-//        return extractDailyDataListFromResponseWithStreams(splitString, outputFolder);
+//        return extractDailyDataListFromResponseWithScanner(splitString, outputFolder);
+        return extractDailyDataListFromResponseWithStreams(splitString, outputFolder);
     }
 
     private List<DailyData> extractDailyDataListFromResponseWithStreams(String splitString, String outputFolder) {
         return splitString
                 .lines()
-                .map(line -> (line == null) ? null : line.trim().split("\\s{2,}"))
                 .filter(Objects::nonNull)
+                .map(line -> line.trim().split("\\s{3,}"))//TODO: potentially unsafe regex (what if people use 3 or more spaces in their name"
                 .filter(arr -> arr[0].equals(FORM_TYPE))
                 .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv"))
                 .collect(Collectors.toList());
