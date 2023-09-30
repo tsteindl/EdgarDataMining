@@ -123,7 +123,7 @@ public class Main {
 
             if (argsMap.get("files") != null) { //TODO: calculate delay
 
-                executeFiles(new ArrayList<>(Arrays.asList(((String) argsMap.get("files")).split(","))), DELAY, output, maxNoForms, conn);
+                executeFiles(((String) argsMap.get("files")).split(","), DELAY, output, maxNoForms, conn);
             }
             else {
                 if (conc)
@@ -162,7 +162,7 @@ public class Main {
         return DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
     }
 
-    private static <T extends FormParser & FormOutputter> void executeFiles(List<String> files, int delay, String output, int maxNoForms, Connection connection) {
+    private static <T extends FormParser & FormOutputter> void executeFiles(String[] files, int delay, String output, int maxNoForms, Connection connection) {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         for (String file : files) {
             String outputPath = "data/output_" + file.replace("/", "_") + ".csv";
