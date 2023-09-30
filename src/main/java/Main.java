@@ -29,7 +29,7 @@ public class Main {
     public static BigInteger startTime;
     public static double totalTimeTaken; //total time taken in seconds
     public static long nOForms = 0;
-    public static List<String> failedForms = new ArrayList<>();
+    public static Set<String> failedForms = new HashSet<>();
 
     private static final CountDownLatch stopParsingLatch = new CountDownLatch(1);
 
@@ -43,15 +43,17 @@ public class Main {
         if (argsMap.get("n") != null)
             maxNoForms = (int) argsMap.get("n");
 
-        String dbUrl = AppConfig.getDbUrl();
-        String dbUsername = AppConfig.getDbUsername();
-        String dbPassword = AppConfig.getDbPassword();
-
-        if (output == null) {
-            output = "csv";
+        if (path == null && argsMap.get("files") == null) {
+            System.out.println("Please provide path (e.g. '-path=2022/QTR1/form.20220106.idx') or individual files with '-files=edgar/data/1433642/0001433642-22-000015.txt,...'");
+            return;
         }
-
-        try (Connection conn = DriverManager.getConnection(dbUrl, dbUsername, dbPassword)) {
+        if (output == null) {
+            System.out.println("Please configure output method (e.g. '-output=db' or '-output=csv')");
+            return;
+        }
+//        Connection conn = null;
+        try (Connection conn = connectToDB()) {
+//            conn = connectToDB();
             conn.setAutoCommit(true); //automatically commit transactions
             System.out.println("Connected to PostgreSQL!");
 
@@ -120,13 +122,15 @@ public class Main {
             startTime = new BigInteger(Long.toString(System.nanoTime()));
 
             if (argsMap.get("files") != null) { //TODO: calculate delay
-                executeFiles(((String) argsMap.get("files")).split(","), DELAY, output, conn);
-            }
-            if (conc)
-                executeConcurrently(path, output, maxNoForms, conn);
-            else
-                executeSequentially(path, output, DELAY, maxNoForms, conn);
 
+                executeFiles(new ArrayList<>(Arrays.asList(((String) argsMap.get("files")).split(","))), DELAY, output, maxNoForms, conn);
+            }
+            else {
+                if (conc)
+                    executeConcurrently(path, output, maxNoForms, conn);
+                else
+                    executeSequentially(path, output, DELAY, maxNoForms, conn);
+            }
             totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
             System.out.println("-------------------------------------------------");
             System.out.println("Application ended");
@@ -136,26 +140,59 @@ public class Main {
             System.out.println("Number of erroneous forms: " + failedForms.size());
             System.out.println("Erroneous forms: " + failedForms.toString());
             System.out.println("-------------------------------------------------");
+
         } catch (SQLException e) {
             System.err.println("Connection failed!");
             e.printStackTrace();
+//        } finally {
+//            if (conn != null) {
+//                try {
+//                    conn.close();
+//                } catch (SQLException e) {
+//                    ignored
+//                }
+//            }
         }
     }
 
-    private static <T extends FormParser & FormOutputter> void executeFiles(String[] files, int delay, String output, Connection connection) throws IOException, InterruptedException {
+    private static Connection connectToDB() throws SQLException {
+        String dbUrl = AppConfig.getDbUrl();
+        String dbUsername = AppConfig.getDbUsername();
+        String dbPassword = AppConfig.getDbPassword();
+        return DriverManager.getConnection(dbUrl, dbUsername, dbPassword);
+    }
+
+    private static <T extends FormParser & FormOutputter> void executeFiles(List<String> files, int delay, String output, int maxNoForms, Connection connection) {
         EdgarScraper edgarScraper = new EdgarScraper("4");
         for (String file : files) {
             String outputPath = "data/output_" + file.replace("/", "_") + ".csv";
             DailyData dailyData = new DailyData("4", "", "", "", file, outputPath);
             try {
-                if (nOForms >= 0) {
-                    continue;
+                if (maxNoForms != -1 && nOForms >= maxNoForms) {
+                    break;
                 }
                 handleDailyData(delay, dailyData, edgarScraper, output, connection);
                 nOForms++;
-            } catch (ParseFormException | OutputException e) {
+            } catch (ParseFormException | OutputException | IOException | InterruptedException e) {
+                if (e instanceof OutputException) {
+                    Exception origE = ((OutputException) e).originalException;
+                    if (origE instanceof SQLException) {
+                        try {
+                            connection = connectToDB();
+                            if (!failedForms.contains(dailyData.folderPath())) {
+                                failedForms.add(dailyData.folderPath());
+                                handleDailyData(delay, dailyData, edgarScraper, output, connection);
+                                nOForms++;
+                                continue; //make sure it isn't constantly re-added
+                            }
+                            //if already in failedForms this will fall through
+                        } catch (SQLException | IOException | InterruptedException | ParseFormException | OutputException ex) {
+                            //exception will fall through
+                        }
+                    }
+                }
                 e.printStackTrace();
-                failedForms.add(((DailyData) null).folderPath());
+                failedForms.add(dailyData.folderPath()); //failedForms is a Set so duplicates cannot be added
             }
         }
     }
@@ -163,7 +200,6 @@ public class Main {
     private static Map<String, Object> parseProgramArgs(String[] args) {
         Map<String, Object> result = new HashMap<>();
         //Default values
-        result.put("path", Constants.DEFAULT_YEAR);
         result.put("conc", false);
         result.put("doStats", false);
         List<String> as = new LinkedList<>(Arrays.asList(args)); //LinkedList supports faster remove than ArrayList
@@ -202,12 +238,10 @@ public class Main {
 
 
     public static <T extends FormParser & FormOutputter> void executeSequentially(String path, String output, int delay, int maxNoForms, Connection connection) {
-//        stats = new Stats();
         EdgarScraper edgarScraper = new EdgarScraper("4");
         //wait until all idx files are downloaded (TODO problem: recursion)
         edgarScraper.scrapeIndexFiles(path, edgarScraper.getIndexFiles(), delay);
         for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
-            try {
                 List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
                 for (DailyData dailyData : dailyDataList) {
                     try {
@@ -216,32 +250,49 @@ public class Main {
                         }
                         handleDailyData(delay, dailyData, edgarScraper, output, connection);
                         nOForms++;
-                    } catch (ParseFormException e) {
+                    } catch (ParseFormException | IOException | InterruptedException | OutputException e) {
+                        if (e instanceof OutputException) {
+                            Exception origE = ((OutputException) e).originalException;
+                            if (origE instanceof SQLException) {
+                                try {
+                                    connection = connectToDB();
+                                    if (failedForms.contains(dailyData.folderPath())) {
+                                        return; //make sure it isn't constantly re-added
+                                    }
+                                    //add to end of List so it can be reprocessed
+                                    dailyDataList.add(dailyData);
+                                    failedForms.add(dailyData.folderPath());
+                                } catch (SQLException ex) {
+                                    //exception will fall through
+                                }
+                            }
+                        }
                         e.printStackTrace();
                         failedForms.add(dailyData.folderPath());
                     }
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 
     private static <T extends FormParser & FormOutputter> void handleDailyData(int delay, DailyData dailyData, EdgarScraper edgarScraper, String output, Connection connection) throws IOException, InterruptedException, ParseFormException, OutputException {
         String responseData = edgarScraper.downloadData(dailyData, delay);
-        if (responseData == null) {
-            return;
+        handleParsableForm(new ParsableForm(responseData, dailyData.folderPath(), dailyData.outputPath()), output, connection);
+    }
+
+    private static <T extends FormParser & FormOutputter> void handleParsableForm(ParsableForm parsableForm, String output, Connection connection) throws ParseFormException, OutputException {
+        if (parsableForm.responseData() == null) {
+            throw new ParseFormException("Server response is empty");
         }
         T formParser;
         switch (output) {
             case "db":
-                formParser = (T) new PSQLForm4Parser(dailyData.folderPath(), responseData, connection);
+                formParser = (T) new PSQLForm4Parser(parsableForm.folderPath(), parsableForm.responseData(), connection);
                 break;
             default: //case csv
-                formParser = (T) new CSVForm4Parser(dailyData.folderPath(), responseData);
+                formParser = (T) new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
         }
         formParser.parseForm();
-        formParser.outputForm(dailyData.outputPath());
+        formParser.outputForm(parsableForm.outputPath());
     }
 
 
@@ -256,27 +307,35 @@ public class Main {
         ExecutorService downloadExecutorService = Executors.newSingleThreadExecutor();
         System.out.println("Starting concurrent program with " + nThreads + " threads");
 
+        Connection[] finalConnection = new Connection[]{connection};
+
         parsableForms.addListener((parsableForm, list, index) -> {
+            if (parsableForm.responseData() == null) {
+                return;
+            }
             threadPool.submit(() -> {
                 try {
-                    if (stopParsingLatch.getCount() > 0) {
-                        T formParser;
-                        switch (output) {
-                            case "db":
-                                formParser = (T) new PSQLForm4Parser(parsableForm.folderPath(), parsableForm.responseData(), connection);
-                                break;
-                            default: //case csv
-                                formParser = (T) new CSVForm4Parser(parsableForm.folderPath(), parsableForm.responseData());
-                        }
-                        formParser.parseForm();
-                        formParser.outputForm(parsableForm.outputPath());
-                        nOForms++;
-                        if (maxNoForms != -1 && nOForms >= maxNoForms) {
-                            // Signal the latch to stop parsing
-                            stopParsingLatch.countDown();
+                    formJob(output, maxNoForms, parsableForm, finalConnection);
+                } catch (ParseFormException | OutputException e) {
+                    if (e instanceof OutputException) {
+                        Exception origE = ((OutputException) e).originalException;
+                        if (origE instanceof SQLException) {
+                            try {
+                                finalConnection[0] = connectToDB();
+                                if (failedForms.contains(parsableForm.folderPath())) {
+                                    return; //make sure it isn't constantly re-added
+                                }
+                                try {
+                                    formJob(output, maxNoForms, parsableForm, finalConnection);
+                                    failedForms.add(parsableForm.folderPath());
+                                } catch (ParseFormException | OutputException ex) {
+                                    //exception will fall through
+                                }
+                            } catch (SQLException ex) {
+                                //exception will fall through
+                            }
                         }
                     }
-                } catch (ParseFormException | OutputException e) {
                     e.printStackTrace();
                     failedForms.add(parsableForm.folderPath());
                 }
@@ -327,6 +386,17 @@ public class Main {
         }).get();
         downloadExecutorService.shutdown();
         threadPool.shutdown();
+    }
+
+    private static void formJob(String output, int maxNoForms, ParsableForm parsableForm, Connection[] finalConnection) throws ParseFormException, OutputException {
+        if (stopParsingLatch.getCount() > 0) {
+            handleParsableForm(parsableForm, output, finalConnection[0]);
+            nOForms++;
+            if (maxNoForms != -1 && nOForms >= maxNoForms) {
+                // Signal the latch to stop parsing
+                stopParsingLatch.countDown();
+            }
+        }
     }
 
 }

@@ -119,7 +119,6 @@ public class PSQLForm4Parser extends Form4Parser implements FormOutputter {
         } catch (SQLException | JsonProcessingException | RuntimeException e) {
             throw new OutputException(e);
         }
-
     }
 
     private void printResultSet(ResultSet resultSet) throws SQLException {

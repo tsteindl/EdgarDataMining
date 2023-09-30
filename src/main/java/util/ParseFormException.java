@@ -9,4 +9,8 @@ public class ParseFormException extends Exception {
     public ParseFormException(String formName, Node n) {
         super("Form " + formName + ": Node should be null but is " + n);
     }
+
+    public ParseFormException(String msg) {
+        super(msg);
+    }
 }
