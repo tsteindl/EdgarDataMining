@@ -1,0 +1,90 @@
+-----------------------------------------------
+Application ended
+Total time taken: 15.909552613s
+Number of Forms parsed: 100
+Avg seconds per form: 0.15909552613
+Number of erroneous forms: 0
+Erroneous forms: []
+
+
+
+
+
+with apache:
+-------------------------------------------------
+Application ended
+Total time taken: 27.66555361s
+Number of Forms parsed: 100
+Avg seconds per form: 0.2766555361
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+-------------------------------------------------
+Application ended
+Total time taken: 14.307075964s
+Number of Forms parsed: 100
+Avg seconds per form: 0.14307075964
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+-------------------------------------------------
+Application ended
+Total time taken: 356.043659284s
+Number of Forms parsed: 1000
+Avg seconds per form: 0.356043659284
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+
+
+with my implementation:
+-------------------------------------------------
+Application ended
+Total time taken: 15.404454175s
+Number of Forms parsed: 100
+Avg seconds per form: 0.15404454174999999
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+-------------------------------------------------
+Application ended
+Total time taken: 15.263845396s
+Number of Forms parsed: 100
+Avg seconds per form: 0.15263845396
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+-------------------------------------------------
+Application ended
+Total time taken: 137.747764072s
+Number of Forms parsed: 1000
+Avg seconds per form: 0.13774776407199998
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+
+
+
+my loadUrl, sleep improvement, diff idx file
+-------------------------------------------------
+Application ended
+Total time taken: 105.754217715s
+Number of Forms parsed: 300
+Avg seconds per form: 0.35251405905
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+
+
+apache loadurl, sleep improvement, diff idx file
+
+-------------------------------------------------
+Application ended
+Total time taken: 105.67077452s
+Number of Forms parsed: 300
+Avg seconds per form: 0.3522359150666666
+Number of erroneous forms: 0
+Erroneous forms: []
+-------------------------------------------------
+
+

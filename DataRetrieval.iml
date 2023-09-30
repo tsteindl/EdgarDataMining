@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module version="4">
+  <component name="AdditionalModuleElements">
+    <content url="file://$MODULE_DIR$" dumb="true">
+      <excludeFolder url="file://$MODULE_DIR$/.ipynb_checkpoints" />
+      <excludeFolder url="file://$MODULE_DIR$/UE 4/PSW2_UE4_Demo/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/UE 4/PSW2_UE4_Demo/out/production/PSW2_UE4_Demo/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/UE 4/PSW2_UE4_Demo/out/production/PSW2_UE4_Demo/out" />
+      <excludeFolder url="file://$MODULE_DIR$/UE 4/PSW2_UE4_Demo/src/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/UE 4/PSW2_UE4_Demo/src/out/production/PSW2_UE4_Demo/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/data" />
+      <excludeFolder url="file://$MODULE_DIR$/prbs-ue02-12024183" />
+    </content>
+  </component>
+</module>

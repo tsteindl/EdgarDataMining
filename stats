@@ -1,0 +1,22 @@
+no concurrency:
+
+-path=2022/QTR1/form.20220105.idx -conc=false
+
+Application ended
+Total time taken: 604.515764172s
+Number of Forms parsed: 4514
+Number of erroneous forms: 0
+Avg seconds per form: 0.1339201958732831
+Erroneous forms: []
+
+
+concurrency:
+
+-path=2022/QTR1/form.20220105.idx -conc=true	
+
+Application ended
+Total time taken: 591.777769823s
+Number of Forms parsed: 4514
+Avg seconds per form: 0.13109830966393443
+Number of erroneous forms: 0
+Erroneous forms: []
