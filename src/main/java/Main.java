@@ -122,7 +122,6 @@ public class Main {
             startTime = new BigInteger(Long.toString(System.nanoTime()));
 
             if (argsMap.get("files") != null) { //TODO: calculate delay
-
                 executeFiles(((String) argsMap.get("files")).split(","), DELAY, output, maxNoForms, conn);
             }
             else {
@@ -256,13 +255,13 @@ public class Main {
                             if (origE instanceof SQLException) {
                                 try {
                                     connection = connectToDB();
-                                    if (failedForms.contains(dailyData.folderPath())) {
-                                        return; //make sure it isn't constantly re-added
+                                    if (!failedForms.contains(dailyData.folderPath())) {
+                                        failedForms.add(dailyData.folderPath());
+                                        handleDailyData(delay, dailyData, edgarScraper, output, connection);
+                                        nOForms++;
+                                        continue; //make sure it isn't constantly re-added
                                     }
-                                    //add to end of List so it can be reprocessed
-                                    dailyDataList.add(dailyData);
-                                    failedForms.add(dailyData.folderPath());
-                                } catch (SQLException ex) {
+                                } catch (SQLException | IOException | InterruptedException | ParseFormException | OutputException ex) {
                                     //exception will fall through
                                 }
                             }
@@ -307,7 +306,7 @@ public class Main {
         ExecutorService downloadExecutorService = Executors.newSingleThreadExecutor();
         System.out.println("Starting concurrent program with " + nThreads + " threads");
 
-        Connection[] finalConnection = new Connection[]{connection};
+        Connection[] finalConnection = new Connection[]{connection}; //workaround for "effectively final in lambdas"
 
         parsableForms.addListener((parsableForm, list, index) -> {
             if (parsableForm.responseData() == null) {
@@ -322,16 +321,12 @@ public class Main {
                         if (origE instanceof SQLException) {
                             try {
                                 finalConnection[0] = connectToDB();
-                                if (failedForms.contains(parsableForm.folderPath())) {
+                                if (!failedForms.contains(parsableForm.folderPath())) {
+                                    failedForms.add(parsableForm.folderPath());
+                                    formJob(output, maxNoForms, parsableForm, finalConnection);
                                     return; //make sure it isn't constantly re-added
                                 }
-                                try {
-                                    formJob(output, maxNoForms, parsableForm, finalConnection);
-                                    failedForms.add(parsableForm.folderPath());
-                                } catch (ParseFormException | OutputException ex) {
-                                    //exception will fall through
-                                }
-                            } catch (SQLException ex) {
+                            } catch (SQLException | ParseFormException | OutputException ex) {
                                 //exception will fall through
                             }
                         }
