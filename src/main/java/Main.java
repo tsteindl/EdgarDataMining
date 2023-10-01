@@ -401,10 +401,12 @@ public class Main {
         ExecutorService threadPool = Executors.newFixedThreadPool(nThreads);
         CompletionService<Void> completionService = new ExecutorCompletionService<>(threadPool);
         Connection[] finalConnection = new Connection[]{connection}; //workaround for "effectively final in lambdas"
+        int totalTasks = 0;
 
         edgarScraper.scrapeIndexFiles(path, edgarScraper.getIndexFiles(), 100); //TODO: do this concurrently
         for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
             List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile, maxNoForms);
+            totalTasks += dailyDataList.size();
             for (DailyData dailyData : dailyDataList) {
                 completionService.submit(() -> {
                     try {
@@ -436,15 +438,15 @@ public class Main {
                 }); //schedule tasks in advance
                 Thread.sleep(DELAY);
             }
-            threadPool.shutdown();
-            //wait for all jobs to finish
-            for (int i = 0; i < dailyDataList.size(); i++) {
-                try {
-                    Future<Void> completedTask = completionService.take();
-                    completedTask.get(); // Wait for the task to complete
-                } catch (ExecutionException e) {
-                    e.printStackTrace();
-                }
+        }
+        threadPool.shutdown();
+        //wait for all jobs to finish
+        for (int i = 0; i < totalTasks; i++) {
+            try {
+                Future<Void> completedTask = completionService.take();
+                completedTask.get(); // Wait for the task to complete
+            } catch (ExecutionException e) {
+                e.printStackTrace();
             }
         }
     }
