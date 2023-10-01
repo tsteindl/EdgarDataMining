@@ -18,7 +18,7 @@ https://www.sec.gov/os/accessing-edgar-data
 ## Technologies used
 - Generic class hierarchies including interfaces and abstract classes enabling building on this implementation (dependency injection)
 - Accessing remote FTP server using HTTP requests (REST)
-- Java FileIO, Streams, Multithreading, Interfaces, Generics, Reflection
+- Java FileIO, Streams, Multithreading, Interfaces, Generics, Reflection, JDBC
 - Multithreaded/Concurrent implementation is ~3x faster than sequential implementation
 - JSON/XML Parsing
 - Implemented XML Parser from XML-Schema (maybe this can be generated in the future)
