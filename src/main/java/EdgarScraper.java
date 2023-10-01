@@ -144,11 +144,14 @@ public class EdgarScraper {
         String splitString = indexFile.data().substring(indexFile.data().lastIndexOf("---") + 4);
         String outputFolder = "data/" + indexFile.path().replace(".idx", "");
 
-//        return extractDailyDataListFromResponseWithScanner(splitString, outputFolder);
-        return extractDailyDataListFromResponseWithStreams(splitString, outputFolder, maxNoForms);
+        return extractDailyDataListFromResponseWithScanner(splitString, outputFolder, maxNoForms);
+//        return extractDailyDataListFromResponseWithStreams(splitString, outputFolder, maxNoForms);
     }
 
     private List<DailyData> extractDailyDataListFromResponseWithStreams(String splitString, String outputFolder, int maxNoForms) {
+        /*
+        OUT OF SERVICE!!!
+         */
         Stream<DailyData> dailyDataStream = splitString
                 .lines()
                 .filter(Objects::nonNull)
@@ -160,20 +163,38 @@ public class EdgarScraper {
                 : dailyDataStream.limit(maxNoForms).collect(Collectors.toList());
     }
 
-    private List<DailyData> extractDailyDataListFromResponseWithScanner(String splitString, String outputFolder) {
-        List<DailyData> dailyDataList = new ArrayList<>();
+    private List<DailyData> extractDailyDataListFromResponseWithScanner(String splitString, String outputFolder, int maxNoForms) {  //this implementation is ostensibly faster than with streams
+        List<DailyData> result = new ArrayList<>();
         try (Scanner scanner = new Scanner(new StringReader(splitString))) {
+            int i = 0;
             while (scanner.hasNextLine()) {
+                if (maxNoForms != -1 && i >= maxNoForms) {
+                    break;
+                }
                 String line = scanner.nextLine().trim();
-                String[] arr = line.split("\\s{2,}");
+//                String[] arr = line.split("\\s{3,}");
+                String[] arr = new String[]{
+                        line.substring(0, 12).trim(),
+                        line.substring(12, 74).trim(),
+                        line.substring(74, 86).trim(),
+                        line.substring(86, 98).trim(),
+                        line.substring(98).trim()
+                };
 
-                if (arr.length >= 5 && arr[0].equals(FORM_TYPE)) {
+                if (arr[0] == null || !arr[0].equals(FORM_TYPE)) {
+                    continue;
+                }
+
+                if (arr.length >= 5) {
                     String csvFilePath = outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv";
-                    dailyDataList.add(new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], csvFilePath));
+                    result.add(new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], csvFilePath));
+                    i++;
+                } else {
+                    System.out.println("debug");
                 }
             }
         }
-        return dailyDataList;
+        return result;
     }
 
     public static JsonObject getJsonObjectFromString(String string) {
