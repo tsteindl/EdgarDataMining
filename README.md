@@ -27,7 +27,7 @@ https://www.sec.gov/os/accessing-edgar-data
 - Recursion over Directory tree and scraping data
 - Processing strings with Java (parallel) Streams
 - Using utility libraries
-- Multithreading/Concurrency to attain speedup of x of my first implementation
+- Multithreading/Concurrency to attain speedup of 3x of my first implementation
 - FileIO
 - JSON/XML Parsing
 - Reflection

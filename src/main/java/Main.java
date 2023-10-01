@@ -28,8 +28,10 @@ public class Main {
     public static Stats stats;
     public static BigInteger startTime;
     public static double totalTimeTaken; //total time taken in seconds
-    public static long nOForms = 0;
+    public static int nOParsedForms = 0;
+    public static int nOFailedForms = 0;
     public static Set<String> failedForms = new HashSet<>();
+
 
     private static final CountDownLatch stopParsingLatch = new CountDownLatch(1);
 
@@ -125,32 +127,22 @@ public class Main {
                 executeFiles(((String) argsMap.get("files")).split(","), DELAY, output, maxNoForms, conn);
             }
             else {
-                if (conc)
-                    executeConcurrently(path, output, maxNoForms, conn);
-                else
-                    executeSequentially(path, output, DELAY, maxNoForms, conn);
+                if (conc) executeConcurrently(path, output, maxNoForms, conn);
+                else executeSequentially(path, output, DELAY, maxNoForms, conn);
             }
             totalTimeTaken = Stats.nsToSec(new BigInteger(Long.toString(System.nanoTime())).subtract(startTime));
             System.out.println("-------------------------------------------------");
             System.out.println("Application ended");
             System.out.println("Total time taken: " + totalTimeTaken + "s");
-            System.out.println("Number of Forms parsed: " + nOForms);
-            System.out.println("Avg seconds per form: " + ((double) totalTimeTaken / nOForms));
-            System.out.println("Number of erroneous forms: " + failedForms.size());
+            System.out.println("Number of Forms parsed: " + nOParsedForms);
+            System.out.println("Avg seconds per form: " + ((double) totalTimeTaken / nOParsedForms));
+            System.out.println("Number of erroneous forms: " + nOFailedForms);
             System.out.println("Erroneous forms: " + failedForms.toString());
             System.out.println("-------------------------------------------------");
 
         } catch (SQLException e) {
             System.err.println("Connection failed!");
             e.printStackTrace();
-//        } finally {
-//            if (conn != null) {
-//                try {
-//                    conn.close();
-//                } catch (SQLException e) {
-//                    ignored
-//                }
-//            }
         }
     }
 
@@ -167,11 +159,11 @@ public class Main {
             String outputPath = "data/output_" + file.replace("/", "_") + ".csv";
             DailyData dailyData = new DailyData("4", "", "", "", file, outputPath);
             try {
-                if (maxNoForms != -1 && nOForms >= maxNoForms) {
+                if (maxNoForms != -1 && nOParsedForms >= maxNoForms) {
                     break;
                 }
                 handleDailyData(delay, dailyData, edgarScraper, output, connection);
-                nOForms++;
+                nOParsedForms++;
             } catch (ParseFormException | OutputException | IOException | InterruptedException e) {
                 if (e instanceof OutputException) {
                     Exception origE = ((OutputException) e).originalException;
@@ -181,7 +173,7 @@ public class Main {
                             if (!failedForms.contains(dailyData.folderPath())) {
                                 failedForms.add(dailyData.folderPath());
                                 handleDailyData(delay, dailyData, edgarScraper, output, connection);
-                                nOForms++;
+                                nOParsedForms++;
                                 continue; //make sure it isn't constantly re-added
                             }
                             //if already in failedForms this will fall through
@@ -192,6 +184,7 @@ public class Main {
                 }
                 e.printStackTrace();
                 failedForms.add(dailyData.folderPath()); //failedForms is a Set so duplicates cannot be added
+                nOFailedForms++;
             }
         }
     }
@@ -241,14 +234,14 @@ public class Main {
         //wait until all idx files are downloaded (TODO problem: recursion)
         edgarScraper.scrapeIndexFiles(path, edgarScraper.getIndexFiles(), delay);
         for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
-                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile);
+                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile, maxNoForms);
                 for (DailyData dailyData : dailyDataList) {
                     try {
-                        if (maxNoForms != -1 && nOForms >= maxNoForms) {
+                        if (maxNoForms != -1 && nOParsedForms >= maxNoForms) {
                             break;
                         }
                         handleDailyData(delay, dailyData, edgarScraper, output, connection);
-                        nOForms++;
+                        nOParsedForms++;
                     } catch (ParseFormException | IOException | InterruptedException | OutputException e) {
                         if (e instanceof OutputException) {
                             Exception origE = ((OutputException) e).originalException;
@@ -258,7 +251,7 @@ public class Main {
                                     if (!failedForms.contains(dailyData.folderPath())) {
                                         failedForms.add(dailyData.folderPath());
                                         handleDailyData(delay, dailyData, edgarScraper, output, connection);
-                                        nOForms++;
+                                        nOParsedForms++;
                                         continue; //make sure it isn't constantly re-added
                                     }
                                 } catch (SQLException | IOException | InterruptedException | ParseFormException | OutputException ex) {
@@ -268,6 +261,7 @@ public class Main {
                         }
                         e.printStackTrace();
                         failedForms.add(dailyData.folderPath());
+                        nOFailedForms++;
                     }
                 }
         }
@@ -295,9 +289,11 @@ public class Main {
     }
 
 
+    /*
+    First concurrent implementation: This implementation should be faster if parsing takes longer than loading the forms (i.e. longer than an HTTP request to the FTP server)
     public static <T extends FormParser & FormOutputter> void executeConcurrently(String path, String output, int maxNoForms, Connection connection) throws InterruptedException, ExecutionException {
         EdgarScraper edgarScraper = new EdgarScraper("4");
-        List<Runnable> downloadQueue = new CopyOnWriteArrayList<>(); //TODO: maybe normal ArrayList suffices
+        List<Runnable> downloadQueue = new CopyOnWriteArrayList<>();
         ObservableCopyOnWriteArrayList<IndexFile> indexFiles = new ObservableCopyOnWriteArrayList<>();
         ObservableCopyOnWriteArrayList<ParsableForm> parsableForms = new ObservableCopyOnWriteArrayList<>();
         int nThreads = Runtime.getRuntime().availableProcessors();
@@ -314,7 +310,14 @@ public class Main {
             }
             threadPool.submit(() -> {
                 try {
-                    formJob(output, maxNoForms, parsableForm, finalConnection);
+                    if (stopParsingLatch.getCount() > 0) {
+                        handleParsableForm(parsableForm, output, finalConnection[0]);
+                        nOParsedForms++;
+                        if (maxNoForms != -1 && nOParsedForms >= maxNoForms) {
+                            // Signal the latch to stop parsing
+                            stopParsingLatch.countDown();
+                        }
+                    }
                 } catch (ParseFormException | OutputException e) {
                     if (e instanceof OutputException) {
                         Exception origE = ((OutputException) e).originalException;
@@ -323,7 +326,14 @@ public class Main {
                                 finalConnection[0] = connectToDB();
                                 if (!failedForms.contains(parsableForm.folderPath())) {
                                     failedForms.add(parsableForm.folderPath());
-                                    formJob(output, maxNoForms, parsableForm, finalConnection);
+                                    if (stopParsingLatch.getCount() > 0) {
+                                        handleParsableForm(parsableForm, output, finalConnection[0]);
+                                        nOParsedForms++;
+                                        if (maxNoForms != -1 && nOParsedForms >= maxNoForms) {
+                                            // Signal the latch to stop parsing
+                                            stopParsingLatch.countDown();
+                                        }
+                                    }
                                     return; //make sure it isn't constantly re-added
                                 }
                             } catch (SQLException | ParseFormException | OutputException ex) {
@@ -341,7 +351,7 @@ public class Main {
         indexFiles.addListener((idxFile, list, index) -> {
             if (stopParsingLatch.getCount() > 0) {
 
-                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile); //TODO: maybe do this in threadpool
+                List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile, maxNoForms); //TODO: maybe do this in threadpool
                 for (DailyData dailyData : dailyDataList) {
                     //add dailydata downloads to beginning, so they can start being processed
                     downloadQueue.add(0, () -> {
@@ -383,15 +393,59 @@ public class Main {
         threadPool.shutdown();
     }
 
-    private static void formJob(String output, int maxNoForms, ParsableForm parsableForm, Connection[] finalConnection) throws ParseFormException, OutputException {
-        if (stopParsingLatch.getCount() > 0) {
-            handleParsableForm(parsableForm, output, finalConnection[0]);
-            nOForms++;
-            if (maxNoForms != -1 && nOForms >= maxNoForms) {
-                // Signal the latch to stop parsing
-                stopParsingLatch.countDown();
+    */
+
+    public static <T extends FormParser & FormOutputter> void executeConcurrently(String path, String output, int maxNoForms, Connection connection) throws InterruptedException, ExecutionException {
+        EdgarScraper edgarScraper = new EdgarScraper("4");
+        int nThreads = Runtime.getRuntime().availableProcessors();
+        ExecutorService threadPool = Executors.newFixedThreadPool(nThreads);
+        CompletionService<Void> completionService = new ExecutorCompletionService<>(threadPool);
+        Connection[] finalConnection = new Connection[]{connection}; //workaround for "effectively final in lambdas"
+
+        edgarScraper.scrapeIndexFiles(path, edgarScraper.getIndexFiles(), 100); //TODO: do this concurrently
+        for (IndexFile idxFile : edgarScraper.getIndexFiles()) {
+            List<DailyData> dailyDataList = edgarScraper.parseIndexFile(idxFile, maxNoForms);
+            for (DailyData dailyData : dailyDataList) {
+                completionService.submit(() -> {
+                    try {
+                        handleDailyData(0, dailyData, edgarScraper, output, finalConnection[0]);
+                        nOParsedForms++;
+                    } catch (ParseFormException | IOException | InterruptedException | OutputException e) {
+                        if (e instanceof OutputException) {
+                            Exception origE = ((OutputException) e).originalException;
+                            if (origE instanceof SQLException) {
+                                try {
+                                    finalConnection[0] = connectToDB();
+                                    if (!failedForms.contains(dailyData.folderPath())) {
+                                        failedForms.add(dailyData.folderPath());
+                                        handleDailyData(0, dailyData, edgarScraper, output, connection);
+                                        nOParsedForms++;
+                                        return null; //because CompletionService is of type Void
+                                    }
+                                } catch (SQLException | IOException | InterruptedException | ParseFormException | OutputException ex) {
+                                    //exception will fall through
+                                }
+                            }
+                        }
+                        e.printStackTrace();
+                        failedForms.add(dailyData.folderPath());
+                        nOFailedForms++;
+                    } finally {
+                        return null; //because CompletionService is of type Void
+                    }
+                }); //schedule tasks in advance
+                Thread.sleep(DELAY);
+            }
+            threadPool.shutdown();
+            //wait for all jobs to finish
+            for (int i = 0; i < dailyDataList.size(); i++) {
+                try {
+                    Future<Void> completedTask = completionService.take();
+                    completedTask.get(); // Wait for the task to complete
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
-
 }

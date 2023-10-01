@@ -2,13 +2,11 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.openjdk.jmh.annotations.*;
 import util.DailyData;
 import util.IndexFile;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class EdgarScraper {
@@ -140,22 +138,23 @@ public class EdgarScraper {
 //    @Fork(1)
 //    @Warmup(iterations = 3)
 //    @Measurement(iterations = 5)
-    public List<DailyData> parseIndexFile(IndexFile indexFile) { //TODO: optimize this it is taking extremely long
+    public List<DailyData> parseIndexFile(IndexFile indexFile, int maxNoForms) { //TODO: optimize this it is taking extremely long
         if (indexFile == null) return null;
         String splitString = indexFile.data().substring(indexFile.data().lastIndexOf("---") + 4);
         String outputFolder = "data/" + indexFile.path().replace(".idx", "");
 
 //        return extractDailyDataListFromResponseWithScanner(splitString, outputFolder);
-        return extractDailyDataListFromResponseWithStreams(splitString, outputFolder);
+        return extractDailyDataListFromResponseWithStreams(splitString, outputFolder, maxNoForms);
     }
 
-    private List<DailyData> extractDailyDataListFromResponseWithStreams(String splitString, String outputFolder) {
+    private List<DailyData> extractDailyDataListFromResponseWithStreams(String splitString, String outputFolder, int maxNoForms) {
         return splitString
                 .lines()
                 .filter(Objects::nonNull)
                 .map(line -> line.trim().split("\\s{3,}"))//TODO: potentially unsafe regex (what if people use 3 or more spaces in their name"
                 .filter(arr -> arr[0].equals(FORM_TYPE))
                 .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv"))
+                .limit(maxNoForms)
                 .collect(Collectors.toList());
     }
 
