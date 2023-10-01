@@ -274,7 +274,7 @@ public class Main {
 
     private static <T extends FormParser & FormOutputter> void handleParsableForm(ParsableForm parsableForm, String output, Connection connection) throws ParseFormException, OutputException {
         if (parsableForm.responseData() == null) {
-            throw new ParseFormException("Server response is empty");
+            throw new ParseFormException("Server response is empty: " + parsableForm.folderPath());
         }
         T formParser;
         switch (output) {
