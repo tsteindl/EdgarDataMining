@@ -8,6 +8,7 @@ import util.IndexFile;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class EdgarScraper {
     private int loadedIndexFiles = 0;
@@ -148,14 +149,15 @@ public class EdgarScraper {
     }
 
     private List<DailyData> extractDailyDataListFromResponseWithStreams(String splitString, String outputFolder, int maxNoForms) {
-        return splitString
+        Stream<DailyData> dailyDataStream = splitString
                 .lines()
                 .filter(Objects::nonNull)
                 .map(line -> line.trim().split("\\s{3,}"))//TODO: potentially unsafe regex (what if people use 3 or more spaces in their name"
                 .filter(arr -> arr[0].equals(FORM_TYPE))
-                .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv"))
-                .limit(maxNoForms)
-                .collect(Collectors.toList());
+                .map(arr -> new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv"));
+        return (maxNoForms == -1)
+                ? dailyDataStream.collect(Collectors.toList())
+                : dailyDataStream.limit(maxNoForms).collect(Collectors.toList());
     }
 
     private List<DailyData> extractDailyDataListFromResponseWithScanner(String splitString, String outputFolder) {
