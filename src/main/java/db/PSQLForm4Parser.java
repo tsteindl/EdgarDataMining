@@ -100,7 +100,7 @@ public class PSQLForm4Parser extends Form4Parser implements FormOutputter {
                 } else {
                     throw new SQLException("Inserting data failed, no ID obtained.");
                 }
-
+                //TODO: check if this really works
                 PreparedStatement insertReportingOwner_Form4Stmt = conn.prepareStatement("INSERT INTO reporting_owner_form_4 VALUES(?,?)");
                 this.reportingOwners.stream().map(ReportingOwner::getRptOwnerCik).forEach(owner_cik -> {
                     try {

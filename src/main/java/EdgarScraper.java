@@ -173,24 +173,28 @@ public class EdgarScraper {
                 }
                 String line = scanner.nextLine().trim();
 //                String[] arr = line.split("\\s{3,}");
-                String[] arr = new String[]{
-                        line.substring(0, 12).trim(),
-                        line.substring(12, 74).trim(),
-                        line.substring(74, 86).trim(),
-                        line.substring(86, 98).trim(),
-                        line.substring(98).trim()
-                };
+                try {
+                    String[] arr = new String[]{
+                            line.substring(0, 12).trim(),
+                            line.substring(12, 74).trim(),
+                            line.substring(74, 86).trim(),
+                            line.substring(86, 98).trim(),
+                            line.substring(98).trim()
+                    };
 
-                if (arr[0] == null || !arr[0].equals(FORM_TYPE)) {
-                    continue;
-                }
+                    if (arr[0] == null || !arr[0].equals(FORM_TYPE)) {
+                        continue;
+                    }
 
-                if (arr.length >= 5) {
-                    String csvFilePath = outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv";
-                    result.add(new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], csvFilePath));
-                    i++;
-                } else {
-                    System.out.println("debug");
+                    if (arr.length >= 5) {
+                        String csvFilePath = outputFolder + "/" + arr[4].replace("/", "_").replace(".txt", "") + ".csv";
+                        result.add(new DailyData(arr[0], arr[1], arr[2], arr[3], arr[4], csvFilePath));
+                        i++;
+                    } else {
+                        System.out.println("debug");
+                    }
+                } catch (StringIndexOutOfBoundsException e) {
+                    System.out.println(e);
                 }
             }
         }
